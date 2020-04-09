@@ -2687,7 +2687,7 @@ developer guide for more information.
         <span class="property-indicator"></span>
         <span class="property-type">string</span>
     </dt>
-    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.  
+    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.
 {{% /md %}}</dd>
 
     <dt class="property-optional"
@@ -2730,7 +2730,7 @@ developer guide for more information.
         <span class="property-indicator"></span>
         <span class="property-type">string</span>
     </dt>
-    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.  
+    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.
 {{% /md %}}</dd>
 
     <dt class="property-optional"
@@ -2773,7 +2773,7 @@ developer guide for more information.
         <span class="property-indicator"></span>
         <span class="property-type">string</span>
     </dt>
-    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.  
+    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.
 {{% /md %}}</dd>
 
     <dt class="property-optional"
@@ -2816,7 +2816,7 @@ developer guide for more information.
         <span class="property-indicator"></span>
         <span class="property-type">str</span>
     </dt>
-    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.  
+    <dd>{{% md %}}Canonical user id to grant for. Used only when `type` is `CanonicalUser`.
 {{% /md %}}</dd>
 
     <dt class="property-optional"
@@ -5747,4 +5747,3 @@ describing redirect behavior and when redirects are applied.
     <dt>Notes</dt>
 	<dd>This Pulumi package is based on the [`aws` Terraform Provider](https://github.com/terraform-providers/terraform-provider-aws).</dd>
 </dl>
-
