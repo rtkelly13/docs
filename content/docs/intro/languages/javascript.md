@@ -78,9 +78,9 @@ When using Pulumi's built in TypeScript support, a `tsconfig.json` file is optio
 {
     "compilerOptions": {
         "outDir": "bin",
-        "target": "es6",
+        "target": "es2016",
         "lib": [
-            "es6"
+            "es2016"
         ],
         "module": "commonjs",
         "moduleResolution": "node",
@@ -112,7 +112,7 @@ Tools like VS Code will give you completion lists, live error reporting and inli
 
 When using the built in TypeScript support, Pulumi sets the following compiler settings, which may not be overridden:
 
-- target: "es6",
+- target: "es2016",
 - module: "commonjs",
 - moduleResolution: "node",
 - sourceMap: "true",
