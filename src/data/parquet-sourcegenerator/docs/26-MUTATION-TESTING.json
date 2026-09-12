@@ -1,0 +1,41 @@
+{
+  "slug": "26-MUTATION-TESTING",
+  "projectId": "parquet-sourcegenerator",
+  "title": "26 — Mutation Testing the Behavioural Suite (Layer 4 of #251)",
+  "category": "Internals & Engineering Spikes",
+  "order": 26,
+  "headings": [
+    {
+      "id": "the-trap-golden-files-make-mutation-scores-meaningless",
+      "text": "The trap: golden files make mutation scores meaningless",
+      "level": 2
+    },
+    {
+      "id": "what-runs-and-where-it-is-configured",
+      "text": "What runs, and where it is configured",
+      "level": 2
+    },
+    {
+      "id": "reporting-pr-never-a-red-build",
+      "text": "Reporting: PR, never a red build",
+      "level": 2
+    },
+    {
+      "id": "what-is-deliberately-not-gated-yet",
+      "text": "What is deliberately NOT gated yet",
+      "level": 2
+    },
+    {
+      "id": "reading-a-score-honestly",
+      "text": "Reading a score honestly",
+      "level": 2
+    },
+    {
+      "id": "practical-notes",
+      "text": "Practical notes",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 26 — Mutation Testing the Behavioural Suite (Layer 4 of #251)\n\nCoverage says a line executed. **Mutation testing says a test would have noticed if the\nline were wrong.** This repository gates 85% line / 70% branch coverage and had no measure\nof the second thing — and had already done it by hand twice, both times with payoff:\n\n- **#209** flipped `clearArray: true → false` in its own pool-hygiene test and watched it\n  fail with \"3 of 10 consumed rows are still reachable\". That proved the test could detect\n  the bug it claimed to guard.\n- **#213** verified a double-return detector by deliberately dropping `slot = null`.\n\nBoth were one-off, manual, unrepeatable. This page is about the repeatable version — and\nabout the trap that makes a naive version worthless.\n\n## The trap: golden files make mutation scores meaningless\n\nThe golden-file tests compare the **full emitted text**, character for character. So *any*\nmutation of the emitter — every operator flip, boundary change and deleted branch — changes\nthe emitted string and is trivially \"killed\". A Stryker run that includes them reports a\nscore approaching 100% while proving nothing about semantic coverage: the golden files\ndetect **change**, not **wrongness**. Worse than useless, an inflated number would claim\nthe behavioural suite is stronger than it is.\n\nThat is the entire substance of this layer: the exclusion is the design, not a detail.\n\n## What runs, and where it is configured\n\n`stryker-config.json` (repo root) + the nightly `mutation.yml`:\n\n- **Excluded from the mutation run** (`test-case-filter`, VSTest syntax):\n  `GoldenCodeGenRegressionTests` (emitted-text match), `GeneratedApiBaselineTests`\n  (`.api.txt` signature baselines), `GeneratedCodeMetricsBaselineTests` (`.metrics.txt`),\n  and `IlInterrogationTests` (IL-shape assertions — same change-not-wrongness property as\n  the text suites). **If you are about to remove one of these filters to raise the score,\n  stop: you are inverting the measurement.** The comment in the config file says so where\n  the damage would be done.\n- **Included**: everything that asserts behaviour — round-trips against Parquet.Net and\n  the external oracles, property-based cases (#198), diagnostics (`PARQ*`), and the\n  compile-checks (a mutation producing non-compiling emitted code *is* wrongness, per the\n  #255 lesson, and those tests stay).\n- **Projects mutated**: `Parquet.SourceGenerator` (parser + emitters — where #253 found\n  the complexity and where surviving mutants matter most) and `Parquet.SourceGenerator.Attributes`\n  (the runtime helpers that ship to consumers).\n\n## Reporting: PR, never a red build\n\nThe established CI lesson (#189, and adopted by #254): a scheduled job that merely fails\ngets muted; a scheduled job that opens something reviewable gets acted on. Each night the\nworkflow force-updates the `mutation/headline` branch and refreshes **one PR** —\n`chore(mutation): nightly mutation testing baseline` — whose body is the recomputed score\nper project with the surviving-mutant inventory grouped by file. The first night's number\n**is** the baseline (#254's exact pattern for the oracle). Merging that PR is how the\nbaseline gets recorded into `docs/MUTATION-HEADLINE.md`; the alternative is closing it.\n\n## What is deliberately NOT gated yet\n\nNo threshold, no floor, no break-at. The issue's rule: *\"Gate on a floor only once the\nnumber is known — choosing a threshold before measuring is how a gate ends up either\nvacuous or permanently red.\"* `stryker-config.json` has no `thresholds` object for exactly\nthis reason; adding one is a change that must cite a measured score in review. The score\nalso never fails the job today — surviving mutants open a conversation through the PR, and\na red schedule would just be noise with a mutation percentage in it.\n\n## Reading a score honestly\n\n`scripts/MutationSummary.cs` recomputes the percentage rather than trusting Stryker's\nheadline: `tested = total − compile-error − ignored − not-run`, and the denominator\ncomponents are printed beside the score. A mutation score with an invisible denominator is\na marketing number; here every part of it is on the page.\n\nTriage priority when survivors appear (issue AC 5): the parser first — `TargetParser` is\nthe generator's front door and the one every #251 layer has pointed at — then the emitters,\nthen the Attributes runtime helpers, because those two ships in the consumer's package and\nits data correctness rests on it.\n\n## Practical notes\n\n- Nightly on `ubuntu-latest`; the generator sweep is capped at 100 minutes and the\n  Attributes sweep at 45, inside a 150-minute job. It is not per-PR: CI is already ~4.5\n  minutes of build+test and mutation testing is orders of magnitude slower.\n- `dotnet-stryker` is a local tool pinned in `.config/dotnet-tools.json` like every other\n  CLI here; restore with the mandated `dotnet tool restore --disable-parallel`.\n- Raw `mutation-report.json` files upload as artifacts every run; the PR body is the\n  summary, the artifact is the evidence.\n\nRefs: #251 (epic), #261 (this layer), #260 (layer 3), #254 (the oracle, same reporting\nshape), #209/#213 (the manual precedents), #189 (the PR-not-red-build lesson).\n",
+  "readingMinutes": 4
+}

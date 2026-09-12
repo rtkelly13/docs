@@ -1,0 +1,26 @@
+{
+  "slug": "03-TYPE-MAPPINGS",
+  "projectId": "parquet-typeprovider",
+  "title": "03 - Parquet to F# Type Mappings",
+  "category": "Internals & Engineering Spikes",
+  "order": 3,
+  "headings": [
+    {
+      "id": "1-primitive-scalar-mappings",
+      "text": "1. Primitive & Scalar Mappings",
+      "level": 2
+    },
+    {
+      "id": "2-nullability-option-handling",
+      "text": "2. Nullability & Option Handling",
+      "level": 2
+    },
+    {
+      "id": "3-nested-structures-collections-phase-3",
+      "text": "3. Nested Structures & Collections (Phase 3)",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 03 - Parquet to F# Type Mappings\n\nThis document defines how Apache Parquet physical and logical types are mapped to the F# type system.\n\n---\n\n## 1. Primitive & Scalar Mappings\n\n| Parquet Physical / Logical Type | Required Column (F#) | Optional Column (`PreferOption=true`) |\n| :--- | :--- | :--- |\n| `BOOLEAN` | `bool` | `bool option` |\n| `INT32` | `int32` | `int32 option` |\n| `INT64` | `int64` | `int64 option` |\n| `INT96` (Legacy Timestamp) | `System.DateTime` | `System.DateTime option` |\n| `FLOAT` | `float32` | `float32 option` |\n| `DOUBLE` | `float` | `float option` |\n| `BYTE_ARRAY` (String / UTF8) | `string` | `string option` |\n| `BYTE_ARRAY` (Raw Binary) | `byte[]` | `byte[] option` |\n| `FIXED_LEN_BYTE_ARRAY` (Guid) | `System.Guid` | `System.Guid option` |\n| `DECIMAL` | `decimal` | `decimal option` |\n| `TIMESTAMP_MILLIS` / `MICROS` | `System.DateTime` | `System.DateTime option` |\n| `DATE` | `System.DateOnly` / `System.DateTime` | `System.DateOnly option` |\n| `TIME_MILLIS` / `MICROS` | `System.TimeSpan` | `System.TimeSpan option` |\n\n---\n\n## 2. Nullability & Option Handling\n\nParquet fields declare repetition levels:\n- `REQUIRED`: Mapped directly to the non-nullable F# type `'T`.\n- `OPTIONAL`:\n  - When `PreferOption = true` (default): Mapped to `'T option`.\n  - When `PreferOption = false`: Value types mapped to `Nullable<'T>`, reference types mapped to nullable references.\n\n---\n\n## 3. Nested Structures & Collections (Phase 3)\n\n| Parquet Structure | F# Representation |\n| :--- | :--- |\n| `LIST<T>` | `'T list` / `'T[]` |\n| `MAP<K, V>` | `Map<'K, 'V>` / `IDictionary<'K, 'V>` |\n| `STRUCT` | Generated Nested Provided Type (`Parent.NestedStruct`) |\n",
+  "readingMinutes": 1
+}

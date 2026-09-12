@@ -1,0 +1,61 @@
+{
+  "slug": "02-API-DESIGN-AND-ATTRIBUTES",
+  "projectId": "parquet-sourcegenerator",
+  "title": "02 - API Design & Attributes",
+  "category": "Guides",
+  "order": 2,
+  "headings": [
+    {
+      "id": "overview",
+      "text": "Overview",
+      "level": 2
+    },
+    {
+      "id": "1-attributes-specification",
+      "text": "1. Attributes Specification",
+      "level": 2
+    },
+    {
+      "id": "parquetserializable",
+      "text": "ParquetSerializable",
+      "level": 3
+    },
+    {
+      "id": "parquetcolumn",
+      "text": "ParquetColumn",
+      "level": 3
+    },
+    {
+      "id": "parquetignore",
+      "text": "ParquetIgnore",
+      "level": 3
+    },
+    {
+      "id": "specialized-data-format-attributes",
+      "text": "Specialized Data Format Attributes",
+      "level": 3
+    },
+    {
+      "id": "2-developer-experience-code-examples",
+      "text": "2. Developer Experience & Code Examples",
+      "level": 2
+    },
+    {
+      "id": "target-domain-model",
+      "text": "Target Domain Model",
+      "level": 3
+    },
+    {
+      "id": "generated-extension-usage",
+      "text": "Generated Extension Usage",
+      "level": 3
+    },
+    {
+      "id": "3-generated-code-anatomy",
+      "text": "3. Generated Code Anatomy",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 02 - API Design & Attributes\n\n## Overview\n\n`Parquet.SourceGenerator` provides an intuitive attribute-driven API. Developers decorate their target C# types (classes, records, or structs) with `[ParquetSerializable]`, and the Roslyn source generator handles schema discovery, column array flattening, and Parquet stream writing/reading.\n\n---\n\n## 1. Attributes Specification\n\n### `[ParquetSerializable]`\nDecorates a class, record, or struct to trigger code generation.\n\n```csharp\nnamespace Parquet.SourceGenerator;\n\n[AttributeUsage(AttributeTargets.Class | AttributeTargets.Struct, AllowMultiple = false, Inherited = true)]\npublic sealed class ParquetSerializableAttribute : Attribute\n{\n}\n```\n\n### `[ParquetColumn]`\nCustomizes the column binding for a specific property or field.\n\n```csharp\nnamespace Parquet.SourceGenerator;\n\n[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]\npublic sealed class ParquetColumnAttribute : Attribute\n{\n    public ParquetColumnAttribute(string name)\n    {\n        Name = name;\n    }\n\n    /// <summary>\n    /// Overrides the Parquet DataField column name.\n    /// </summary>\n    public string Name { get; }\n\n    /// <summary>\n    /// Specifies explicit order index for columns.\n    /// </summary>\n    public int Order { get; set; } = -1;\n\n    /// <summary>\n    /// Explicitly flags whether the column can contain null values.\n    /// </summary>\n    public bool Nullable { get; set; }\n}\n```\n\n### `[ParquetIgnore]`\nExcludes a property or field from being written to or read from Parquet.\n\n```csharp\nnamespace Parquet.SourceGenerator;\n\n[AttributeUsage(AttributeTargets.Property | AttributeTargets.Field, AllowMultiple = false)]\npublic sealed class ParquetIgnoreAttribute : Attribute\n{\n}\n```\n\n### Specialized Data Format Attributes\n\n#### `[ParquetTimestamp]`\nSpecifies how `DateTime` / `DateTimeOffset` values are stored in Parquet (Milliseconds or Microseconds; Parquet.Net has no nanosecond format, so that unit is not offered).\n\n#### `[ParquetDecimal]`\nSpecifies explicit precision and scale for `decimal` properties.\n\n```csharp\n[ParquetDecimal(precision: 18, scale: 4)]\npublic decimal Price { get; init; }\n```\n\n---\n\n## 2. Developer Experience & Code Examples\n\n### Target Domain Model\n```csharp\nusing System;\nusing Parquet.SourceGenerator;\n\nnamespace Analytics.Models;\n\n[ParquetSerializable]\npublic partial record TransactionLog\n{\n    [ParquetColumn(\"tx_id\", Order = 1)]\n    public Guid Id { get; init; }\n\n    [ParquetColumn(\"user_id\", Order = 2)]\n    public string UserId { get; init; } = string.Empty;\n\n    [ParquetColumn(\"amount\", Order = 3)]\n    [ParquetDecimal(18, 2)]\n    public decimal Amount { get; init; }\n\n    [ParquetColumn(\"timestamp\", Order = 4)]\n    public DateTime Timestamp { get; init; }\n\n    [ParquetIgnore]\n    public string LocalSessionCache { get; init; } = string.Empty;\n}\n```\n\n### Generated Extension Usage\n\n#### Writing Parquet Files\n```csharp\nusing System.IO;\nusing System.Threading.Tasks;\nusing Analytics.Models;\n\npublic async Task SaveLogsAsync(Stream stream, List<TransactionLog> logs)\n{\n    // WriteParquetAsync is generated at compile time with zero reflection!\n    await logs.WriteParquetAsync(stream);\n}\n```\n\n#### Reading Parquet Files\n```csharp\nusing System.IO;\nusing System.Threading.Tasks;\nusing Analytics.Models;\n\npublic async Task ReadLogsAsync(Stream stream)\n{\n    // ReadParquetAsync reads column arrays directly into strong typed records\n    List<TransactionLog> logs = await TransactionLogParquetExtensions.ReadParquetAsync(stream);\n}\n```\n\n#### Accessing Compiled Schema\n```csharp\nusing Parquet.Data;\n\n// Static schema definition generated at compile time\nParquetSchema schema = TransactionLogParquetExtensions.Schema;\n```\n\n---\n\n## 3. Generated Code Anatomy\n\nFor the `TransactionLog` model above, the source generator emits the following C# code:\n\n```csharp\n// <auto-generated/>\n#nullable enable\n\nnamespace Analytics.Models;\n\npublic static partial class TransactionLogParquetExtensions\n{\n    public static readonly global::Parquet.Data.ParquetSchema Schema = new global::Parquet.Data.ParquetSchema(\n        new global::Parquet.Data.DataField<global::System.Guid>(\"tx_id\"),\n        new global::Parquet.Data.DataField<string>(\"user_id\"),\n        new global::Parquet.Data.DataField<decimal>(\"amount\"),\n        new global::Parquet.Data.DataField<global::System.DateTime>(\"timestamp\")\n    );\n\n    public static async global::System.Threading.Tasks.Task WriteParquetAsync(\n        this global::System.Collections.Generic.IReadOnlyCollection<TransactionLog> items,\n        global::System.IO.Stream stream,\n        global::System.Threading.CancellationToken cancellationToken = default)\n    {\n        int count = items.Count;\n        var col0 = new global::System.Guid[count];\n        var col1 = new string[count];\n        var col2 = new decimal[count];\n        var col3 = new global::System.DateTime[count];\n\n        int i = 0;\n        foreach (var item in items)\n        {\n            col0[i] = item.Id;\n            col1[i] = item.UserId;\n            col2[i] = item.Amount;\n            col3[i] = item.Timestamp;\n            i++;\n        }\n\n        using var writer = await global::Parquet.ParquetWriter.CreateAsync(Schema, stream, cancellationToken: cancellationToken);\n        using var groupWriter = writer.CreateRowGroup();\n\n        await groupWriter.WriteColumnAsync(new global::Parquet.Data.DataColumn(Schema.DataFields[0], col0), cancellationToken);\n        await groupWriter.WriteColumnAsync(new global::Parquet.Data.DataColumn(Schema.DataFields[1], col1), cancellationToken);\n        await groupWriter.WriteColumnAsync(new global::Parquet.Data.DataColumn(Schema.DataFields[2], col2), cancellationToken);\n        await groupWriter.WriteColumnAsync(new global::Parquet.Data.DataColumn(Schema.DataFields[3], col3), cancellationToken);\n    }\n}\n```\n",
+  "readingMinutes": 3
+}

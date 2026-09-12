@@ -1,0 +1,31 @@
+{
+  "slug": "24-METRICS-ORACLE",
+  "projectId": "parquet-sourcegenerator",
+  "title": "24 — The Metrics Oracle (#254): Metrics.exe against CodeMetrics.cs",
+  "category": "Internals & Engineering Spikes",
+  "order": 24,
+  "headings": [
+    {
+      "id": "the-mechanism",
+      "text": "The mechanism",
+      "level": 2
+    },
+    {
+      "id": "what-is-gated-and-what-is-only-reported",
+      "text": "What is gated, and what is only reported",
+      "level": 2
+    },
+    {
+      "id": "the-schema-so-the-next-reader-does-not-guess",
+      "text": "The schema, so the next reader does not guess",
+      "level": 2
+    },
+    {
+      "id": "known-first-run-risk-stated-plainly",
+      "text": "Known first-run risk, stated plainly",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 24 — The Metrics Oracle (#254): Metrics.exe against CodeMetrics.cs\n\nLayer 1's baselines (`metrics/*.metrics.txt`, [21 — Code Metrics](/parquet-sourcegenerator/guides/21-CODE-METRICS)) are\ncomputed by `scripts/CodeMetrics.cs` — a bespoke, cross-platform program. It exists because\n`Microsoft.CodeAnalysis.Metrics` ships `Metrics.exe`, a .NET Framework **Windows-only**\nexecutable, which cannot run on this repository's `ubuntu-latest` CI.\n\n\"Cannot run on the current runner\" is not \"cannot be in CI\", though. A nightly\n`windows-latest` job can run the vendor tool and ask it the one question the bespoke\ncomputation can never answer about itself:\n\n> **Is our ruler accurate?**\n\nIf `CodeMetrics.cs` enumerates members differently from Microsoft's tool — a treatment of\naccessors, partials or nested types that quietly diverges — then every number in every\nbaseline is wrong **in the same direction**, and the drift gate holds that wrong baseline\nstable forever with perfect confidence. Drift detection has no opinion about correctness;\nonly an independent oracle does. This is the same reasoning that put PyArrow (#165), DuckDB\n(#166) and pinned `parquet-cli` (#183) around the *generated files*; the metrics were the\nlast self-reported number in the quality stack without a cross-check.\n\n## The mechanism\n\n`.github/workflows/metrics-oracle.yml`, nightly (`30 5 * * *`) plus manual dispatch:\n\n1. `nuget install Microsoft.CodeAnalysis.Metrics` (version pinned in the workflow env) and\n   run `Metrics.exe` over both generator projects in one invocation, emitting one XML report.\n2. `scripts/MetricsOracleCompare.cs` reads the XML and the matching `metrics/*.metrics.txt`\n   baseline and compares them **per type**: MI within ±2 (the layer-1 cross-machine policy —\n   the index bottoms out in a cube root), CC / CL / SLOC exact.\n3. Any disagreement fails the job **and** opens or updates a `metrics-oracle`-labelled\n   GitHub issue with the run link. A silently-red schedule gets muted; an issue gets acted\n   on — the reporting lesson of #189, which #261 also adopts.\n\n## What is gated, and what is only reported\n\n**Gated: type-level agreement.** The baseline lists every hand-written type in each\nassembly; the oracle must report the same metrics for each. A baseline type the oracle does\nnot name is itself a failure (it means the two tools disagree about what exists).\n\n**Reported, never gated: assembly totals.** The two tools disagree about scope before they\never disagree about arithmetic — how source generators, partials and generated files enter\nan assembly-level rollup is precisely the kind of enumeration detail the oracle cannot\nstandardize away. A tolerance there would paper over real drift; excluding it focuses the\ngate on the claim that matters: *for every object both tools can see, they read the same*.\n\n## The schema, so the next reader does not guess\n\n`Metrics.exe` writes element names as **symbol kinds**: `<Assembly>`, `<Namespace>`,\n`<NamedType>`, with `<Metrics><Metric Name=\"MaintainabilityIndex\" Value=\"62\"/></Metrics>`\nchildren; a type's `Name` attribute carries at most the containing-type qualification\n(`TargetParser.MemberSink`), so the full dotted key is ancestor `<Namespace>` + `.` +\n`Name`. `MetricsOracleCompare.cs` reconstructs keys exactly that way and indexes both the\nqualified and unqualified spellings — never a bare last segment, because a same-named type\nin another namespace silently standing in for its twin would defeat the entire point.\n\n## Known first-run risk, stated plainly\n\nThis comparison has been exercised against a synthetic report built from the real\n`Metrics.exe` schema (agree → green; corrupted and missing types → red), but not against\n`Metrics.exe` itself — no Windows run has happened yet. If the vendor tool disagrees on the\nfirst night, the issue it opens *is* the deliverable: per #254's acceptance criteria, the\ndiscrepancy is investigated and documented **before the job is marked green**, and a\ntolerance is never chosen to make an existing disagreement pass.\n\nRefs: #251 (epic), #253 (layer 1), #254 (this oracle), #21 (the tooling split this page\nschedules around).\n",
+  "readingMinutes": 3
+}

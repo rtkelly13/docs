@@ -1,0 +1,36 @@
+{
+  "slug": "03-INCREMENTAL-GENERATOR-PIPELINE",
+  "projectId": "parquet-sourcegenerator",
+  "title": "03 - Incremental Generator Pipeline",
+  "category": "Internals & Engineering Spikes",
+  "order": 3,
+  "headings": [
+    {
+      "id": "roslyn-iincrementalgenerator-pipeline-architecture",
+      "text": "Roslyn IIncrementalGenerator Pipeline Architecture",
+      "level": 2
+    },
+    {
+      "id": "pipeline-execution-stages",
+      "text": "Pipeline Execution Stages",
+      "level": 2
+    },
+    {
+      "id": "1-syntax-provider-filtering",
+      "text": "1. Syntax Provider & Filtering",
+      "level": 2
+    },
+    {
+      "id": "2-value-equatable-intermediate-models-for-roslyn-caching",
+      "text": "2. Value-Equatable Intermediate Models for Roslyn Caching",
+      "level": 2
+    },
+    {
+      "id": "3-roslyn-diagnostics-validations-parq001---parq099",
+      "text": "3. Roslyn Diagnostics & Validations (PARQ001 - PARQ099)",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 03 - Incremental Generator Pipeline\n\n## Roslyn IIncrementalGenerator Pipeline Architecture\n\n`Parquet.SourceGenerator` is built using Roslyn 4.0's `IIncrementalGenerator` engine. Incremental generators run continuously in modern IDEs (Visual Studio, Rider, VS Code / C# Dev Kit) and MSBuild. High performance and correct caching behavior are critical to ensure that code generation occurs in milliseconds without causing IDE lag.\n\n---\n\n## Pipeline Execution Stages\n\n```\n +------------------------+\n |  Compilation / Syntax  |\n +------------------------+\n             |\n             v  Filter classes/structs with [ParquetSerializable]\n +------------------------+\n | SyntaxValueProvider    |\n +------------------------+\n             |\n             v  Transform & Extract Symbols (INamedTypeSymbol -> Equatable Model)\n +------------------------+\n | Transform Model Step   |\n +------------------------+\n             |\n             v  Combine & Filter duplicates\n +------------------------+\n | Incremental Pipeline   |\n +------------------------+\n             |\n             v  Emit C# Source Code & Roslyn Diagnostics\n +------------------------+\n | Code Generation &      |\n | Diagnostic Output      |\n +------------------------+\n```\n\n---\n\n## 1. Syntax Provider & Filtering\n\n```csharp\n[Generator(LanguageNames.CSharp)]\npublic sealed class ParquetIncrementalGenerator : IIncrementalGenerator\n{\n    public void Initialize(IncrementalGeneratorInitializationContext context)\n    {\n        // Step 1: Collect targets with attributes\n        IncrementalValuesProvider<ClassToGenerate?> targets = context.SyntaxProvider\n            .CreateSyntaxProvider(\n                predicate: static (s, _) => IsTargetSyntax(s),\n                transform: static (ctx, token) => GetTargetSymbol(ctx, token))\n            .Where(static m => m is not null);\n\n        // Step 2: Register source output\n        context.RegisterSourceOutput(targets, static (spc, target) =>\n        {\n            if (target is null) return;\n            GenerateSource(spc, target);\n        });\n    }\n\n    private static bool IsTargetSyntax(SyntaxNode node)\n    {\n        return node is ClassDeclarationSyntax { AttributeLists.Count: > 0 }\n            || node is RecordDeclarationSyntax { AttributeLists.Count: > 0 }\n            || node is StructDeclarationSyntax { AttributeLists.Count: > 0 };\n    }\n}\n```\n\n---\n\n## 2. Value-Equatable Intermediate Models for Roslyn Caching\n\nRoslyn incremental caching relies on strict structural equality (`IEquatable<T>`) for intermediate models. Passing raw `ISymbol` or `SyntaxNode` references downstream breaks Roslyn's cache!\n\n```csharp\npublic sealed record PropertyModel(\n    string Name,\n    string ParquetColumnName,\n    string TypeName,\n    bool IsNullable,\n    int Order) : IEquatable<PropertyModel>;\n\npublic sealed record ClassToGenerate(\n    string Namespace,\n    string ClassName,\n    EquatableArray<PropertyModel> Properties) : IEquatable<ClassToGenerate>;\n```\n\n---\n\n## 3. Roslyn Diagnostics & Validations (`PARQ001` - `PARQ099`)\n\nThe source generator inspects target symbols and emits compile-time diagnostics for error conditions:\n\n| Diagnostic ID | Severity | Description | Remedy |\n| :--- | :--- | :--- | :--- |\n| `PARQ001` | Error | Target type must have a accessible parameterless or primary constructor. | Add a parameterless constructor or record positional parameters. |\n| `PARQ002` | Error | Property type is not supported by `Parquet.Net` schema. | Use a supported primitive type (`int`, `string`, `DateTime`, etc.) or custom converter. |\n| `PARQ003` | Warning | Duplicate `ParquetColumn` name detected within the same type. | Ensure unique column names across properties. |\n| `PARQ004` | Error | Invalid `ParquetDecimal` attribute precision/scale specification. | Ensure precision > scale and scale >= 0. |\n\n```csharp\npublic static class Diagnostics\n{\n    public static readonly DiagnosticDescriptor MissingConstructor = new(\n        id: \"PARQ001\",\n        title: \"Missing accessible constructor\",\n        messageFormat: \"Type '{0}' decorated with [ParquetSerializable] must have an accessible parameterless constructor or primary constructor\",\n        category: \"ParquetSourceGenerator\",\n        DiagnosticSeverity.Error,\n        isEnabledByDefault: true);\n}\n```\n",
+  "readingMinutes": 2
+}

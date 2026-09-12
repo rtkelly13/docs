@@ -1,0 +1,31 @@
+{
+  "slug": "02-ROADMAP",
+  "projectId": "parquet-typeprovider",
+  "title": "02 - Roadmap & Milestones",
+  "category": "Guides",
+  "order": 2,
+  "headings": [
+    {
+      "id": "phase-1-foundation-design-time-schema-inference-milestone-1",
+      "text": "Phase 1: Foundation & Design-Time Schema Inference (Milestone 1)",
+      "level": 2
+    },
+    {
+      "id": "phase-2-runtime-engine-columnar-execution-milestone-2",
+      "text": "Phase 2: Runtime Engine & Columnar Execution (Milestone 2)",
+      "level": 2
+    },
+    {
+      "id": "phase-3-advanced-types-streaming-milestone-3",
+      "text": "Phase 3: Advanced Types & Streaming (Milestone 3)",
+      "level": 2
+    },
+    {
+      "id": "phase-4-integration-testing-ci-packaging-milestone-4",
+      "text": "Phase 4: Integration Testing, CI, & Packaging (Milestone 4)",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 02 - Roadmap & Milestones\n\n## Phase 1: Foundation & Design-Time Schema Inference (Milestone 1)\n- [ ] Initialize repository structure with `FSharp.TypeProviders.SDK`.\n- [ ] Implement sample file loading and resolution (relative paths, absolute paths).\n- [ ] Implement Parquet schema inspection from `Parquet.Net` metadata.\n- [ ] Generate basic `ProvidedTypeDefinition` types with scalar properties (primitives, strings, decimals).\n- [ ] Wire basic quotation expressions for typed row instantiation.\n\n## Phase 2: Runtime Engine & Columnar Execution (Milestone 2)\n- [ ] Implement `ParquetRowContext` columnar batch representation.\n- [ ] Implement synchronous `.Load(filePath)` and `.Load(stream)` row enumeration.\n- [ ] Support `option<'T>` for optional / nullable Parquet columns.\n- [ ] Implement `Parquet.TypeProvider.Tests` covering all core Parquet primitive data types.\n\n## Phase 3: Advanced Types & Streaming (Milestone 3)\n- [ ] Async & streaming APIs: `.AsyncLoad(...)` and `IAsyncEnumerable<'Row>`.\n- [ ] Complex type support:\n  - Timestamp units (Millis, Micros).\n  - Enums and custom logical types.\n  - Lists and nested structures.\n- [ ] Static column accessor overloads (columnar arrays without creating row objects).\n\n## Phase 4: Integration Testing, CI, & Packaging (Milestone 4)\n- [ ] Multi-targeting and multi-IDE testing (Visual Studio, Rider, VS Code / Ionide).\n- [ ] F# Interactive (`.fsx`) and Polyglot Notebook verification.\n- [ ] Performance benchmarking vs naive reflection readers (`BenchmarkDotNet`).\n- [ ] GitHub Actions CI workflow with NuGet packaging and SourceLink.\n",
+  "readingMinutes": 1
+}

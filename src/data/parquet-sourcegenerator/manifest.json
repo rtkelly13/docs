@@ -1,0 +1,21 @@
+{
+  "projectId": "parquet-sourcegenerator",
+  "projectName": "Parquet.SourceGenerator",
+  "version": "0.1.0",
+  "updatedAt": "2026-09-12T16:23:30.696Z",
+  "stats": {
+    "docCount": 29,
+    "apiSymbolCount": 384,
+    "modelCount": 7,
+    "ledgerEntryCount": 6
+  },
+  "models": [
+    "LegacyRecord",
+    "ListOrder",
+    "NestedOrder",
+    "OrderEvent",
+    "PocoOrder",
+    "ScalarMetric",
+    "SortedShipment"
+  ]
+}

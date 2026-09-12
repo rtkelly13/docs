@@ -1,0 +1,56 @@
+{
+  "slug": "09-PERFORMANCE-TRIAGE-DOTNET-DUMP",
+  "projectId": "parquet-sourcegenerator",
+  "title": "09 - Performance & Memory Triage with dotnet-dump",
+  "category": "Internals & Engineering Spikes",
+  "order": 9,
+  "headings": [
+    {
+      "id": "-motivation",
+      "text": "🎯 Motivation",
+      "level": 2
+    },
+    {
+      "id": "-tooling-overview",
+      "text": "🛠️ Tooling Overview",
+      "level": 2
+    },
+    {
+      "id": "-running-the-automated-memory-triage-tool",
+      "text": "🚀 Running the Automated Memory Triage Tool",
+      "level": 2
+    },
+    {
+      "id": "1-analyze-an-existing-dump",
+      "text": "1. Analyze an Existing Dump",
+      "level": 3
+    },
+    {
+      "id": "2-capture-and-triage-a-running-process",
+      "text": "2. Capture and Triage a Running Process",
+      "level": 3
+    },
+    {
+      "id": "3-launch-workload-and-capture",
+      "text": "3. Launch Workload and Capture",
+      "level": 3
+    },
+    {
+      "id": "-triage-report-artifacts",
+      "text": "📊 Triage Report Artifacts",
+      "level": 2
+    },
+    {
+      "id": "-interactive-sos-diagnostic-playbook",
+      "text": "🔬 Interactive SOS Diagnostic Playbook",
+      "level": 2
+    },
+    {
+      "id": "key-sos-commands-for-parquet-codegen",
+      "text": "Key SOS Commands for Parquet Codegen",
+      "level": 3
+    }
+  ],
+  "rawMarkdown": "# 09 - Performance & Memory Triage with dotnet-dump\n\nThis guide explains the runtime memory diagnostic and dump triage workflow in **Parquet.SourceGenerator** using `dotnet-dump` and SOS commands.\n\n---\n\n## 🎯 Motivation\n\nWhile [BenchmarkDotNet](/parquet-sourcegenerator/guides/05-TESTING-STRATEGY-AND-BENCHMARKS) measures elapsed execution time and total allocated bytes per operation, it does not reveal:\n1. **Live Managed Heap Topography**: Which objects survive Gen 0 collections and accumulate into Gen 1/Gen 2.\n2. **Buffer Pool Leaks & Anchored References**: Verifying that `ArrayPool<T>` buckets and string deduplicators (`StringDeduplicator`) return rented buffers and do not anchor large byte/char arrays.\n3. **Large Object Heap (LOH) & Pinned Object Heap (POH) Fragmentation**: Identifying buffers exceeding 85,000 bytes or pinned spans that cause fragmentation and GC pauses under analytical workloads (e.g. 1M+ rows).\n4. **Hidden Ephemeral Boxing**: Identifying transient boxing objects that escape compile-time analyzers.\n\n---\n\n## 🛠️ Tooling Overview\n\n`dotnet-dump` is registered in `.config/dotnet-tools.json`:\n\n```bash\ndotnet tool restore\n```\n\nTo run `dotnet-dump` directly:\n```bash\ndotnet tool run dotnet-dump --help\n```\n\n---\n\n## 🚀 Running the Automated Memory Triage Tool\n\nWe provide an automated memory triage script in `scripts/TriageMemoryDump.cs`. It can capture dumps from running processes, execute test workloads, and generate a comprehensive SOS diagnostic report.\n\n### 1. Analyze an Existing Dump\nIf a memory dump was already captured during testing or CI:\n```bash\ndotnet run scripts/TriageMemoryDump.cs -- --analyze path/to/memory.dmp\n```\n\n### 2. Capture and Triage a Running Process\nTo capture a memory dump from an active benchmark or CLI process by PID:\n```bash\ndotnet run scripts/TriageMemoryDump.cs -- --pid 12345 --type Full --out temp/dumps\n```\n\n### 3. Launch Workload and Capture\nTo launch a specific workload command and capture a dump after an initial warmup:\n```bash\ndotnet run scripts/TriageMemoryDump.cs -- --command \"dotnet run --project test/Parquet.SourceGenerator.CLI/Parquet.SourceGenerator.CLI.csproj -c Release\" --delay 3\n```\n\n---\n\n## 📊 Triage Report Artifacts\n\nThe tool writes output to `temp/dumps/`:\n- **`MEMORY_TRIAGE_REPORT.md`**: Markdown summary containing:\n  - GC Generation Sizes (`Gen 0`, `Gen 1`, `Gen 2`, `LOH`, `POH`)\n  - Top 25 managed types ranked by total memory consumption\n  - Dedicated breakdown for all `Parquet.*` types and internal buffer structures\n- **`dump_*.dmp`**: The raw process core/memory dump file.\n\n---\n\n## 🔬 Interactive SOS Diagnostic Playbook\n\nTo explore a captured dump interactively, launch the SOS analyzer shell:\n```bash\ndotnet tool run dotnet-dump analyze temp/dumps/dump_cli.dmp\n```\n\n### Key SOS Commands for Parquet Codegen\n\n| SOS Command | Purpose |\n| :--- | :--- |\n| `eeheap -gc` | Inspect heap size across all GC heaps, ephemeral segment sizes, LOH, and POH. |\n| `dumpheap -stat` | Display count and total memory usage grouped by MethodTable / Type. |\n| `dumpheap -type Parquet` | Filter heap objects to types containing `Parquet` (e.g. serializers, field readers). |\n| `dumpheap -min 10000` | List individual heap objects exceeding 10 KB to detect buffer leaks or large arrays. |\n| `gcroot <address>` | Trace the GC root chain anchoring an object to determine why it cannot be collected. |\n| `poh` | Inspect Pinned Object Heap entries to detect pinned memory blocking compaction. |\n| `clrstack -all` | View managed call stacks for all active threads. |\n",
+  "readingMinutes": 3
+}

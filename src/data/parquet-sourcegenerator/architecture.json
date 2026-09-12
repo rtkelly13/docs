@@ -1,0 +1,34 @@
+{
+  "diagrams": [
+    {
+      "id": "diag-1",
+      "title": "Generated Call Graph Architecture 1",
+      "chart": "graph TD\n    tsampledomainmodelslegacyrecordparquetlegacyextensions_055[\"SampleDomain.Models.LegacyRecordParquetLegacyExtensions\"]\n    tsampledomainmodelslegacyrecordparquetlegacyextensionsstringdeduplicator_074[\"SampleDomain.Models.LegacyRecordParquetLegacyExtensions.StringDeduplicator\"]\n    tsampledomainmodelslegacyrecordparquetlegacyextensions_055 -->|1| tsampledomainmodelslegacyrecordparquetlegacyextensionsstringdeduplicator_074"
+    },
+    {
+      "id": "diag-2",
+      "title": "Generated Call Graph Architecture 2",
+      "chart": "graph TD\n    tsampledomainmodelslistorderparquetextensions_046[\"SampleDomain.Models.ListOrderParquetExtensions\"]\n    tsampledomainmodelslistorderparquetmemorysource_048[\"SampleDomain.Models.ListOrderParquetMemorySource\"]\n    tsampledomainmodelslistorderparquetparallelsource_050[\"SampleDomain.Models.ListOrderParquetParallelSource\"]\n    tsampledomainmodelslistorderparquetstreamsource_048[\"SampleDomain.Models.ListOrderParquetStreamSource\"]\n    tsampledomainmodelslistorderparquetmemorysource_048 -->|2| tsampledomainmodelslistorderparquetextensions_046\n    tsampledomainmodelslistorderparquetparallelsource_050 -->|2| tsampledomainmodelslistorderparquetextensions_046\n    tsampledomainmodelslistorderparquetstreamsource_048 -->|2| tsampledomainmodelslistorderparquetextensions_046"
+    },
+    {
+      "id": "diag-3",
+      "title": "Generated Call Graph Architecture 3",
+      "chart": "graph TD\n    tsampledomainmodelsnestedorderparquetextensions_048[\"SampleDomain.Models.NestedOrderParquetExtensions\"]\n    tsampledomainmodelsnestedorderparquetmemorysource_050[\"SampleDomain.Models.NestedOrderParquetMemorySource\"]\n    tsampledomainmodelsnestedorderparquetparallelsource_052[\"SampleDomain.Models.NestedOrderParquetParallelSource\"]\n    tsampledomainmodelsnestedorderparquetstreamsource_050[\"SampleDomain.Models.NestedOrderParquetStreamSource\"]\n    tsampledomainmodelsnestedorderparquetmemorysource_050 -->|2| tsampledomainmodelsnestedorderparquetextensions_048\n    tsampledomainmodelsnestedorderparquetparallelsource_052 -->|2| tsampledomainmodelsnestedorderparquetextensions_048\n    tsampledomainmodelsnestedorderparquetstreamsource_050 -->|2| tsampledomainmodelsnestedorderparquetextensions_048"
+    },
+    {
+      "id": "diag-4",
+      "title": "Generated Call Graph Architecture 4",
+      "chart": "graph TD\n    tsampledomainmodelsordereventparquetextensions_047[\"SampleDomain.Models.OrderEventParquetExtensions\"]\n    tsampledomainmodelsordereventparquetextensionsstringdeduplicator_066[\"SampleDomain.Models.OrderEventParquetExtensions.StringDeduplicator\"]\n    tsampledomainmodelsordereventparquetmemorysource_049[\"SampleDomain.Models.OrderEventParquetMemorySource\"]\n    tsampledomainmodelsordereventparquetparallelsource_051[\"SampleDomain.Models.OrderEventParquetParallelSource\"]\n    tsampledomainmodelsordereventparquetstreamsource_049[\"SampleDomain.Models.OrderEventParquetStreamSource\"]\n    tsampledomainmodelsordereventparquetextensions_047 -->|7| tsampledomainmodelsordereventparquetextensionsstringdeduplicator_066\n    tsampledomainmodelsordereventparquetmemorysource_049 -->|3| tsampledomainmodelsordereventparquetextensions_047\n    tsampledomainmodelsordereventparquetparallelsource_051 -->|2| tsampledomainmodelsordereventparquetextensions_047\n    tsampledomainmodelsordereventparquetstreamsource_049 -->|3| tsampledomainmodelsordereventparquetextensions_047"
+    },
+    {
+      "id": "diag-5",
+      "title": "Generated Call Graph Architecture 5",
+      "chart": "graph TD\n    tsampledomainmodelspocoorderparquetextensions_046[\"SampleDomain.Models.PocoOrderParquetExtensions\"]\n    tsampledomainmodelspocoorderparquetmemorysource_048[\"SampleDomain.Models.PocoOrderParquetMemorySource\"]\n    tsampledomainmodelspocoorderparquetparallelsource_050[\"SampleDomain.Models.PocoOrderParquetParallelSource\"]\n    tsampledomainmodelspocoorderparquetstreamsource_048[\"SampleDomain.Models.PocoOrderParquetStreamSource\"]\n    tsampledomainmodelspocoorderparquetmemorysource_048 -->|2| tsampledomainmodelspocoorderparquetextensions_046\n    tsampledomainmodelspocoorderparquetparallelsource_050 -->|2| tsampledomainmodelspocoorderparquetextensions_046\n    tsampledomainmodelspocoorderparquetstreamsource_048 -->|2| tsampledomainmodelspocoorderparquetextensions_046"
+    },
+    {
+      "id": "diag-6",
+      "title": "Generated Call Graph Architecture 6",
+      "chart": "graph TD\n    tsampledomainmodelsscalarmetricparquetextensions_049[\"SampleDomain.Models.ScalarMetricParquetExtensions\"]\n    tsampledomainmodelsscalarmetricparquetmemorysource_051[\"SampleDomain.Models.ScalarMetricParquetMemorySource\"]\n    tsampledomainmodelsscalarmetricparquetparallelsource_053[\"SampleDomain.Models.ScalarMetricParquetParallelSource\"]\n    tsampledomainmodelsscalarmetricparquetstreamsource_051[\"SampleDomain.Models.ScalarMetricParquetStreamSource\"]\n    tsampledomainmodelsscalarmetricparquetmemorysource_051 -->|3| tsampledomainmodelsscalarmetricparquetextensions_049\n    tsampledomainmodelsscalarmetricparquetparallelsource_053 -->|2| tsampledomainmodelsscalarmetricparquetextensions_049\n    tsampledomainmodelsscalarmetricparquetstreamsource_051 -->|3| tsampledomainmodelsscalarmetricparquetextensions_049"
+    }
+  ]
+}

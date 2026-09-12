@@ -1,0 +1,56 @@
+{
+  "slug": "01-VISION-AND-ARCHITECTURE",
+  "projectId": "parquet-sourcegenerator",
+  "title": "01 - Vision & Architecture",
+  "category": "Guides",
+  "order": 1,
+  "headings": [
+    {
+      "id": "executive-summary",
+      "text": "Executive Summary",
+      "level": 2
+    },
+    {
+      "id": "the-problem-reflection-bottlenecks-in-data-pipelines",
+      "text": "The Problem: Reflection Bottlenecks in Data Pipelines",
+      "level": 2
+    },
+    {
+      "id": "the-solution-compile-time-code-generation",
+      "text": "The Solution: Compile-Time Code Generation",
+      "level": 2
+    },
+    {
+      "id": "key-benefits",
+      "text": "Key Benefits",
+      "level": 3
+    },
+    {
+      "id": "architectural-overview",
+      "text": "Architectural Overview",
+      "level": 2
+    },
+    {
+      "id": "1-compile-time-engine-parquetsourcegenerator",
+      "text": "1. Compile-Time Engine (Parquet.SourceGenerator)",
+      "level": 3
+    },
+    {
+      "id": "2-runtime-contract-parquetsourcegeneratorattributes",
+      "text": "2. Runtime Contract (Parquet.SourceGenerator.Attributes)",
+      "level": 3
+    },
+    {
+      "id": "3-generated-extensions",
+      "text": "3. Generated Extensions",
+      "level": 3
+    },
+    {
+      "id": "performance-goals-benchmarks-target",
+      "text": "Performance Goals & Benchmarks Target",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 01 - Vision & Architecture\n\n## Executive Summary\n\n`Parquet.SourceGenerator` is a compile-time code generator for C# targeting the [Parquet.Net](https://github.com/aloneguid/parquet-dotnet) ecosystem. Its primary objective is to replace reflection-based object serialization and schema discovery with zero-allocation, strongly-typed compile-time generated column reader/writer implementations.\n\n---\n\n## The Problem: Reflection Bottlenecks in Data Pipelines\n\nThe default high-level API in `Parquet.Net` (`ParquetConvert.SerializeAsync<T>` and `ParquetConvert.DeserializeAsync<T>`) relies on runtime reflection:\n1. **Property Scanning**: At runtime, `ParquetConvert` uses `typeof(T).GetProperties()` to discover fields, inspect attributes, and map C# types to Parquet `DataField`s.\n2. **Dynamic Value Dereferencing**: Reading and writing property values requires invoking `PropertyInfo.GetValue` and `PropertyInfo.SetValue`, resulting in boxing overhead for primitive types (`int`, `double`, `DateTime`, etc.).\n3. **Array Allocations & Transposition**: High-throughput Parquet storage relies on column-oriented batching. Converting a row-oriented collection (`List<T>`) into column arrays via reflection causes significant GC pressure and CPU cache misses.\n4. **Native AOT & Trimming Incompatibility**: Reflection-heavy serialization breaks when compiling applications with `PublishAot=true` or trimming enabled in .NET 8/9+, as the linker cannot statically trace dynamic property access.\n\n---\n\n## The Solution: Compile-Time Code Generation\n\n`Parquet.SourceGenerator` leverages Roslyn `IIncrementalGenerator` APIs to inspect annotated classes, records, and structs during compilation and generate dedicated serializer extensions:\n\n```\n+-------------------+      Roslyn Incremental      +--------------------------------+\n| User POCO / Record| ---- Generator Pipeline ---> | Generated Extension Methods    |\n| [ParquetClass]    |                              | - Schema Discovery             |\n+-------------------+                              | - Column Batch Writer          |\n                                                   | - Column Batch Reader          |\n                                                   +--------------------------------+\n```\n\n### Key Benefits\n- **Zero Reflection at Runtime**: Property access and column array mapping are hardcoded by the compiler.\n- **Ultra-High Throughput**: Directly copies primitive arrays between memory buffers and Parquet `DataColumn` instances.\n- **Minimal GC Allocations**: Eliminates object boxing and intermediate dynamic objects.\n- **Native AOT & Trimmer Safe**: Fully deterministic compile-time C# code with zero dynamic code emission (`Reflection.Emit`).\n- **Compile-Time Diagnostics**: Emits Roslyn compiler errors/warnings (`PARQ001` - `PARQ099`) if an unsupported type or invalid attribute configuration is used.\n\n---\n\n## Architectural Overview\n\n### 1. Compile-Time Engine (`Parquet.SourceGenerator`)\n- **Target Framework**: `netstandard2.0` (required for Roslyn analyzer & source generator compatibility across MSBuild, VS, and `dotnet build`).\n- **Roslyn API**: `Microsoft.CodeAnalysis.IIncrementalGenerator` (Roslyn 4.0+).\n- **Caching Strategy**: Models passed through the incremental pipeline implement `IEquatable<T>` to leverage Roslyn caching and avoid unnecessary re-generation during typing in the IDE.\n\n### 2. Runtime Contract (`Parquet.SourceGenerator.Attributes`)\n- Lightweight target attributes shipped as part of the generator package or a companion runtime assembly (`[ParquetSerializable]`, `[ParquetColumn]`, `[ParquetIgnore]`).\n\n### 3. Generated Extensions\nFor any marked type `UserRecord`, the source generator emits a partial serializer class or extension methods:\n\n```csharp\n// <auto-generated />\nnamespace MyNamespace;\n\npublic static partial class UserRecordParquetExtensions\n{\n    public static readonly ParquetSchema Schema = new ParquetSchema(\n        new DataField<int>(\"id\"),\n        new DataField<string>(\"name\"),\n        new DataField<DateTime>(\"created_at\")\n    );\n\n    public static async Task WriteParquetAsync(\n        this IEnumerable<UserRecord> items, \n        Stream stream, \n        ParquetOptions? options = null, \n        CancellationToken cancellationToken = default)\n    {\n        // Generated zero-allocation column extraction and stream writing\n    }\n\n    public static async Task<List<UserRecord>> ReadParquetAsync(\n        Stream stream, \n        CancellationToken cancellationToken = default)\n    {\n        // Generated zero-allocation column reading and object construction\n    }\n}\n```\n\n---\n\n## Performance Goals & Benchmarks Target\n\n| Metric | ParquetConvert (Reflection) | Parquet.SourceGenerator Target | Improvement Target |\n| :--- | :--- | :--- | :--- |\n| **Serialization Throughput** | ~50 MB/s | ~250+ MB/s | **5x Faster** |\n| **GC Allocations (MB / 100k rows)** | ~45 MB | < 2 MB | **> 95% Reduction** |\n| **Native AOT Compatibility** | ❌ Fails / Trimming Warning | ✅ 100% Trim Safe | **Native AOT Ready** |\n| **Build Time Impact** | N/A | < 15ms incremental | **Negligible IDE Impact** |\n",
+  "readingMinutes": 3
+}

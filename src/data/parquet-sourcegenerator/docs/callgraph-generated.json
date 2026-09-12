@@ -1,0 +1,41 @@
+{
+  "slug": "callgraph-generated",
+  "projectId": "parquet-sourcegenerator",
+  "title": "The generated code's call graph — documentation (#252)",
+  "category": "General",
+  "order": 99,
+  "headings": [
+    {
+      "id": "legacyrecordparquetlegacyextensionsg",
+      "text": "LegacyRecordParquetLegacyExtensions.g",
+      "level": 2
+    },
+    {
+      "id": "listorderparquetextensionsg",
+      "text": "ListOrderParquetExtensions.g",
+      "level": 2
+    },
+    {
+      "id": "nestedorderparquetextensionsg",
+      "text": "NestedOrderParquetExtensions.g",
+      "level": 2
+    },
+    {
+      "id": "ordereventparquetextensionsg",
+      "text": "OrderEventParquetExtensions.g",
+      "level": 2
+    },
+    {
+      "id": "pocoorderparquetextensionsg",
+      "text": "PocoOrderParquetExtensions.g",
+      "level": 2
+    },
+    {
+      "id": "scalarmetricparquetextensionsg",
+      "text": "ScalarMetricParquetExtensions.g",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# The generated code's call graph — documentation (#252)\n\nStatic view of the golden models' emitted code: what a consumer's debugger walks.\nSame extractor, same limits (delegates/virtuals invisible). Not a gate — the golden\nfiles themselves are the contract; this page is the map. Refresh alongside the\ncall-graph baselines: `UPDATE_GOLDEN_FILES=true dotnet run scripts/CallGraph.cs`.\n\n## LegacyRecordParquetLegacyExtensions.g\n\n```mermaid\ngraph TD\n    tsampledomainmodelslegacyrecordparquetlegacyextensions_055[\"SampleDomain.Models.LegacyRecordParquetLegacyExtensions\"]\n    tsampledomainmodelslegacyrecordparquetlegacyextensionsstringdeduplicator_074[\"SampleDomain.Models.LegacyRecordParquetLegacyExtensions.StringDeduplicator\"]\n    tsampledomainmodelslegacyrecordparquetlegacyextensions_055 -->|1| tsampledomainmodelslegacyrecordparquetlegacyextensionsstringdeduplicator_074\n```\n\n## ListOrderParquetExtensions.g\n\n```mermaid\ngraph TD\n    tsampledomainmodelslistorderparquetextensions_046[\"SampleDomain.Models.ListOrderParquetExtensions\"]\n    tsampledomainmodelslistorderparquetmemorysource_048[\"SampleDomain.Models.ListOrderParquetMemorySource\"]\n    tsampledomainmodelslistorderparquetparallelsource_050[\"SampleDomain.Models.ListOrderParquetParallelSource\"]\n    tsampledomainmodelslistorderparquetstreamsource_048[\"SampleDomain.Models.ListOrderParquetStreamSource\"]\n    tsampledomainmodelslistorderparquetmemorysource_048 -->|2| tsampledomainmodelslistorderparquetextensions_046\n    tsampledomainmodelslistorderparquetparallelsource_050 -->|2| tsampledomainmodelslistorderparquetextensions_046\n    tsampledomainmodelslistorderparquetstreamsource_048 -->|2| tsampledomainmodelslistorderparquetextensions_046\n```\n\n## NestedOrderParquetExtensions.g\n\n```mermaid\ngraph TD\n    tsampledomainmodelsnestedorderparquetextensions_048[\"SampleDomain.Models.NestedOrderParquetExtensions\"]\n    tsampledomainmodelsnestedorderparquetmemorysource_050[\"SampleDomain.Models.NestedOrderParquetMemorySource\"]\n    tsampledomainmodelsnestedorderparquetparallelsource_052[\"SampleDomain.Models.NestedOrderParquetParallelSource\"]\n    tsampledomainmodelsnestedorderparquetstreamsource_050[\"SampleDomain.Models.NestedOrderParquetStreamSource\"]\n    tsampledomainmodelsnestedorderparquetmemorysource_050 -->|2| tsampledomainmodelsnestedorderparquetextensions_048\n    tsampledomainmodelsnestedorderparquetparallelsource_052 -->|2| tsampledomainmodelsnestedorderparquetextensions_048\n    tsampledomainmodelsnestedorderparquetstreamsource_050 -->|2| tsampledomainmodelsnestedorderparquetextensions_048\n```\n\n## OrderEventParquetExtensions.g\n\n```mermaid\ngraph TD\n    tsampledomainmodelsordereventparquetextensions_047[\"SampleDomain.Models.OrderEventParquetExtensions\"]\n    tsampledomainmodelsordereventparquetextensionsstringdeduplicator_066[\"SampleDomain.Models.OrderEventParquetExtensions.StringDeduplicator\"]\n    tsampledomainmodelsordereventparquetmemorysource_049[\"SampleDomain.Models.OrderEventParquetMemorySource\"]\n    tsampledomainmodelsordereventparquetparallelsource_051[\"SampleDomain.Models.OrderEventParquetParallelSource\"]\n    tsampledomainmodelsordereventparquetstreamsource_049[\"SampleDomain.Models.OrderEventParquetStreamSource\"]\n    tsampledomainmodelsordereventparquetextensions_047 -->|7| tsampledomainmodelsordereventparquetextensionsstringdeduplicator_066\n    tsampledomainmodelsordereventparquetmemorysource_049 -->|3| tsampledomainmodelsordereventparquetextensions_047\n    tsampledomainmodelsordereventparquetparallelsource_051 -->|2| tsampledomainmodelsordereventparquetextensions_047\n    tsampledomainmodelsordereventparquetstreamsource_049 -->|3| tsampledomainmodelsordereventparquetextensions_047\n```\n\n## PocoOrderParquetExtensions.g\n\n```mermaid\ngraph TD\n    tsampledomainmodelspocoorderparquetextensions_046[\"SampleDomain.Models.PocoOrderParquetExtensions\"]\n    tsampledomainmodelspocoorderparquetmemorysource_048[\"SampleDomain.Models.PocoOrderParquetMemorySource\"]\n    tsampledomainmodelspocoorderparquetparallelsource_050[\"SampleDomain.Models.PocoOrderParquetParallelSource\"]\n    tsampledomainmodelspocoorderparquetstreamsource_048[\"SampleDomain.Models.PocoOrderParquetStreamSource\"]\n    tsampledomainmodelspocoorderparquetmemorysource_048 -->|2| tsampledomainmodelspocoorderparquetextensions_046\n    tsampledomainmodelspocoorderparquetparallelsource_050 -->|2| tsampledomainmodelspocoorderparquetextensions_046\n    tsampledomainmodelspocoorderparquetstreamsource_048 -->|2| tsampledomainmodelspocoorderparquetextensions_046\n```\n\n## ScalarMetricParquetExtensions.g\n\n```mermaid\ngraph TD\n    tsampledomainmodelsscalarmetricparquetextensions_049[\"SampleDomain.Models.ScalarMetricParquetExtensions\"]\n    tsampledomainmodelsscalarmetricparquetmemorysource_051[\"SampleDomain.Models.ScalarMetricParquetMemorySource\"]\n    tsampledomainmodelsscalarmetricparquetparallelsource_053[\"SampleDomain.Models.ScalarMetricParquetParallelSource\"]\n    tsampledomainmodelsscalarmetricparquetstreamsource_051[\"SampleDomain.Models.ScalarMetricParquetStreamSource\"]\n    tsampledomainmodelsscalarmetricparquetmemorysource_051 -->|3| tsampledomainmodelsscalarmetricparquetextensions_049\n    tsampledomainmodelsscalarmetricparquetparallelsource_053 -->|2| tsampledomainmodelsscalarmetricparquetextensions_049\n    tsampledomainmodelsscalarmetricparquetstreamsource_051 -->|3| tsampledomainmodelsscalarmetricparquetextensions_049\n```\n\n",
+  "readingMinutes": 1
+}

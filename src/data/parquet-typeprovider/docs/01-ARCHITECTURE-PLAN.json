@@ -1,0 +1,41 @@
+{
+  "slug": "01-ARCHITECTURE-PLAN",
+  "projectId": "parquet-typeprovider",
+  "title": "01 - Architecture Plan: Parquet.TypeProvider",
+  "category": "Guides",
+  "order": 1,
+  "headings": [
+    {
+      "id": "1-overview",
+      "text": "1. Overview",
+      "level": 2
+    },
+    {
+      "id": "2-type-provider-sdk-architecture",
+      "text": "2. Type Provider SDK Architecture",
+      "level": 2
+    },
+    {
+      "id": "a-design-time-component-parquettypeproviderdesigntime",
+      "text": "A. Design-Time Component (Parquet.TypeProvider.DesignTime)",
+      "level": 3
+    },
+    {
+      "id": "b-runtime-component-parquettypeproviderruntime",
+      "text": "B. Runtime Component (Parquet.TypeProvider.Runtime)",
+      "level": 3
+    },
+    {
+      "id": "3-memory-performance-strategy",
+      "text": "3. Memory & Performance Strategy",
+      "level": 2
+    },
+    {
+      "id": "4-key-static-parameters",
+      "text": "4. Key Static Parameters",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 01 - Architecture Plan: Parquet.TypeProvider\n\n## 1. Overview\n\n`Parquet.TypeProvider` is an F# Type Provider that generates strongly-typed representations of Apache Parquet schemas at compile time. It enables F# developers to seamlessly read and query Parquet datasets with full static type checking, auto-completion, and optimized execution.\n\n```mermaid\nflowchart LR\n    subgraph DesignTime [Design Time / Compilation]\n        Sample[Sample .parquet File / Schema] --> SchemaParser[Schema Inference Engine]\n        SchemaParser --> TPGenerator[ProvidedTypeDefinition Generator]\n        TPGenerator --> FSCompiler[F# Compiler / IDE IntelliSense]\n    end\n\n    subgraph Runtime [Execution Time]\n        DataFile[Production Parquet Stream / File] --> ColumnDecoder[Low-Level Parquet.Net Chunk Reader]\n        ColumnDecoder --> RowInstantiator[Generated Row Accessors / Seq]\n        RowInstantiator --> Consumer[User F# Code]\n    end\n```\n\n---\n\n## 2. Type Provider SDK Architecture\n\nFollowing F# Type Provider best practices and the `FSharp.TypeProviders.SDK`, the project is cleanly divided into two assemblies:\n\n### A. Design-Time Component (`Parquet.TypeProvider.DesignTime`)\n* **Role**: Runs inside the IDE (Visual Studio, Rider, VS Code / Ionide) and the F# compiler (`fsc.exe`).\n* **Responsibilities**:\n  1. Locates the sample Parquet file or schema specification from the static parameter.\n  2. Parses the Parquet file metadata (`FileMetaData`, `Schema`, `Thrift` schema fields) using `Parquet.Net` metadata readers.\n  3. Uses `ProvidedTypeDefinition`, `ProvidedProperty`, and `ProvidedMethod` to generate the erased types.\n  4. Emits runtime quotation expressions (`<@@ ... @@>`) that wire property getters directly to underlying row index arrays.\n\n### B. Runtime Component (`Parquet.TypeProvider.Runtime`)\n* **Role**: Deployed with the application and referenced at runtime.\n* **Responsibilities**:\n  1. `ParquetReaderCore`: Wraps `ParquetReader` and `ParquetRowGroupReader` from `Parquet.Net`.\n  2. `ParquetRowContext`: Lightweight column storage representing decoded row-group batches in memory.\n  3. `ParquetSequence`: Implements `seq<'Row>` and `IAsyncEnumerable<'Row>` over batched row groups.\n\n---\n\n## 3. Memory & Performance Strategy\n\n1. **Erased Types**:\n   * Types are erased at runtime to avoid code bloat. Row objects are represented internally by a lightweight context or struct wrapping column arrays:\n     ```fsharp\n     type ParquetRowContext = {\n         RowIndex: int\n         Columns: obj[]\n     }\n     ```\n2. **Columnar Batching over Row-by-Row Decoding**:\n   * Instead of reading row-by-row with reflection, `Parquet.Net` reads an entire column chunk into a contiguous typed array (`int[]`, `string[]`, `DateTime[]`, etc.).\n   * The generated row property accessor simply performs an array index lookup:\n     ```fsharp\n     // Property getter expression emitted by design-time provider:\n     <@@ fun (ctx: ParquetRowContext) -> (ctx.Columns.[columnIdx] :?> 'FieldType[])[ctx.RowIndex] @@>\n     ```\n3. **Row-Group Streaming**:\n   * Reading does not require buffering the entire file. When iterating via `seq` or `IAsyncEnumerable`, row groups are loaded, processed, and released sequentially.\n\n---\n\n## 4. Key Static Parameters\n\nThe type provider accepts the following static parameters:\n\n```fsharp\ntype Dataset = ParquetProvider<\n    Sample = \"path/to/sample.parquet\",      // Local path or URL to sample file\n    Schema = \"\",                            // Optional inline schema definition\n    PreferOption = true,                    // Map nullable columns to 'T option (vs null)\n    BatchSize = 10000                       // Default row group batch size\n>\n```\n",
+  "readingMinutes": 2
+}

@@ -1,0 +1,86 @@
+{
+  "slug": "06-TEST-DATA-SPECIFICATION",
+  "projectId": "parquet-sourcegenerator",
+  "title": "06 - Test Data Specification & Symmetrical Benchmarking",
+  "category": "Internals & Engineering Spikes",
+  "order": 6,
+  "headings": [
+    {
+      "id": "purpose-symmetrical-property-verification",
+      "text": "Purpose & Symmetrical Property Verification",
+      "level": 2
+    },
+    {
+      "id": "-dataset-matrix-specifications",
+      "text": "📊 Dataset Matrix & Specifications",
+      "level": 2
+    },
+    {
+      "id": "1-01smallflatprimitivesparquet",
+      "text": "1. 01smallflatprimitives.parquet",
+      "level": 3
+    },
+    {
+      "id": "2-02mediumnullabletypesparquet",
+      "text": "2. 02mediumnullabletypes.parquet",
+      "level": 3
+    },
+    {
+      "id": "3-03complexdecimalsguidsparquet",
+      "text": "3. 03complexdecimalsguids.parquet",
+      "level": 3
+    },
+    {
+      "id": "4-04nestedlistsmapsparquet",
+      "text": "4. 04nestedlistsmaps.parquet",
+      "level": 3
+    },
+    {
+      "id": "5-05largescaleflatparquet",
+      "text": "5. 05largescaleflat.parquet",
+      "level": 3
+    },
+    {
+      "id": "-git-lfs-provenanced-benchmark-datasets",
+      "text": "🏛️ Git LFS Provenanced Benchmark Datasets",
+      "level": 2
+    },
+    {
+      "id": "registered-public-datasets",
+      "text": "Registered Public Datasets",
+      "level": 3
+    },
+    {
+      "id": "-verification-synchronization-commands",
+      "text": "🛠️ Verification & Synchronization Commands",
+      "level": 2
+    },
+    {
+      "id": "standalone-c-provenance-verification-net-10-via-dotnet-run",
+      "text": "Standalone C Provenance Verification (.NET 10 via dotnet run)",
+      "level": 3
+    },
+    {
+      "id": "re-fetching-re-profiling-datasets-net-10-via-dotnet-run",
+      "text": "Re-fetching & Re-profiling Datasets (.NET 10 via dotnet run)",
+      "level": 3
+    },
+    {
+      "id": "python-synthetic-test-generator-pyarrow-via-uv",
+      "text": "Python Synthetic Test Generator (PyArrow via uv)",
+      "level": 3
+    },
+    {
+      "id": "c-synthetic-generator-parquetnet-via-dotnet-run",
+      "text": "C Synthetic Generator (Parquet.Net via dotnet run)",
+      "level": 3
+    },
+    {
+      "id": "-cryptographic-hash-based-regression-suite",
+      "text": "🔒 Cryptographic Hash-Based Regression Suite",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 06 - Test Data Specification & Symmetrical Benchmarking\n\n## Purpose & Symmetrical Property Verification\n\nTo prove the correctness, precision, and performance of `Parquet.SourceGenerator` across multiple scales and complexities, we maintain **symmetrically deterministic test datasets**. \n\nThese datasets currently provide deterministic coverage across two PyArrow format settings and the\nmodern Parquet.Net writer. The compatibility contract and required independent-engine coverage are\ndefined in [14 - Parquet Compatibility Matrix](/parquet-sourcegenerator/guides/14-COMPATIBILITY-MATRIX).\n\nThe current dataset producers are:\n1. **Python Engine (`PyArrow` via `uv`)**:\n   - `test/data/v1/`: PyArrow `version=\"1.0\"` output.\n   - `test/data/v2/`: PyArrow `version=\"2.6\"` output.\n2. **C# Engine (`Parquet.Net` via `dotnet run`)**:\n   - `test/data_csharp/v3/`: Committed files created by Parquet.Net 6.0.3; `v3` is a historical fixture-directory name, not the library version. The current generator references Parquet.Net 6.1.0 for CI regeneration, so in CI this directory is rewritten by the pinned current writer.\n   - There is currently no generated `test/data_csharp/v4/` directory.\n3. **Pinned older-producer fixtures (`tools/ParquetNetLegacyFixtures`)**:\n   - `test/data_producers/parquet-net-6.0.3/`: written by a manually-run tool that pins Parquet.Net 6.0.3 explicitly. Nothing regenerates this directory, so its files stay genuinely 6.0.3-produced and the version matrix can assert on the footer they carry. Regenerate with `dotnet run --project tools/ParquetNetLegacyFixtures/ParquetNetLegacyFixtures.csproj`; the tool prints the footer `CreatedBy` and SHA-256 of what it wrote.\n\nBecause row generation uses strict deterministic mathematical formulas based on the zero-indexed row index $i$, the fixtures provide reproducible value checks for the producers listed above. Exact producer metadata, dimensions, support classification, and hashes are recorded in [`test/data/fixture-manifest.json`](../test/data/fixture-manifest.json). They do not by themselves prove compatibility with every Parquet implementation.\n\n---\n\n## 📊 Dataset Matrix & Specifications\n\n### 1. `01_small_flat_primitives.parquet`\n- **Scale**: 100 rows\n- **Complexity**: Low (flat, non-null primitives)\n- **Purpose**: Fast smoke testing and quick unit test assertions.\n\n| Field Name | Type | Deterministic Row Formula ($i \\in [0, 99]$) |\n| :--- | :--- | :--- |\n| `id` | `INT32` | $i$ |\n| `name` | `UTF8` | `\"user_\" + i` |\n| `score` | `DOUBLE` | $(i \\times 1.5) \\pmod{100.0}$ |\n| `is_active` | `BOOLEAN` | $i \\pmod 2 == 0$ |\n| `created_at_ms` | `INT64` | $1700000000000 + (i \\times 1000)$ |\n\n---\n\n### 2. `02_medium_nullable_types.parquet`\n- **Scale**: 10,000 rows\n- **Complexity**: Medium (nullable primitives with null definition levels)\n- **Purpose**: Verifies null bitmap handling and nullable types (`int?`, `double?`, `string?`, `bool?`).\n\n| Field Name | Type | Deterministic Null Rule ($i \\in [0, 9999]$) | Deterministic Value Formula |\n| :--- | :--- | :--- | :--- |\n| `id` | `INT32` | Non-null | $i$ |\n| `nullable_int` | `INT32?` | `NULL` if $i \\pmod 5 == 0$ | $i \\times 10$ |\n| `nullable_double` | `DOUBLE?` | `NULL` if $i \\pmod 5 == 0$ | $(i \\times 3.14159) \\pmod{1000.0}$ |\n| `nullable_string` | `UTF8?` | `NULL` if $i \\pmod 5 == 0$ | `\"str_val_\" + i` |\n| `nullable_bool` | `BOOLEAN?` | `NULL` if $i \\pmod 5 == 0$ | $i \\pmod 3 == 0$ |\n\n---\n\n### 3. `03_complex_decimals_guids.parquet`\n- **Scale**: 5,000 rows\n- **Complexity**: Medium-High (Fixed precision decimals, GUID strings, timestamps)\n- **Purpose**: Verifies high-precision data types, byte scaling, and GUID parsing.\n\n| Field Name | Type | Deterministic Row Formula ($i \\in [0, 4999]$) |\n| :--- | :--- | :--- |\n| `id` | `INT32` | $i$ |\n| `guid_str` | `UTF8` | `Guid.Parse(i+1, 0, 0, ...)` |\n| `amount` | `DECIMAL(18, 4)` | $(i \\times 123.4567) \\pmod{99999.9999}$ |\n| `timestamp_us` | `INT64` / `TIMESTAMP_US` | $1700000000000000 + (i \\times 100000)$ |\n| `category` | `INT32` | $i \\pmod 4$ |\n\n---\n\n### 4. `04_nested_lists_maps.parquet`\n- **Scale**: 1,000 rows\n- **Complexity**: High (Nested repeated lists and map key-value structures)\n- **Purpose**: Verifies repetition levels, list fields (`DataField<List<T>>`), and map fields.\n\n| Field Name | Type | Deterministic Row Value |\n| :--- | :--- | :--- |\n| `id` | `INT32` | $i$ |\n| `tags` | `LIST<UTF8>` | `[\"primary\", \"tag_\" + (i % 10), \"sub_\" + (i % 3)]` |\n| `scores` | `LIST<INT32>` | `[i, i + 1, i + 2]` |\n| `metadata` | `MAP<UTF8, UTF8>` | `{\"env\": (i % 2 == 0 ? \"production\" : \"staging\"), \"index\": str(i)}` |\n\n---\n\n### 5. `05_large_scale_flat.parquet`\n- **Scale**: 100,000 rows\n- **Complexity**: High Scale (Volume throughput and GC memory allocation benchmarking)\n- **Purpose**: Used by `BenchmarkDotNet` to profile MB/s throughput and allocation overhead.\n\n| Field Name | Type | Deterministic Row Formula ($i \\in [0, 99999]$) |\n| :--- | :--- | :--- |\n| `id` | `INT64` | $i$ |\n| `payload` | `UTF8` | `\"payload_data_string_buffer_segment_\" + (i % 500)` |\n| `val_a` | `INT32` | $i \\times 7$ |\n| `val_b` | `DOUBLE` | $i \\times 0.123456789$ |\n| `is_valid` | `BOOLEAN` | $i \\pmod 7 \\neq 0$ |\n\n---\n\n## 🏛️ Git LFS Provenanced Benchmark Datasets\n\nIn addition to synthetic unit test fixtures, the repository maintains real-world, fixed public datasets under [`benchmarks/data/`](../benchmarks/data/) tracked via **Git LFS**. Each dataset is cryptographically pinned and accompanied by a machine-readable [`provenance.json`](../benchmarks/data/provenance.json) and human-readable [`PROVENANCE.md`](../benchmarks/data/PROVENANCE.md).\n\n### Registered Public Datasets\n\n1. **`tpch_lineitem_sf001.parquet`** (60,175 rows, 1.34 MB)\n   - **Origin**: TPC-H SF 0.01 via Hugging Face (`liangyc/tpch-sf-0_01`, commit `a91e9442ea`)\n   - **License**: Apache-2.0\n   - **Profile**: 16 columns across 4 `Int64` keys, 4 `Decimal(15,2)` financial amounts, 3 `Date` timestamps, 4 dictionary-encoded strings (`l_returnflag`, `l_linestatus`, `l_shipinstruct`, `l_shipmode`), and 1 plain free-text string (`l_comment`).\n2. **`adult_census_income.parquet`** (32,561 rows, 554 KB)\n   - **Origin**: Adult Census Income via Hugging Face (`scikit-learn/adult-census-income`, commit `aefa0f0f1b`)\n   - **License**: CC-BY-4.0\n   - **Profile**: 15 columns with heavy categorical dictionary encoding (9 string columns including `workclass`, `education`, `occupation`, `relationship`, `income`).\n3. **`diamonds.parquet`** (53,940 rows, 785 KB)\n   - **Origin**: Diamonds regression benchmark via Hugging Face (`inria-soda/tabular-benchmark`, commit `cb2bcee34f`)\n   - **License**: CC0-1.0\n   - **Profile**: 10 columns testing floating-point precision (`carat`, `depth`, `table`, `x`, `y`, `z`, `price`) and ordinal categories.\n\n---\n\n## 🛠️ Verification & Synchronization Commands\n\n### Standalone C# Provenance Verification (.NET 10 via `dotnet run`)\n```bash\ndotnet run scripts/VerifyProvenance.cs\n```\n\n### Re-fetching & Re-profiling Datasets (.NET 10 via `dotnet run`)\n```bash\ndotnet run scripts/FetchBenchmarkDatasets.cs\n```\n\n### Python Synthetic Test Generator (PyArrow via `uv`)\n> **Note**: `scripts/generate_test_data.py` is an explicit, authorized exclusion to the repository's C#-only script policy, maintained strictly for cross-engine PyArrow format-compatibility testing. All other automation, scripts, and tooling must be authored in C#.\n\n```bash\nuv run scripts/generate_test_data.py\n```\n\n### C# Synthetic Generator (`Parquet.Net` via `dotnet run`)\n```bash\ndotnet run --project test/Parquet.SourceGenerator.CLI/Parquet.SourceGenerator.CLI.csproj\n```\n\n---\n\n## 🔒 Cryptographic Hash-Based Regression Suite\n\nTo guarantee that Parquet files produced by `Parquet.SourceGenerator` are strictly deterministic and immune to silent binary or structural emitter regressions, the test suite includes **[`ParquetHashRegressionTests.cs`](../test/Parquet.SourceGenerator.Tests/ParquetHashRegressionTests.cs)**:\n\n1. **Bit-for-Bit In-Memory Determinism**:\n   - Asserts that repeated serializations via `WriteParquetAsync` and `WriteParquetBatchedAsync` produce byte-identical streams (`bytes1.SequenceEqual(bytes2)`) and identical SHA-256 digests across all supported compression codecs (`None`, `Snappy`, `Gzip`, `Zstd`) and batch configurations (25, 50, 100).\n2. **Pinned Golden SHA-256 Hashes**:\n   - Validates generated binary output against immutable golden SHA-256 hashes for canonical scalar models (`TestUserRecord` Snappy and Uncompressed, `TestNullableRecord`, `BenchmarkGuidModel`) and real-world analytical datasets (TPC-H LineItem, Adult Census, Diamonds).\n   - Any unintentional alteration to column ordering, definition level flags, Thrift metadata encoding, or block layouts fails the test with a distinct cryptographic diff.\n3. **Checked-in Dataset Integrity**:\n   - Continuously validates the cryptographic integrity and hydration of all 15 tracked Parquet files across `test/data/v1/`, `test/data/v2/`, `test/data_csharp/v3/`, and `test/data_producers/parquet-net-6.0.3/`, as well as the 3 Git LFS public benchmark datasets in `benchmarks/data/`.\n    - These tests are trait-gated (`Category=DatasetIntegrity`) and run in CI **before** compatibility datasets are generated into a temporary directory. The manifest hashes always describe the checked-in files. The main post-generation suite run filters this category out and instead exercises round-trip compatibility against the temporary generated files (see `TestDataIntegrationTests`).\n",
+  "readingMinutes": 6
+}

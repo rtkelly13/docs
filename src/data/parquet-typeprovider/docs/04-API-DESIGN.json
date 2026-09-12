@@ -1,0 +1,41 @@
+{
+  "slug": "04-API-DESIGN",
+  "projectId": "parquet-typeprovider",
+  "title": "04 - API Design & Usage Patterns",
+  "category": "Internals & Engineering Spikes",
+  "order": 4,
+  "headings": [
+    {
+      "id": "1-type-provider-declaration",
+      "text": "1. Type Provider Declaration",
+      "level": 2
+    },
+    {
+      "id": "2-reading-data",
+      "text": "2. Reading Data",
+      "level": 2
+    },
+    {
+      "id": "a-synchronous-file-stream-loading",
+      "text": "A. Synchronous File / Stream Loading",
+      "level": 3
+    },
+    {
+      "id": "b-async-streaming-loading",
+      "text": "B. Async / Streaming Loading",
+      "level": 3
+    },
+    {
+      "id": "c-direct-columnar-access-zero-allocation-batch-reading",
+      "text": "C. Direct Columnar Access (Zero-Allocation Batch Reading)",
+      "level": 3
+    },
+    {
+      "id": "3-interactive-data-exploration-f-interactive-notebooks",
+      "text": "3. Interactive Data Exploration (F Interactive / Notebooks)",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 04 - API Design & Usage Patterns\n\nThis document describes the public surface area and common usage patterns for `Parquet.TypeProvider`.\n\n---\n\n## 1. Type Provider Declaration\n\n```fsharp\nopen Parquet.TypeProvider\n\n// Type definition with sample file\ntype Orders = ParquetProvider<\"../data/samples/orders.parquet\">\n```\n\n---\n\n## 2. Reading Data\n\n### A. Synchronous File / Stream Loading\n```fsharp\n// From local path\nlet data: seq<Orders.Row> = Orders.Load(\"path/to/orders_2026.parquet\")\n\n// From open stream\nuse fileStream = File.OpenRead(\"path/to/orders_2026.parquet\")\nlet dataFromStream = Orders.Load(fileStream)\n\nfor row in data do\n    printfn $\"Order ID: {row.OrderId}, Total: {row.Amount}\"\n```\n\n### B. Async / Streaming Loading\n```fsharp\ntask {\n    let! rows = Orders.AsyncLoad(\"https://storage.blob.core.windows.net/data/orders.parquet\")\n    for row in rows do\n        // Process rows asynchronously\n        do! processRowAsync row\n}\n```\n\n### C. Direct Columnar Access (Zero-Allocation Batch Reading)\nFor high-performance analytical scenarios that don't need row abstractions:\n```fsharp\n// Read columns directly as contiguous typed arrays\nlet orderIds: int64[] = Orders.Columns.OrderId(\"path/to/orders.parquet\")\nlet amounts: decimal[] = Orders.Columns.Amount(\"path/to/orders.parquet\")\n```\n\n---\n\n## 3. Interactive Data Exploration (F# Interactive / Notebooks)\n\nIn `.fsx` or Jupyter / Polyglot Notebooks:\n```fsharp\n#r \"nuget: Parquet.TypeProvider\"\n\nopen Parquet.TypeProvider\n\ntype Trades = ParquetProvider<\"trades_sample.parquet\">\nlet df = Trades.Load(\"trades_sample.parquet\")\n\ndf\n|> Seq.filter (fun t -> t.Symbol = \"AAPL\")\n|> Seq.averageBy (fun t -> float t.Price)\n|> printfn \"Average AAPL Price: %f\"\n```\n",
+  "readingMinutes": 1
+}

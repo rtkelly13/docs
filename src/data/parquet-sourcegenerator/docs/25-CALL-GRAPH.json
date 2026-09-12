@@ -1,0 +1,31 @@
+{
+  "slug": "25-CALL-GRAPH",
+  "projectId": "parquet-sourcegenerator",
+  "title": "25 — The Call Graph (#252): structure as a first-class, gated artifact",
+  "category": "Internals & Engineering Spikes",
+  "order": 25,
+  "headings": [
+    {
+      "id": "the-artifacts",
+      "text": "The artifacts",
+      "level": 2
+    },
+    {
+      "id": "the-four-gates",
+      "text": "The four gates",
+      "level": 2
+    },
+    {
+      "id": "what-this-graph-does-not-capture-read-this-before-trusting-an-absence",
+      "text": "What this graph does NOT capture — read this before trusting an absence",
+      "level": 2
+    },
+    {
+      "id": "why-the-generated-graph-is-documentation-not-a-gate",
+      "text": "Why the generated graph is documentation, not a gate",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 25 — The Call Graph (#252): structure as a first-class, gated artifact\n\nLayers 1–3 ([21](/parquet-sourcegenerator/guides/21-CODE-METRICS), [22](/parquet-sourcegenerator/guides/22-GENERATED-CODE-METRICS),\n[23](/parquet-sourcegenerator/guides/23-DUPLICATION)) measure *volume, branching, and overlap* — all properties of\nindividual methods. The defects that have actually cost this repository time were never\nline-level: three hand-rolled copies of `ResolveSchemaField` broke together on #196, and\n#264 is a receipt for two components independently reading one footer. Those are\n**graph** defects — the shape of who-calls-whom — and until this page, nothing observed\nthe shape.\n\n## The artifacts\n\n| what | where | gated? |\n|:--|:--|:--|\n| method-level edge list, one `E:` line per static call edge | `graph/<project>.callgraph.txt` | **drift** (zero tolerance, the `*.api.txt` grammar) |\n| every declared cycle, with its reason | `graph/callgraph.allowlist.txt` | presence in the allowlist *is* the gate |\n| type-level Mermaid of the generator | `docs/callgraph.md` | refreshed by the same command |\n| Mermaid of the generated code's graph — \"what a consumer's debugger walks\" | `docs/callgraph-generated.md` | documentation only |\n| run summary (nodes/edges/unresolved/fan-out/depth) | `graph/callgraph-summary.md` → step summary | informational |\n\nRefresh all of it with the same verb as every other baseline here:\n`UPDATE_GOLDEN_FILES=true dotnet run scripts/CallGraph.cs`.\n\n## The four gates\n\n1. **Edge drift.** A new edge is a new dependency; a removed edge is a decoupling. Either\n   way it should have been a decision, and the diff makes it one.\n2. **Cycles.** No multi-node strongly-connected component without a catalogued,\n   justified `SCC` line. Direct self-recursion needs a `SELF` line with a stated reason.\n   Today's entire cycle inventory is the #176 compound parser and the emitter's\n   definition-ladder — genuinely recursive over trees, bounded by `MaxCompoundDepth` and\n   the containment path. That is the case for recursion, kept *countable* — three `SELF`\n   lines and one `SCC`, not a silent mesh. Mutual recursion *across* components has no\n   allowlist kind at all, because it has no legitimate use in this architecture.\n3. **Fan-out.** `Mark Seemann`'s chunking argument says a method calling more than about\n   seven others can't be held in the head at once; 7 is an archetype, not a law — but the\n   archetype is where the ratchet is aimed, so the caps (28 today — one method,\n   `CodeEmitter.EmitSource`, sits on it) come down over time and never up, per the\n   CodeMetrics policy.\n4. **Layering.** No `Emitter.Components.*` → `CodeEmitter`/`LegacyCodeEmitter` edge: a\n   spoke must not call its hub. Had this gate existed, the `ResolveSchemaField`\n   divergence would have been visible as it happened.\n\nThe current picture: 211 nodes / 356 edges / max depth 6 from public entry points in the\nmain project; 105 / 121 / 6 in Legacy.\n\n## What this graph does NOT capture — read this before trusting an absence\n\nThis is a **static approximation over syntax**: no compilation, no symbol resolution. A\ncall site is attributed by receiver name and method name + argument count against the\nproject's own methods, and anything ambiguous or external is **counted unresolved, never\nguessed**. Concretely:\n\n- **Delegates are invisible.** `Action<>`/`Func<>` fields invoked without a method name\n  (the emitter's per-component lambda seams) produce no edge. Their call sites are inside\n  the unresolved count — currently 86% of all call sites, dominated by framework and\n  Parquet.Net calls, which is why the number is in the header, not hidden.\n- **Virtual and interface dispatch resolves to the name**, not the runtime target. An\n  edge into an interface method means \"somewhere that interface is implemented\" — treat\n  the edge as weaker than a concrete one.\n- **Complex receivers are refused**: `a.b.M()`, `x?.M()`, `((T)y).M()` are unresolved by\n  policy — a wrong guess here is worse than a counted blind spot. (The same rule,\n  learned the hard way during calibration, keeps `item.GetHashCode()` inside\n  `EquatableArray.GetHashCode` from becoming a fabricated recursion — absent an edge is\n  *not* proof of independence; the gates only reject cycles they actually saw.)\n- **Overloads sharing name and arity merge** into one node; parameter types join the\n  method identity precisely so that calls between sibling overloads read as real edges\n  instead of false self-loops.\n\n## Why the generated graph is documentation, not a gate\n\nLayer 2 already gates the emitted code's size and shape per capability; its call graph is\na *description* of what the emitter outputs — the point lookup → pruned-range → column\nread → materialisation chain that a consumer's debugger walks. Duplicating a gate there\nwould add noise without adding a question anyone can answer differently.\n\nRefs: #252 (this), #251 (epic), #260 (overlap; this is the connectivity view of the same\nfailure), #264 (two mechanisms, one concept — a graph-shape problem the allowlist format\nmakes visible).\n",
+  "readingMinutes": 4
+}

@@ -1,0 +1,332 @@
+[
+  {
+    "slug": "01-ARCHITECTURE-PLAN",
+    "projectId": "parquet-typeprovider",
+    "title": "01 - Architecture Plan: Parquet.TypeProvider",
+    "category": "Guides",
+    "order": 1,
+    "headings": [
+      {
+        "id": "1-overview",
+        "text": "1. Overview",
+        "level": 2
+      },
+      {
+        "id": "2-type-provider-sdk-architecture",
+        "text": "2. Type Provider SDK Architecture",
+        "level": 2
+      },
+      {
+        "id": "a-design-time-component-parquettypeproviderdesigntime",
+        "text": "A. Design-Time Component (Parquet.TypeProvider.DesignTime)",
+        "level": 3
+      },
+      {
+        "id": "b-runtime-component-parquettypeproviderruntime",
+        "text": "B. Runtime Component (Parquet.TypeProvider.Runtime)",
+        "level": 3
+      },
+      {
+        "id": "3-memory-performance-strategy",
+        "text": "3. Memory & Performance Strategy",
+        "level": 2
+      },
+      {
+        "id": "4-key-static-parameters",
+        "text": "4. Key Static Parameters",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 2
+  },
+  {
+    "slug": "02-ROADMAP",
+    "projectId": "parquet-typeprovider",
+    "title": "02 - Roadmap & Milestones",
+    "category": "Guides",
+    "order": 2,
+    "headings": [
+      {
+        "id": "phase-1-foundation-design-time-schema-inference-milestone-1",
+        "text": "Phase 1: Foundation & Design-Time Schema Inference (Milestone 1)",
+        "level": 2
+      },
+      {
+        "id": "phase-2-runtime-engine-columnar-execution-milestone-2",
+        "text": "Phase 2: Runtime Engine & Columnar Execution (Milestone 2)",
+        "level": 2
+      },
+      {
+        "id": "phase-3-advanced-types-streaming-milestone-3",
+        "text": "Phase 3: Advanced Types & Streaming (Milestone 3)",
+        "level": 2
+      },
+      {
+        "id": "phase-4-integration-testing-ci-packaging-milestone-4",
+        "text": "Phase 4: Integration Testing, CI, & Packaging (Milestone 4)",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 1
+  },
+  {
+    "slug": "03-TYPE-MAPPINGS",
+    "projectId": "parquet-typeprovider",
+    "title": "03 - Parquet to F# Type Mappings",
+    "category": "Internals & Engineering Spikes",
+    "order": 3,
+    "headings": [
+      {
+        "id": "1-primitive-scalar-mappings",
+        "text": "1. Primitive & Scalar Mappings",
+        "level": 2
+      },
+      {
+        "id": "2-nullability-option-handling",
+        "text": "2. Nullability & Option Handling",
+        "level": 2
+      },
+      {
+        "id": "3-nested-structures-collections-phase-3",
+        "text": "3. Nested Structures & Collections (Phase 3)",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 1
+  },
+  {
+    "slug": "04-API-DESIGN",
+    "projectId": "parquet-typeprovider",
+    "title": "04 - API Design & Usage Patterns",
+    "category": "Internals & Engineering Spikes",
+    "order": 4,
+    "headings": [
+      {
+        "id": "1-type-provider-declaration",
+        "text": "1. Type Provider Declaration",
+        "level": 2
+      },
+      {
+        "id": "2-reading-data",
+        "text": "2. Reading Data",
+        "level": 2
+      },
+      {
+        "id": "a-synchronous-file-stream-loading",
+        "text": "A. Synchronous File / Stream Loading",
+        "level": 3
+      },
+      {
+        "id": "b-async-streaming-loading",
+        "text": "B. Async / Streaming Loading",
+        "level": 3
+      },
+      {
+        "id": "c-direct-columnar-access-zero-allocation-batch-reading",
+        "text": "C. Direct Columnar Access (Zero-Allocation Batch Reading)",
+        "level": 3
+      },
+      {
+        "id": "3-interactive-data-exploration-f-interactive-notebooks",
+        "text": "3. Interactive Data Exploration (F Interactive / Notebooks)",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 1
+  },
+  {
+    "slug": "05-TESTING-AND-BENCHMARKS",
+    "projectId": "parquet-typeprovider",
+    "title": "05 - Testing Strategy & Benchmarking System",
+    "category": "Internals & Engineering Spikes",
+    "order": 5,
+    "headings": [
+      {
+        "id": "1-testing-machinery",
+        "text": "1. Testing Machinery",
+        "level": 2
+      },
+      {
+        "id": "a-design-time-provided-type-verification",
+        "text": "A. Design-Time Provided Type Verification",
+        "level": 3
+      },
+      {
+        "id": "b-binary-compatibility-cross-validation",
+        "text": "B. Binary Compatibility & Cross-Validation",
+        "level": 3
+      },
+      {
+        "id": "c-f-interactive-fsx-script-testing",
+        "text": "C. F Interactive (.fsx) Script Testing",
+        "level": 3
+      },
+      {
+        "id": "2-benchmarking-architecture-benchmarkdotnet",
+        "text": "2. Benchmarking Architecture (BenchmarkDotNet)",
+        "level": 2
+      },
+      {
+        "id": "multi-scale-workloads",
+        "text": "Multi-Scale Workloads",
+        "level": 3
+      },
+      {
+        "id": "benchmark-comparison-matrix",
+        "text": "Benchmark Comparison Matrix",
+        "level": 3
+      },
+      {
+        "id": "benchmark-automation-ci-reports",
+        "text": "Benchmark Automation & CI Reports",
+        "level": 3
+      }
+    ],
+    "readingMinutes": 2
+  },
+  {
+    "slug": "06-TESTING-AND-CONSUMPTION-PLAN",
+    "projectId": "parquet-typeprovider",
+    "title": "06 - Testing, Consumption, and F# Language Integration Plan",
+    "category": "Internals & Engineering Spikes",
+    "order": 6,
+    "headings": [
+      {
+        "id": "1-f-bespoke-language-behaviors",
+        "text": "1. F-Bespoke Language Behaviors",
+        "level": 2
+      },
+      {
+        "id": "a-idiomatic-option-handling-t-option-t-voption",
+        "text": "A. Idiomatic Option Handling ('T option & 'T voption)",
+        "level": 3
+      },
+      {
+        "id": "b-units-of-measure-support",
+        "text": "B. Units of Measure Support",
+        "level": 3
+      },
+      {
+        "id": "c-structural-equality-comparisons",
+        "text": "C. Structural Equality & Comparisons",
+        "level": 3
+      },
+      {
+        "id": "d-pipeline-functional-combinators",
+        "text": "D. Pipeline & Functional Combinators",
+        "level": 3
+      },
+      {
+        "id": "2-multi-tier-testing-machinery",
+        "text": "2. Multi-Tier Testing Machinery",
+        "level": 2
+      },
+      {
+        "id": "layer-1-schema-provided-type-unit-tests-testsparquettypeprovidertests",
+        "text": "Layer 1: Schema & Provided Type Unit Tests (tests/Parquet.TypeProvider.Tests)",
+        "level": 3
+      },
+      {
+        "id": "layer-2-cross-engine-binary-parity-tests",
+        "text": "Layer 2: Cross-Engine Binary Parity Tests",
+        "level": 3
+      },
+      {
+        "id": "layer-3-memory-resource-leak-tests",
+        "text": "Layer 3: Memory & Resource Leak Tests",
+        "level": 3
+      },
+      {
+        "id": "3-end-to-end-package-consumption-testing",
+        "text": "3. End-to-End Package Consumption Testing",
+        "level": 2
+      },
+      {
+        "id": "a-local-packaging-pipeline",
+        "text": "A. Local Packaging Pipeline",
+        "level": 3
+      },
+      {
+        "id": "b-ide-tooling-verification-matrix",
+        "text": "B. IDE & Tooling Verification Matrix",
+        "level": 3
+      },
+      {
+        "id": "4-multi-scale-benchmarking-suite",
+        "text": "4. Multi-Scale Benchmarking Suite",
+        "level": 2
+      },
+      {
+        "id": "multi-scale-testing-1k-10k-100k-1000000-rows",
+        "text": "Multi-Scale Testing (1K, 10K, 100K, 1,000,000 Rows)",
+        "level": 3
+      },
+      {
+        "id": "benchmarked-candidates",
+        "text": "Benchmarked Candidates:",
+        "level": 3
+      },
+      {
+        "id": "measured-metrics",
+        "text": "Measured Metrics:",
+        "level": 3
+      },
+      {
+        "id": "5-planned-sample-applications",
+        "text": "5. Planned Sample Applications",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 4
+  },
+  {
+    "slug": "07-ECOSYSTEM-AND-DEPENDENCIES",
+    "projectId": "parquet-typeprovider",
+    "title": "07 - F# Software Foundation Ecosystem & Dependency Standards",
+    "category": "Reference",
+    "order": 7,
+    "headings": [
+      {
+        "id": "1-language-baseline-f-60",
+        "text": "1. Language Baseline: F 6.0+",
+        "level": 2
+      },
+      {
+        "id": "rationale-for-f-60-baseline",
+        "text": "Rationale for F 6.0 Baseline:",
+        "level": 3
+      },
+      {
+        "id": "2-the-f-software-foundation-fsprojects-governance",
+        "text": "2. The F Software Foundation (fsprojects) Governance",
+        "level": 2
+      },
+      {
+        "id": "3-technical-evaluation-of-foundation-dependencies",
+        "text": "3. Technical Evaluation of Foundation Dependencies",
+        "level": 2
+      },
+      {
+        "id": "fsharpcontroltaskseq-fsprojectsfsharpcontroltaskseq",
+        "text": "FSharp.Control.TaskSeq (fsprojects/FSharp.Control.TaskSeq)",
+        "level": 3
+      },
+      {
+        "id": "fsharptypeproviderssdk-fsprojectsfsharptypeproviderssdk",
+        "text": "FSharp.TypeProviders.SDK (fsprojects/FSharp.TypeProviders.SDK)",
+        "level": 3
+      },
+      {
+        "id": "4-dependency-selection-matrix-policy",
+        "text": "4. Dependency Selection Matrix & Policy",
+        "level": 2
+      },
+      {
+        "id": "5-guidelines-for-future-f-extension-packages",
+        "text": "5. Guidelines for Future F Extension Packages",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 3
+  }
+]

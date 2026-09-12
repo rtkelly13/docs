@@ -1,0 +1,116 @@
+{
+  "slug": "14-COMPATIBILITY-MATRIX",
+  "projectId": "parquet-sourcegenerator",
+  "title": "14 - Parquet Compatibility Matrix",
+  "category": "Reference",
+  "order": 14,
+  "headings": [
+    {
+      "id": "status-vocabulary",
+      "text": "Status Vocabulary",
+      "level": 2
+    },
+    {
+      "id": "product-variants",
+      "text": "Product Variants",
+      "level": 2
+    },
+    {
+      "id": "generated-model-type-envelope",
+      "text": "Generated Model Type Envelope",
+      "level": 2
+    },
+    {
+      "id": "generated-model-shapes-outside-the-envelope",
+      "text": "Generated Model Shapes Outside The Envelope",
+      "level": 2
+    },
+    {
+      "id": "schema-and-file-features",
+      "text": "Schema And File Features",
+      "level": 2
+    },
+    {
+      "id": "timestamp-and-decimal-contract",
+      "text": "Timestamp And Decimal Contract",
+      "level": 2
+    },
+    {
+      "id": "writer-options-and-encodings",
+      "text": "Writer Options And Encodings",
+      "level": 2
+    },
+    {
+      "id": "format-and-producer-matrix",
+      "text": "Format And Producer Matrix",
+      "level": 2
+    },
+    {
+      "id": "compatibility-definitions",
+      "text": "Compatibility Definitions",
+      "level": 2
+    },
+    {
+      "id": "backward-compatibility",
+      "text": "Backward compatibility",
+      "level": 3
+    },
+    {
+      "id": "forward-compatibility",
+      "text": "Forward compatibility",
+      "level": 3
+    },
+    {
+      "id": "schema-evolution",
+      "text": "Schema evolution",
+      "level": 3
+    },
+    {
+      "id": "semantic-compatibility",
+      "text": "Semantic compatibility",
+      "level": 3
+    },
+    {
+      "id": "apache-arrow-recordbatch-ingestion-experimental-177",
+      "text": "Apache Arrow RecordBatch Ingestion (Experimental, 177)",
+      "level": 2
+    },
+    {
+      "id": "conditional-emission",
+      "text": "Conditional emission",
+      "level": 3
+    },
+    {
+      "id": "supported-apachearrow-floor",
+      "text": "Supported Apache.Arrow floor",
+      "level": 3
+    },
+    {
+      "id": "physical-type-mapping",
+      "text": "Physical type mapping",
+      "level": 3
+    },
+    {
+      "id": "rejected-inputs",
+      "text": "Rejected inputs",
+      "level": 3
+    },
+    {
+      "id": "deliberate-deviation-from-the-issues-signature",
+      "text": "Deliberate deviation from the issue's signature",
+      "level": 3
+    },
+    {
+      "id": "evidence-and-test-ownership",
+      "text": "Evidence And Test Ownership",
+      "level": 2
+    },
+    {
+      "id": "related-work",
+      "text": "Related Work",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 14 - Parquet Compatibility Matrix\n\nThis document defines the compatibility promise for `Parquet.SourceGenerator`.\n\nThe promise is not \"every Parquet file\". Apache Parquet is a broad file format with nested schemas,\nrepeated fields, maps, optional logical types, page indexes, bloom filters, encryption, and producer-\nspecific metadata. The generator currently emits strongly typed readers and writers for a deliberate\nflat-schema envelope. Files and features outside that envelope must be classified explicitly rather\nthan being treated as accidentally supported.\n\n## Status Vocabulary\n\n| Status | Meaning |\n|:---|:---|\n| **Supported** | The generated model or file shape is implemented and belongs in the required regression matrix. |\n| **Read-supported** | Generated readers can consume the shape, but generated writers do not emit it as a first-class feature. |\n| **Write-supported** | Generated writers can emit the shape, but compatibility with every external consumer is not implied. |\n| **Unverified** | The implementation may support the shape, but an independent compatibility test is still required. |\n| **Unsupported** | The generator rejects the model or the generated API cannot safely consume the file. |\n| **Unknown/future** | No compatibility promise is made until the feature is investigated. |\n\n## Product Variants\n\n| Variant | Underlying API | Current package baseline | Supported consumer targets |\n|:---|:---|:---|:---|\n| Modern generator | Parquet.Net v6 `DataField` and `Memory<T>` APIs | Parquet.Net 6.1.0 | Consumer projects using the modern package and a compatible .NET runtime |\n| Classic generator | Parquet.Net v4/v5 `DataColumn` APIs | Parquet.Net 4.25.0 in package-consumption tests | .NET 8, .NET 9, and .NET Framework 4.7.2 in the current test setup |\n| Generator analyzer | Roslyn incremental generator | `netstandard2.0` analyzer assembly | Roslyn hosts compatible with the package's compiler dependency range |\n\nThe classic backend is one API family for Parquet.Net 4.x and 5.x. The modern backend targets the\nv6 API family. They are separate emitters and do not have identical generated API surfaces or\nperformance characteristics.\n\n## Generated Model Type Envelope\n\nThe following types are accepted by the modern parser allowlist and are the starting point for the\nrequired generated read/write matrix.\n\n| Type family | Status | Notes |\n|:---|:---|:---|\n| `bool`, `byte`, `sbyte`, `short`, `ushort`, `int`, `uint`, `long`, `ulong` | Supported | Primitive Parquet.Net mappings |\n| `float`, `double` | Supported | Floating-point physical types |\n| `string` | Supported | UTF-8 string column |\n| `byte[]` | Supported | Binary column |\n| `System.DateOnly` | Supported | DateTimeDataField at midnight with generated conversion |\n| `System.DateTime` | Supported | Millisecond or microsecond configuration |\n| `System.TimeSpan` | Supported | Generator-specific conversion to an integer duration representation |\n| `System.TimeOnly` | Supported | Generator-specific conversion to an integer time representation |\n| `System.Guid` | Supported | Binary Guid representation |\n| `decimal` | Supported | Precision and scale are controlled by `[ParquetDecimal]` |\n| Enums | Supported | Encoded through the enum underlying integral type |\n| `System.ReadOnlyMemory<byte>` | Supported | Modern backend type |\n| `System.ReadOnlyMemory<char>` | Supported | Modern backend type |\n| `Parquet.File.Values.Primitives.Interval` | Supported | Parquet.Net passthrough mapping |\n| Nullable value types and annotated nullable references | Supported | Encoded as optional columns with definition levels |\n\nNullable reference handling depends on the compilation's nullable context. An annotated reference\n(`string?`) is optional; a non-annotated reference (`string`) is required when nullable analysis is\nenabled. In an oblivious context, reference types remain conservatively optional.\n\n## Generated Model Shapes Outside The Envelope\n\n| Shape | Status | Current behavior |\n|:---|:---|:---|\n| `char` | Unsupported | Rejected by `PARQ006` |\n| `DateTimeOffset` | Unsupported | Rejected by `PARQ006`; callers should model the instant and offset explicitly |\n| `System.Numerics.BigInteger` | Unsupported | Parquet.Net accepts the schema type but its plain encoder cannot safely encode the managed struct; rejected by `PARQ006` |\n| `BigDecimal` | Unsupported | The current Parquet.Net public type is not in the generator's supported model envelope |\n| Arrays other than `byte[]` | Unsupported | Rejected by `PARQ006` |\n| `List<T>`, `Dictionary<TKey,TValue>`, and other collections | Unsupported | Rejected by `PARQ006` |\n| Nested user-defined objects | Unsupported | Rejected by `PARQ006` |\n| Nested target types | Unsupported | Rejected by `PARQ009` |\n| Generic target types | Unsupported | Rejected by `PARQ010` |\n| Members without an accessible setter or initializer | Unsupported | Rejected by `PARQ007` |\n| Reference types without an accessible parameterless constructor | Unsupported | Rejected by `PARQ008` |\n| Positional records | Unsupported | Rejected when no accessible parameterless construction is available |\n\nThese restrictions describe generated model support. A valid external Parquet file containing nested\nor repeated columns may still be inspected by an external tool, but it is not a supported input for a\ngenerated model unless its required fields fit the supported flat envelope.\n\n## Schema And File Features\n\n| Feature | Status | Contract |\n|:---|:---|:---|\n| Flat required columns | Supported | Required model members map to required fields |\n| Flat optional columns | Supported | Nullable model members map to optional fields |\n| Multiple row groups | Supported | Generated readers process row groups independently |\n| Column order changed in the file | Supported | Generated readers resolve fields by name after the fast positional check |\n| Additional file columns | Supported for reading | Generated readers resolve the fields they know; additional columns are not materialized |\n| Missing required generated column | Supported failure | The reader throws a descriptive `InvalidDataException` |\n| Missing optional generated column | Supported | The column materialises as all-null; see [document 16](16-VERSION-AND-SCHEMA-EVOLUTION.md) |\n| Nested and repeated fields | Unsupported for generated models | No generated collection or repetition-level model exists |\n| Lists and maps | Unsupported for generated models | External files are fixture/conformance inputs, not generated-model inputs |\n| Encrypted Parquet files | Unknown/future | No compatibility promise |\n| Page indexes and bloom filters | Unknown/future | Metadata features are not currently required for ordinary generated reads |\n| Arbitrary producer metadata | Supported if semantically irrelevant | Metadata must not alter supported schema/value interpretation |\n\n## Timestamp And Decimal Contract\n\n| Feature | Status | Contract |\n|:---|:---|:---|\n| Millisecond timestamps | Supported | `[ParquetTimestamp(ParquetTimestampUnit.Milliseconds)]` |\n| Microsecond timestamps | Supported | `[ParquetTimestamp(ParquetTimestampUnit.Microseconds)]` |\n| Nanosecond timestamps | Unsupported | Parquet.Net's supported DateTime representation does not provide this path |\n| Decimal precision up to 38 | Supported | Precision must be greater than or equal to scale |\n| Decimal scale | Supported | Must be declared consistently between model and file |\n| Decimal precision/scale mismatch | Supported failure | The reader/writer must fail rather than silently rescale values |\n\n## Writer Options And Encodings\n\nThe modern writer exposes these compression choices through `ParquetSerializerOptions`:\n\n| Option family | Current values | Compatibility status |\n|:---|:---|:---|\n| Compression | None, Snappy, Gzip, Lz4, Brotli, Zstd | Required generated matrix; independent consumer verification pending |\n| Column encoding hint | Default, Dictionary, DeltaBinaryPacked, ByteSplitStream | Required where the type and Parquet.Net support the hint |\n| Dictionary threshold | Runtime configurable | Writer behavior; not a schema compatibility guarantee |\n| Dictionary sample size | Runtime configurable | Writer behavior; not a schema compatibility guarantee |\n| String deduplication | Runtime read option | In-memory identity/allocation behavior only; file values must not change |\n| Row-group size | Runtime configurable | Required to preserve row-group ordering and value semantics |\n\nThe encoding enum is an implementation hint, not a promise that every Parquet consumer supports\nevery encoding for every physical type. Interoperability tests must validate the actual combinations\nthat the underlying writer accepts.\n\n## Format And Producer Matrix\n\n| Producer or consumer | Current status | Required follow-up |\n|:---|:---|:---|\n| Modern generated code with Parquet.Net 6.1.0 | Supported baseline | Generated round-trip and type matrix |\n| Classic generated code with Parquet.Net 4.25.0 | Supported baseline | Legacy package-consumption matrix |\n| PyArrow format setting 1.0 | Fixture coverage exists | Pin exact PyArrow version and validate both directions |\n| PyArrow format setting 2.6 | Fixture coverage exists | Pin exact PyArrow version and validate both directions |\n| PyArrow reading generated output | Verified in ExternalInterop CI | Pinned PyArrow canonical fixture and generated C# output |\n| DuckDB reading and writing supported flat schemas | Verified in ExternalInterop CI | Pinned DuckDB CLI and generated canonical fixture |\n| Apache Parquet tooling | Verified in ApacheConformance CI | Pinned parquet-cli 1.18.1 (`test/data/apache-conformance.json`) validates generated output and every fixture; corrupt corpus must fail predictably |\n| Older Parquet.Net output read by current generated code | Verified | Parquet.Net 6.0.3 fixtures in the version matrix (document 16) |\n| Current generated output read by legacy consumers | Verified in CI | Cross-version package interop step (document 16) |\n| Public LFS benchmark datasets | Provenance and runtime coverage | Treat hashes as provenance, not semantic compatibility |\n\nThe `test/data_csharp/v3` directory is a fixture-directory name, not evidence that the files were\nwritten by Parquet.Net v3. The committed files record Parquet.Net 6.0.3 in their footer metadata,\nbut CI regenerates that directory on every run with the currently pinned Parquet.Net (6.1.0), so\nfiles read from it during a CI run are produced by the current writer. Anything that must be read\nback as genuinely older-producer output therefore lives under `test/data_producers/`, which nothing\nregenerates: `test/data_producers/parquet-net-6.0.3/` is written by\n[`tools/ParquetNetLegacyFixtures`](../tools/ParquetNetLegacyFixtures), a manually-run tool that pins\nParquet.Net 6.0.3 explicitly. Exact committed fixture provenance is recorded in\n[`test/data/fixture-manifest.json`](../test/data/fixture-manifest.json).\nThere is currently no generated `test/data_csharp/v4` directory.\n\n## Compatibility Definitions\n\n### Backward compatibility\n\nThe current generated reader can read files written by an older producer when the file schema is\ninside this document's supported envelope and the older producer's encoding and compression are\nsupported by the current Parquet.Net dependency.\n\n### Forward compatibility\n\nThe current generated reader can read files written by a newer producer only when the newer file uses\nfeatures already inside the documented envelope. Unknown future features are not silently accepted as\nforward-compatible.\n\n### Schema evolution\n\nColumn reordering and additional file columns are supported. Missing required generated columns fail\ndescriptively. Missing optional generated columns materialise as nulls. The full behaviour table,\nthe producer/consumer/version matrix behind it, and the known gaps are in\n[document 16](16-VERSION-AND-SCHEMA-EVOLUTION.md).\n\n### Semantic compatibility\n\nCompatibility means equivalent schema meaning and logical values. It does not require byte-identical\nfiles, identical page boundaries, identical statistics encoding, or identical metadata ordering across\nindependent writers.\n\n## Apache Arrow RecordBatch Ingestion (Experimental, #177)\n\nWhen — and only when — the consumer compilation references **Apache.Arrow**, the generator emits one\nextra file per `[ParquetSerializable]` type:\n\n```\n{Namespace}.{Type}.Arrow.g.cs\n```\n\nIt contributes a second overload into the same `partial` extensions class:\n\n```csharp\nFooParquetExtensions.WriteParquetRowGroupAsync(\n    ParquetWriter writer,\n    Apache.Arrow.RecordBatch batch,\n    ParquetSerializerOptions? options = null,\n    CancellationToken cancellationToken = default);\n```\n\n### Conditional emission\n\n- The generator gates the file on an `IncrementalValueProvider<bool>` derived from\n  `Compilation.ReferencedAssemblyNames` plus a `GetTypeByMetadataName(\"Apache.Arrow.RecordBatch\")`\n  confirmation. Neither the generator package nor the Attributes runtime package takes a dependency\n  on Apache.Arrow — the consumer opts in with a `PackageReference`.\n- Because the gate is a single `bool`, adding or removing the Arrow reference re-runs only the\n  Arrow-gated source output; the main emission stays cached and byte-identical.\n- **File-count implication:** a project that references Apache.Arrow generates *two* files per\n  annotated type rather than one. Golden-file and generated-file-count assertions in downstream\n  projects must account for this.\n- Types the bridge cannot express get no `.Arrow.g.cs` at all (see below), so the file count is\n  \"one per type, plus one per *Arrow-representable* type\".\n\n### Supported Apache.Arrow floor\n\n`23.0.0`. Apache.Arrow ships `net462`/`netstandard2.0`/`net8.0`, so every TFM this product line\nsupports can consume the bridge. The emitted code calls Apache.Arrow's public API directly — there is\nno helper assembly and therefore no version-skew surface beyond the API used here.\n\n### Physical type mapping\n\n| C# member | Parquet column | Required Arrow type | Handoff |\n|:---|:---|:---|:---|\n| `sbyte` / `short` / `int` / `long` | same | `Int8` / `Int16` / `Int32` / `Int64` | zero-copy |\n| `byte` / `ushort` / `uint` / `ulong` | same | `UInt8` / `UInt16` / `UInt32` / `UInt64` | zero-copy |\n| `float` / `double` | same | `Float` / `Double` | zero-copy |\n| enum | underlying integer | matching integer type | zero-copy |\n| `TimeOnly` | `TimeDataField(Micros)` | `Time64(Microsecond)` | zero-copy |\n| `bool` | `bool` | `Boolean` | expanded (Arrow packs bits) |\n| `decimal` | `DecimalDataField(p,s)` | `Decimal128(p,s)` | converted |\n| `DateTime` | `DateTimeDataField` | `Timestamp(Microsecond)` with `[ParquetTimestamp(Microseconds)]`, otherwise `Timestamp(Millisecond)` | converted |\n| `DateOnly` | `DateTimeDataField` | `Date32` | converted |\n| `TimeSpan` | `TimeDataField(Millis)` | `Duration(Millisecond)` | converted |\n| `Guid` | `DataField<Guid>` | `FixedSizeBinary(16)`, RFC 4122 byte order | converted |\n| `string` | `string` | `Utf8` | one rented `char[]`, sliced per value |\n| `byte[]` | `byte[]` | `Binary` | slices of the Arrow value buffer |\n\nNullable columns take their definition levels from the Arrow validity bitmap; no caller-supplied\nlevel arrays are needed, and the resulting file is byte-identical to the POCO write path.\n\n### Rejected inputs\n\nValidation runs before a single byte is written and reports **every** offending field at once as an\n`InvalidDataException` — nothing is silently coerced.\n\n- missing column, extra nulls in a required column, mismatched column length\n- physical/logical type mismatch (including `LargeUtf8`, `LargeBinary`, `StringView`, `Date64`,\n  `Time32`, `Decimal256`)\n- timestamp / time / duration unit mismatch, decimal precision-scale mismatch, `FixedSizeBinary`\n  width other than 16\n- `DictionaryArray` — a Parquet dictionary is a physical encoding, not a logical type; decode first\n\nTypes with a compound member (nested group, list, map — #176) or an exotic leaf get **no** bridge at\nall rather than a partial one.\n\n### Deliberate deviation from the issue's signature\n\n#177 proposed `this ParquetWriter writer`. An extension method cannot work here: `RecordBatch` carries\nno generic parameter, so every `[ParquetSerializable]` type in scope would contribute an\nindistinguishable `WriteParquetRowGroupAsync(ParquetWriter, RecordBatch, …)` extension and every call\nsite would be `CS0121` ambiguous. (The POCO overload escapes this because `IReadOnlyCollection<T>`\nnames the type.) The bridge is therefore a plain static method, called qualified.\n\n## Evidence And Test Ownership\n\n| Claim | Evidence required |\n|:---|:---|\n| Generated code round-trips | Deterministic C# runtime tests |\n| External producer can be read | Fixture plus semantic comparison through generated reader |\n| Generated output is externally readable | External engine reads generated output and validates semantics |\n| File is structurally valid | Independent Apache Parquet tooling |\n| Fixture bytes are unchanged | SHA-256 provenance test |\n| Version compatibility | Producer/consumer matrix with exact versions |\n| Large/random input safety | Property-based and corruption tests |\n\nHash regression tests protect provenance and intentional byte-level determinism. They are not a\nsubstitute for semantic interoperability tests.\n\n## Related Work\n\n- [Issue #161](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/161) tracks this contract.\n- [Issue #162](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/162) builds the semantic harness.\n- [Issue #163](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/163) establishes the fixture corpus.\n- [Issue #164](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/164) adds the generated type matrix.\n- [Issue #165](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/165) adds PyArrow interoperability.\n- [Issue #166](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/166) adds DuckDB interoperability.\n- [Issue #167](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/167) adds Apache conformance validation.\n- [Issue #168](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/168) adds version and schema-evolution testing; results in [document 16](16-VERSION-AND-SCHEMA-EVOLUTION.md).\n- [Issue #169](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/169) adds property-based and negative testing.\n- [Issue #170](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/170) provides the `/regression` execution modes.\n- [Issue #177](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/177) adds the Apache Arrow `RecordBatch` ingestion bridge.\n",
+  "readingMinutes": 13
+}

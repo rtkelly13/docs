@@ -1,0 +1,2101 @@
+[
+  {
+    "slug": "01-VISION-AND-ARCHITECTURE",
+    "projectId": "parquet-sourcegenerator",
+    "title": "01 - Vision & Architecture",
+    "category": "Guides",
+    "order": 1,
+    "headings": [
+      {
+        "id": "executive-summary",
+        "text": "Executive Summary",
+        "level": 2
+      },
+      {
+        "id": "the-problem-reflection-bottlenecks-in-data-pipelines",
+        "text": "The Problem: Reflection Bottlenecks in Data Pipelines",
+        "level": 2
+      },
+      {
+        "id": "the-solution-compile-time-code-generation",
+        "text": "The Solution: Compile-Time Code Generation",
+        "level": 2
+      },
+      {
+        "id": "key-benefits",
+        "text": "Key Benefits",
+        "level": 3
+      },
+      {
+        "id": "architectural-overview",
+        "text": "Architectural Overview",
+        "level": 2
+      },
+      {
+        "id": "1-compile-time-engine-parquetsourcegenerator",
+        "text": "1. Compile-Time Engine (Parquet.SourceGenerator)",
+        "level": 3
+      },
+      {
+        "id": "2-runtime-contract-parquetsourcegeneratorattributes",
+        "text": "2. Runtime Contract (Parquet.SourceGenerator.Attributes)",
+        "level": 3
+      },
+      {
+        "id": "3-generated-extensions",
+        "text": "3. Generated Extensions",
+        "level": 3
+      },
+      {
+        "id": "performance-goals-benchmarks-target",
+        "text": "Performance Goals & Benchmarks Target",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 3
+  },
+  {
+    "slug": "02-API-DESIGN-AND-ATTRIBUTES",
+    "projectId": "parquet-sourcegenerator",
+    "title": "02 - API Design & Attributes",
+    "category": "Guides",
+    "order": 2,
+    "headings": [
+      {
+        "id": "overview",
+        "text": "Overview",
+        "level": 2
+      },
+      {
+        "id": "1-attributes-specification",
+        "text": "1. Attributes Specification",
+        "level": 2
+      },
+      {
+        "id": "parquetserializable",
+        "text": "ParquetSerializable",
+        "level": 3
+      },
+      {
+        "id": "parquetcolumn",
+        "text": "ParquetColumn",
+        "level": 3
+      },
+      {
+        "id": "parquetignore",
+        "text": "ParquetIgnore",
+        "level": 3
+      },
+      {
+        "id": "specialized-data-format-attributes",
+        "text": "Specialized Data Format Attributes",
+        "level": 3
+      },
+      {
+        "id": "2-developer-experience-code-examples",
+        "text": "2. Developer Experience & Code Examples",
+        "level": 2
+      },
+      {
+        "id": "target-domain-model",
+        "text": "Target Domain Model",
+        "level": 3
+      },
+      {
+        "id": "generated-extension-usage",
+        "text": "Generated Extension Usage",
+        "level": 3
+      },
+      {
+        "id": "3-generated-code-anatomy",
+        "text": "3. Generated Code Anatomy",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 3
+  },
+  {
+    "slug": "03-INCREMENTAL-GENERATOR-PIPELINE",
+    "projectId": "parquet-sourcegenerator",
+    "title": "03 - Incremental Generator Pipeline",
+    "category": "Internals & Engineering Spikes",
+    "order": 3,
+    "headings": [
+      {
+        "id": "roslyn-iincrementalgenerator-pipeline-architecture",
+        "text": "Roslyn IIncrementalGenerator Pipeline Architecture",
+        "level": 2
+      },
+      {
+        "id": "pipeline-execution-stages",
+        "text": "Pipeline Execution Stages",
+        "level": 2
+      },
+      {
+        "id": "1-syntax-provider-filtering",
+        "text": "1. Syntax Provider & Filtering",
+        "level": 2
+      },
+      {
+        "id": "2-value-equatable-intermediate-models-for-roslyn-caching",
+        "text": "2. Value-Equatable Intermediate Models for Roslyn Caching",
+        "level": 2
+      },
+      {
+        "id": "3-roslyn-diagnostics-validations-parq001---parq099",
+        "text": "3. Roslyn Diagnostics & Validations (PARQ001 - PARQ099)",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 2
+  },
+  {
+    "slug": "04-ROADMAP-AND-CONTRIBUTING",
+    "projectId": "parquet-sourcegenerator",
+    "title": "04 - Roadmap & Open Source Blueprint",
+    "category": "Internals & Engineering Spikes",
+    "order": 4,
+    "headings": [
+      {
+        "id": "-project-roadmap",
+        "text": "🗺️ Project Roadmap",
+        "level": 2
+      },
+      {
+        "id": "phase-1-foundation-infrastructure-",
+        "text": "Phase 1: Foundation & Infrastructure ✅",
+        "level": 3
+      },
+      {
+        "id": "phase-2-primitive-types-basic-code-generation-",
+        "text": "Phase 2: Primitive Types & Basic Code Generation ✅",
+        "level": 3
+      },
+      {
+        "id": "phase-3-nullability-complex-types-diagnostics-",
+        "text": "Phase 3: Nullability, Complex Types & Diagnostics ✅",
+        "level": 3
+      },
+      {
+        "id": "phase-4-native-aot-performance-optimization-benchmarking-",
+        "text": "Phase 4: Native AOT, Performance Optimization & Benchmarking ✅",
+        "level": 3
+      },
+      {
+        "id": "phase-5-open-source-launch-cicd-",
+        "text": "Phase 5: Open Source Launch & CI/CD ✅",
+        "level": 3
+      },
+      {
+        "id": "phase-6-broader-runtime-support-",
+        "text": "Phase 6: Broader Runtime Support ✅",
+        "level": 3
+      },
+      {
+        "id": "phase-7-measurement",
+        "text": "Phase 7: Measurement",
+        "level": 3
+      },
+      {
+        "id": "phase-8-compound-types-the-apache-arrow-bridge",
+        "text": "Phase 8: Compound Types & the Apache Arrow bridge",
+        "level": 3
+      },
+      {
+        "id": "-testing-strategy",
+        "text": "🧪 Testing Strategy",
+        "level": 2
+      },
+      {
+        "id": "1-source-generator-unit-tests-verifysourcegenerators",
+        "text": "1. Source Generator Unit Tests (Verify.SourceGenerators)",
+        "level": 3
+      },
+      {
+        "id": "2-integration-tests-parquetnet-compatibility",
+        "text": "2. Integration Tests (Parquet.Net Compatibility)",
+        "level": 3
+      },
+      {
+        "id": "3-native-aot-verification",
+        "text": "3. Native AOT Verification",
+        "level": 3
+      },
+      {
+        "id": "-contributing-guidelines",
+        "text": "🤝 Contributing Guidelines",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 6
+  },
+  {
+    "slug": "05-TESTING-STRATEGY-AND-BENCHMARKS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "05 - Testing Machinery & Benchmarking Strategy",
+    "category": "Internals & Engineering Spikes",
+    "order": 5,
+    "headings": [
+      {
+        "id": "overview",
+        "text": "Overview",
+        "level": 2
+      },
+      {
+        "id": "1-generator-unit-snapshot-testing-verifysourcegenerators",
+        "text": "1. Generator Unit & Snapshot Testing (Verify.SourceGenerators)",
+        "level": 2
+      },
+      {
+        "id": "test-harness-setup",
+        "text": "Test Harness Setup",
+        "level": 3
+      },
+      {
+        "id": "2-incremental-cache-testing-trackincrementalsteps",
+        "text": "2. Incremental Cache Testing (TrackIncrementalSteps)",
+        "level": 2
+      },
+      {
+        "id": "3-end-to-end-binary-data-roundtrip-testing",
+        "text": "3. End-to-End Binary Data Roundtrip Testing",
+        "level": 2
+      },
+      {
+        "id": "3a-property-based-fuzzing-corrupted-file-coverage",
+        "text": "3a. Property-Based Fuzzing & Corrupted-File Coverage",
+        "level": 2
+      },
+      {
+        "id": "what-a-case-is",
+        "text": "What a case is",
+        "level": 3
+      },
+      {
+        "id": "the-properties",
+        "text": "The properties",
+        "level": 3
+      },
+      {
+        "id": "value-profiles",
+        "text": "Value profiles",
+        "level": 3
+      },
+      {
+        "id": "seeds-in-ci",
+        "text": "Seeds in CI",
+        "level": 3
+      },
+      {
+        "id": "minimisation-and-permanent-fixtures",
+        "text": "Minimisation and permanent fixtures",
+        "level": 3
+      },
+      {
+        "id": "corrupted-files",
+        "text": "Corrupted files",
+        "level": 3
+      },
+      {
+        "id": "4-native-aot-trimming-verification",
+        "text": "4. Native AOT & Trimming Verification",
+        "level": 2
+      },
+      {
+        "id": "5-performance-benchmarks-benchmarkdotnet",
+        "text": "5. Performance Benchmarks (BenchmarkDotNet)",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 6
+  },
+  {
+    "slug": "06-TEST-DATA-SPECIFICATION",
+    "projectId": "parquet-sourcegenerator",
+    "title": "06 - Test Data Specification & Symmetrical Benchmarking",
+    "category": "Internals & Engineering Spikes",
+    "order": 6,
+    "headings": [
+      {
+        "id": "purpose-symmetrical-property-verification",
+        "text": "Purpose & Symmetrical Property Verification",
+        "level": 2
+      },
+      {
+        "id": "-dataset-matrix-specifications",
+        "text": "📊 Dataset Matrix & Specifications",
+        "level": 2
+      },
+      {
+        "id": "1-01smallflatprimitivesparquet",
+        "text": "1. 01smallflatprimitives.parquet",
+        "level": 3
+      },
+      {
+        "id": "2-02mediumnullabletypesparquet",
+        "text": "2. 02mediumnullabletypes.parquet",
+        "level": 3
+      },
+      {
+        "id": "3-03complexdecimalsguidsparquet",
+        "text": "3. 03complexdecimalsguids.parquet",
+        "level": 3
+      },
+      {
+        "id": "4-04nestedlistsmapsparquet",
+        "text": "4. 04nestedlistsmaps.parquet",
+        "level": 3
+      },
+      {
+        "id": "5-05largescaleflatparquet",
+        "text": "5. 05largescaleflat.parquet",
+        "level": 3
+      },
+      {
+        "id": "-git-lfs-provenanced-benchmark-datasets",
+        "text": "🏛️ Git LFS Provenanced Benchmark Datasets",
+        "level": 2
+      },
+      {
+        "id": "registered-public-datasets",
+        "text": "Registered Public Datasets",
+        "level": 3
+      },
+      {
+        "id": "-verification-synchronization-commands",
+        "text": "🛠️ Verification & Synchronization Commands",
+        "level": 2
+      },
+      {
+        "id": "standalone-c-provenance-verification-net-10-via-dotnet-run",
+        "text": "Standalone C Provenance Verification (.NET 10 via dotnet run)",
+        "level": 3
+      },
+      {
+        "id": "re-fetching-re-profiling-datasets-net-10-via-dotnet-run",
+        "text": "Re-fetching & Re-profiling Datasets (.NET 10 via dotnet run)",
+        "level": 3
+      },
+      {
+        "id": "python-synthetic-test-generator-pyarrow-via-uv",
+        "text": "Python Synthetic Test Generator (PyArrow via uv)",
+        "level": 3
+      },
+      {
+        "id": "c-synthetic-generator-parquetnet-via-dotnet-run",
+        "text": "C Synthetic Generator (Parquet.Net via dotnet run)",
+        "level": 3
+      },
+      {
+        "id": "-cryptographic-hash-based-regression-suite",
+        "text": "🔒 Cryptographic Hash-Based Regression Suite",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 6
+  },
+  {
+    "slug": "07-KNOWN-LIMITATIONS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "07 - Known Limitations & Remediation Plan",
+    "category": "Reference",
+    "order": 7,
+    "headings": [
+      {
+        "id": "1-parquetnet-version-support-and-net-framework",
+        "text": "1. Parquet.Net version support and .NET Framework",
+        "level": 2
+      },
+      {
+        "id": "11-a-v5-package-would-not-restore-net472-support-",
+        "text": "1.1 A .V5 package would not restore net472 support ✅",
+        "level": 3
+      },
+      {
+        "id": "12-the-api-break-is-between-v5-and-v6-not-v4-and-v5-",
+        "text": "1.2 The API break is between v5 and v6, not v4 and v5 ✅",
+        "level": 3
+      },
+      {
+        "id": "13-net472-constraints-beyond-parquetnet-itself-",
+        "text": "1.3 net472 constraints beyond Parquet.Net itself ✅",
+        "level": 3
+      },
+      {
+        "id": "14-the-isexternalinit-polyfill-missed-netstandard21-",
+        "text": "1.4 The IsExternalInit polyfill missed netstandard2.1 ✅",
+        "level": 3
+      },
+      {
+        "id": "2-correctness",
+        "text": "2. Correctness",
+        "level": 2
+      },
+      {
+        "id": "21-readparquetparallelasync-performs-no-parallel-work-",
+        "text": "2.1 ReadParquetParallelAsync performs no parallel work ✅",
+        "level": 3
+      },
+      {
+        "id": "22-the-read-path-reallocates-its-result-list-on-every-row-group-",
+        "text": "2.2 The read path reallocates its result list on every row group ✅",
+        "level": 3
+      },
+      {
+        "id": "23-positional-records-emit-uncompilable-code-",
+        "text": "2.3 Positional records emit uncompilable code ✅",
+        "level": 3
+      },
+      {
+        "id": "24-get-only-properties-and-readonly-fields-emit-uncompilable-code-",
+        "text": "2.4 Get-only properties and readonly fields emit uncompilable code ✅",
+        "level": 3
+      },
+      {
+        "id": "25-inherited-members-are-silently-dropped-",
+        "text": "2.5 Inherited members are silently dropped ✅",
+        "level": 3
+      },
+      {
+        "id": "26-nested-and-generic-types-are-unhandled-",
+        "text": "2.6 Nested and generic types are unhandled ✅",
+        "level": 3
+      },
+      {
+        "id": "27-datetimeoffset-is-claimed-but-does-not-round-trip-",
+        "text": "2.7 DateTimeOffset is claimed but does not round-trip ✅",
+        "level": 3
+      },
+      {
+        "id": "28-unsupported-property-types-fail-at-runtime-not-compile-time-",
+        "text": "2.8 Unsupported property types fail at runtime, not compile time ✅",
+        "level": 3
+      },
+      {
+        "id": "29-every-reference-type-column-is-forced-nullable-",
+        "text": "2.9 Every reference-type column is forced nullable ✅",
+        "level": 3
+      },
+      {
+        "id": "3-options-and-api-surface",
+        "text": "3. Options and API surface",
+        "level": 2
+      },
+      {
+        "id": "31-parquetserializeroptions-does-nothing-on-any-read-path-",
+        "text": "3.1 ParquetSerializerOptions does nothing on any read path ✅",
+        "level": 3
+      },
+      {
+        "id": "32-row-group-sizing-uses-a-magic-number-sentinel-",
+        "text": "3.2 Row-group sizing uses a magic-number sentinel ✅",
+        "level": 3
+      },
+      {
+        "id": "33-parquetserializeroptionsdefault-is-a-mutable-shared-singleton-",
+        "text": "3.3 ParquetSerializerOptions.Default is a mutable shared singleton ✅",
+        "level": 3
+      },
+      {
+        "id": "34-schemaname-is-a-dead-public-api-",
+        "text": "3.4 SchemaName is a dead public API ✅",
+        "level": 3
+      },
+      {
+        "id": "35-memory-overloads-are-asymmetric-and-one-leaks-",
+        "text": "3.5 Memory overloads are asymmetric, and one leaks ✅",
+        "level": 3
+      },
+      {
+        "id": "36-parquetcolumn-cannot-express-order-without-a-name-",
+        "text": "3.6 ParquetColumn cannot express order without a name ✅",
+        "level": 3
+      },
+      {
+        "id": "37-parquetoptionscompressionlevel-is-not-exposed-",
+        "text": "3.7 ParquetOptions.CompressionLevel is not exposed ✅",
+        "level": 3
+      },
+      {
+        "id": "4-documentation-drift-",
+        "text": "4. Documentation drift ✅",
+        "level": 2
+      },
+      {
+        "id": "5-remediation-order",
+        "text": "5. Remediation order",
+        "level": 2
+      },
+      {
+        "id": "6-classic-v4v5-backend",
+        "text": "6. Classic (v4/v5) backend",
+        "level": 2
+      },
+      {
+        "id": "61-byte-columns-emitted-code-that-does-not-parse-",
+        "text": "6.1 byte columns emitted code that does not parse ✅",
+        "level": 3
+      },
+      {
+        "id": "62-nullable-enums-could-not-round-trip-",
+        "text": "6.2 Nullable enums could not round-trip ✅",
+        "level": 3
+      },
+      {
+        "id": "63-compression-was-accepted-and-discarded-",
+        "text": "6.3 Compression was accepted and discarded ✅",
+        "level": 3
+      },
+      {
+        "id": "64-the-reader-was-created-without-options-",
+        "text": "6.4 The reader was created without options ✅",
+        "level": 3
+      },
+      {
+        "id": "65-net472-was-declared-but-never-compiled-",
+        "text": "6.5 net472 was declared but never compiled ✅",
+        "level": 3
+      },
+      {
+        "id": "66-the-v6-type-allowlist-was-too-wide-for-v4-",
+        "text": "6.6 The v6 type allowlist was too wide for v4 ✅",
+        "level": 3
+      },
+      {
+        "id": "67-read-path-hygiene-",
+        "text": "6.7 Read-path hygiene ⚪ ✅",
+        "level": 3
+      }
+    ],
+    "readingMinutes": 22
+  },
+  {
+    "slug": "08-IL-INTERROGATION",
+    "projectId": "parquet-sourcegenerator",
+    "title": "08 - IL Interrogation & Codegen Performance Verification",
+    "category": "Internals & Engineering Spikes",
+    "order": 8,
+    "headings": [
+      {
+        "id": "-motivation",
+        "text": "🎯 Motivation",
+        "level": 2
+      },
+      {
+        "id": "-tooling-overview",
+        "text": "🛠️ Tooling Overview",
+        "level": 2
+      },
+      {
+        "id": "-running-the-il-interrogation-script",
+        "text": "🚀 Running the IL Interrogation Script",
+        "level": 2
+      },
+      {
+        "id": "companion-scriptsstatemachinemetricscs",
+        "text": "Companion: scripts/StateMachineMetrics.cs",
+        "level": 3
+      },
+      {
+        "id": "standard-run",
+        "text": "Standard Run",
+        "level": 3
+      },
+      {
+        "id": "options-custom-targets",
+        "text": "Options & Custom Targets",
+        "level": 3
+      },
+      {
+        "id": "-generated-artifacts",
+        "text": "📊 Generated Artifacts",
+        "level": 2
+      },
+      {
+        "id": "example-report-output",
+        "text": "Example Report Output",
+        "level": 3
+      },
+      {
+        "id": "-diffing-il-between-branches",
+        "text": "🔍 Diffing IL Between Branches",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 3
+  },
+  {
+    "slug": "09-PERFORMANCE-TRIAGE-DOTNET-DUMP",
+    "projectId": "parquet-sourcegenerator",
+    "title": "09 - Performance & Memory Triage with dotnet-dump",
+    "category": "Internals & Engineering Spikes",
+    "order": 9,
+    "headings": [
+      {
+        "id": "-motivation",
+        "text": "🎯 Motivation",
+        "level": 2
+      },
+      {
+        "id": "-tooling-overview",
+        "text": "🛠️ Tooling Overview",
+        "level": 2
+      },
+      {
+        "id": "-running-the-automated-memory-triage-tool",
+        "text": "🚀 Running the Automated Memory Triage Tool",
+        "level": 2
+      },
+      {
+        "id": "1-analyze-an-existing-dump",
+        "text": "1. Analyze an Existing Dump",
+        "level": 3
+      },
+      {
+        "id": "2-capture-and-triage-a-running-process",
+        "text": "2. Capture and Triage a Running Process",
+        "level": 3
+      },
+      {
+        "id": "3-launch-workload-and-capture",
+        "text": "3. Launch Workload and Capture",
+        "level": 3
+      },
+      {
+        "id": "-triage-report-artifacts",
+        "text": "📊 Triage Report Artifacts",
+        "level": 2
+      },
+      {
+        "id": "-interactive-sos-diagnostic-playbook",
+        "text": "🔬 Interactive SOS Diagnostic Playbook",
+        "level": 2
+      },
+      {
+        "id": "key-sos-commands-for-parquet-codegen",
+        "text": "Key SOS Commands for Parquet Codegen",
+        "level": 3
+      }
+    ],
+    "readingMinutes": 3
+  },
+  {
+    "slug": "10-NATIVE-AOT-GUIDE",
+    "projectId": "parquet-sourcegenerator",
+    "title": "10 - Native AOT & Type System Guide: Mechanics, Nullable<T>, and Runtime Directives",
+    "category": "Guides",
+    "order": 10,
+    "headings": [
+      {
+        "id": "-executive-summary-motivation",
+        "text": "🎯 Executive Summary & Motivation",
+        "level": 2
+      },
+      {
+        "id": "why-native-aot-for-parquet-processing",
+        "text": "Why Native AOT for Parquet Processing?",
+        "level": 3
+      },
+      {
+        "id": "the-source-generator-advantage",
+        "text": "The Source Generator Advantage",
+        "level": 3
+      },
+      {
+        "id": "-2-the-naive-case-cold-start-short-lived-process-performance",
+        "text": "⚡ 2. The \"Naive Case\": Cold-Start & Short-Lived Process Performance",
+        "level": 2
+      },
+      {
+        "id": "empirical-cold-start-benchmark-coreclr-jit-vs-native-aot",
+        "text": "Empirical Cold-Start Benchmark: CoreCLR (JIT) vs Native AOT",
+        "level": 3
+      },
+      {
+        "id": "architectural-reasons-for-the-72-acceleration",
+        "text": "Architectural Reasons for the 7.2× Acceleration",
+        "level": 3
+      },
+      {
+        "id": "-complete-supported-types-matrix",
+        "text": "📊 Complete Supported Types Matrix",
+        "level": 2
+      },
+      {
+        "id": "-deep-dive-the-mechanics-of-nullablet-under-native-aot",
+        "text": "🔬 Deep Dive: The Mechanics of Nullable<T> Under Native AOT",
+        "level": 2
+      },
+      {
+        "id": "1-nullablet-is-a-value-type-struct",
+        "text": "1. Nullable<T> is a Value Type Struct",
+        "level": 3
+      },
+      {
+        "id": "2-canonical-code-sharing-vs-non-shared-value-types",
+        "text": "2. Canonical Code Sharing vs Non-Shared Value Types",
+        "level": 3
+      },
+      {
+        "id": "3-the-failure-mechanism-typeunifierwithverifiedtypehandle",
+        "text": "3. The Failure Mechanism: TypeUnifier.WithVerifiedTypeHandle",
+        "level": 3
+      },
+      {
+        "id": "-the-parquetnet-610-architectural-shift-root-cause",
+        "text": "💥 The Parquet.Net 6.1.0 Architectural Shift & Root Cause",
+        "level": 2
+      },
+      {
+        "id": "what-changed-in-parquetnet-610",
+        "text": "What Changed in Parquet.Net 6.1.0?",
+        "level": 3
+      },
+      {
+        "id": "the-reflection-landmine-in-datafieldsetisnullable",
+        "text": "The Reflection Landmine in DataField.setIsNullable",
+        "level": 3
+      },
+      {
+        "id": "-resolution-strategies-best-practices",
+        "text": "🛠️ Resolution Strategies & Best Practices",
+        "level": 2
+      },
+      {
+        "id": "strategy-1-runtime-directives-rdxml-recommended-for-applications",
+        "text": "Strategy 1: Runtime Directives (rd.xml) — Recommended for Applications",
+        "level": 3
+      },
+      {
+        "id": "strategy-2-trimmer-root-descriptors-illinkdescriptorsxml",
+        "text": "Strategy 2: Trimmer Root Descriptors (ILLink.Descriptors.xml)",
+        "level": 3
+      },
+      {
+        "id": "strategy-3-automatic-nuget-package-level-msbuild-targets-injection",
+        "text": "Strategy 3: Automatic NuGet Package-Level MSBuild Targets Injection",
+        "level": 3
+      },
+      {
+        "id": "-the-native-aot-verification-harness-parquetsourcegeneratoraottest",
+        "text": "🧪 The Native AOT Verification Harness (Parquet.SourceGenerator.AotTest)",
+        "level": 2
+      },
+      {
+        "id": "why-a-standalone-console-app-instead-of-xunit",
+        "text": "Why a Standalone Console App Instead of xUnit?",
+        "level": 3
+      },
+      {
+        "id": "running-native-aot-verification-locally",
+        "text": "Running Native AOT Verification Locally",
+        "level": 3
+      }
+    ],
+    "readingMinutes": 11
+  },
+  {
+    "slug": "11-PERFORMANCE-OPTIMIZATION-FINDINGS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "11 - Performance Optimization Findings & Baseline Analysis",
+    "category": "Internals & Engineering Spikes",
+    "order": 11,
+    "headings": [
+      {
+        "id": "-1-executive-summary",
+        "text": "🎯 1. Executive Summary",
+        "level": 2
+      },
+      {
+        "id": "-2-empirical-baseline-data",
+        "text": "🔬 2. Empirical Baseline Data",
+        "level": 2
+      },
+      {
+        "id": "21-il-interrogation-results-scriptsinterrogateilcs",
+        "text": "2.1 IL Interrogation Results (scripts/InterrogateIL.cs)",
+        "level": 3
+      },
+      {
+        "id": "22-disassembly-analysis-of-string-column-boxing",
+        "text": "2.2 Disassembly Analysis of String Column Boxing",
+        "level": 3
+      },
+      {
+        "id": "-3-experimental-mechanisms-evaluated",
+        "text": "🧪 3. Experimental Mechanisms Evaluated",
+        "level": 2
+      },
+      {
+        "id": "mechanism-a-direct-readonlymemoryreadonlymemorychar-writing-recommended",
+        "text": "Mechanism A: Direct ReadOnlyMemory<ReadOnlyMemory<char>?> Writing (Recommended)",
+        "level": 3
+      },
+      {
+        "id": "mechanism-b-zero-boxing-array-reference-fast-path",
+        "text": "Mechanism B: Zero-Boxing Array Reference Fast-Path",
+        "level": 3
+      },
+      {
+        "id": "mechanism-c-l1-string-deduplication-cache-analysis",
+        "text": "Mechanism C: L1 String Deduplication Cache Analysis",
+        "level": 3
+      },
+      {
+        "id": "-4-summary-actionable-recommendations",
+        "text": "📋 4. Summary & Actionable Recommendations",
+        "level": 2
+      },
+      {
+        "id": "-5-verified-post-optimization-results-issue-116",
+        "text": "🏆 5. Verified Post-Optimization Results (Issue 116)",
+        "level": 2
+      },
+      {
+        "id": "51-post-optimization-il-interrogation-scriptsinterrogateilcs---check",
+        "text": "5.1 Post-Optimization IL Interrogation (scripts/InterrogateIL.cs --check)",
+        "level": 3
+      },
+      {
+        "id": "52-verification-suite",
+        "text": "5.2 Verification Suite",
+        "level": 3
+      },
+      {
+        "id": "-6-branchless-null-bitmap-construction-issue-145",
+        "text": "⚡ 6. Branchless Null Bitmap Construction (Issue 145)",
+        "level": 2
+      },
+      {
+        "id": "61-what-changed",
+        "text": "6.1 What Changed",
+        "level": 3
+      },
+      {
+        "id": "62-verification-of-branch-elimination",
+        "text": "6.2 Verification of Branch Elimination",
+        "level": 3
+      },
+      {
+        "id": "63-measured-results",
+        "text": "6.3 Measured Results",
+        "level": 3
+      },
+      {
+        "id": "64-negative-result-simd-packing-does-not-pay-here",
+        "text": "6.4 Negative Result: SIMD Packing Does Not Pay Here",
+        "level": 3
+      }
+    ],
+    "readingMinutes": 10
+  },
+  {
+    "slug": "12-BUFFER-REUSE-AND-EXTRACTION-STRATEGIES",
+    "projectId": "parquet-sourcegenerator",
+    "title": "12 - Buffer Reuse & Column Extraction Strategies",
+    "category": "Internals & Engineering Spikes",
+    "order": 12,
+    "headings": [
+      {
+        "id": "-1-executive-summary",
+        "text": "🎯 1. Executive Summary",
+        "level": 2
+      },
+      {
+        "id": "key-conclusions",
+        "text": "Key Conclusions",
+        "level": 3
+      },
+      {
+        "id": "-2-evaluated-strategies",
+        "text": "🔬 2. Evaluated Strategies",
+        "level": 2
+      },
+      {
+        "id": "-3-empirical-benchmark-data",
+        "text": "📊 3. Empirical Benchmark Data",
+        "level": 2
+      },
+      {
+        "id": "31-wide-analytical-schema-benchmarktpchlineitem-16-columns-with-nullables",
+        "text": "3.1 Wide Analytical Schema (BenchmarkTpchLineItem, 16 Columns with Nullables)",
+        "level": 3
+      },
+      {
+        "id": "32-narrow-primitive-schema-scaleevent-4-columns-non-nullable",
+        "text": "3.2 Narrow Primitive Schema (ScaleEvent, 4 Columns Non-Nullable)",
+        "level": 3
+      },
+      {
+        "id": "-4-architectural-analysis-hardware-mechanics",
+        "text": "🧠 4. Architectural Analysis & Hardware Mechanics",
+        "level": 2
+      },
+      {
+        "id": "41-cpu-cache-spatial-locality-vs-multi-pass-traversal",
+        "text": "4.1 CPU Cache Spatial Locality vs. Multi-Pass Traversal",
+        "level": 3
+      },
+      {
+        "id": "42-parquet-format-constraint-strict-schema-field-order",
+        "text": "4.2 Parquet Format Constraint: Strict Schema Field Order",
+        "level": 3
+      },
+      {
+        "id": "43-why-eager-return-with-single-try-finally-is-the-optimal-pattern",
+        "text": "4.3 Why Eager Return with Single try / finally is the Optimal Pattern",
+        "level": 3
+      },
+      {
+        "id": "-5-production-architectural-decision",
+        "text": "📋 5. Production Architectural Decision",
+        "level": 2
+      },
+      {
+        "id": "-6-direct-columnar-handoff-measured-issue-137",
+        "text": "🚚 6. Direct Columnar Handoff — Measured (issue 137)",
+        "level": 2
+      },
+      {
+        "id": "61-what-was-measured",
+        "text": "6.1 What Was Measured",
+        "level": 3
+      },
+      {
+        "id": "62-results",
+        "text": "6.2 Results",
+        "level": 3
+      },
+      {
+        "id": "63-what-the-numbers-say",
+        "text": "6.3 What The Numbers Say",
+        "level": 3
+      },
+      {
+        "id": "64-simd-nullable-extraction-re-measured-on-columnar-input-issues-145-137",
+        "text": "6.4 SIMD Nullable Extraction, Re-measured on Columnar Input (issues 145 / 137)",
+        "level": 3
+      },
+      {
+        "id": "65-scope-of-the-emitted-api",
+        "text": "6.5 Scope Of The Emitted API",
+        "level": 3
+      }
+    ],
+    "readingMinutes": 15
+  },
+  {
+    "slug": "13-COMPILER-DIAGNOSTICS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "13 - Compiler Diagnostics Reference",
+    "category": "Reference",
+    "order": 13,
+    "headings": [
+      {
+        "id": "-diagnostics-catalog",
+        "text": "📋 Diagnostics Catalog",
+        "level": 2
+      },
+      {
+        "id": "-detailed-diagnostic-explanations",
+        "text": "🔍 Detailed Diagnostic Explanations",
+        "level": 2
+      },
+      {
+        "id": "parq001-type-must-be-partial",
+        "text": "PARQ001: Type Must Be Partial",
+        "level": 3
+      },
+      {
+        "id": "parq002-duplicate-column-name",
+        "text": "PARQ002: Duplicate Column Name",
+        "level": 3
+      },
+      {
+        "id": "parq003-no-public-serializable-properties-found",
+        "text": "PARQ003: No Public Serializable Properties Found",
+        "level": 3
+      },
+      {
+        "id": "parq004-non-public-property-ignored",
+        "text": "PARQ004: Non-Public Property Ignored",
+        "level": 3
+      },
+      {
+        "id": "parq005-invalid-decimal-precision-or-scale",
+        "text": "PARQ005: Invalid Decimal Precision or Scale",
+        "level": 3
+      },
+      {
+        "id": "parq006-unsupported-property-type",
+        "text": "PARQ006: Unsupported Property Type",
+        "level": 3
+      },
+      {
+        "id": "parq007-parquet-member-is-not-assignable",
+        "text": "PARQ007: Parquet Member Is Not Assignable",
+        "level": 3
+      },
+      {
+        "id": "parq008-type-has-no-accessible-parameterless-constructor",
+        "text": "PARQ008: Type Has No Accessible Parameterless Constructor",
+        "level": 3
+      },
+      {
+        "id": "parq009-nested-type-not-supported",
+        "text": "PARQ009: Nested Type Not Supported",
+        "level": 3
+      },
+      {
+        "id": "parq010-generic-type-not-supported",
+        "text": "PARQ010: Generic Type Not Supported",
+        "level": 3
+      },
+      {
+        "id": "parq011-property-type-unsupported-on-classic-v5-api",
+        "text": "PARQ011: Property Type Unsupported on Classic (v5) API",
+        "level": 3
+      }
+    ],
+    "readingMinutes": 6
+  },
+  {
+    "slug": "14-COMPATIBILITY-MATRIX",
+    "projectId": "parquet-sourcegenerator",
+    "title": "14 - Parquet Compatibility Matrix",
+    "category": "Reference",
+    "order": 14,
+    "headings": [
+      {
+        "id": "status-vocabulary",
+        "text": "Status Vocabulary",
+        "level": 2
+      },
+      {
+        "id": "product-variants",
+        "text": "Product Variants",
+        "level": 2
+      },
+      {
+        "id": "generated-model-type-envelope",
+        "text": "Generated Model Type Envelope",
+        "level": 2
+      },
+      {
+        "id": "generated-model-shapes-outside-the-envelope",
+        "text": "Generated Model Shapes Outside The Envelope",
+        "level": 2
+      },
+      {
+        "id": "schema-and-file-features",
+        "text": "Schema And File Features",
+        "level": 2
+      },
+      {
+        "id": "timestamp-and-decimal-contract",
+        "text": "Timestamp And Decimal Contract",
+        "level": 2
+      },
+      {
+        "id": "writer-options-and-encodings",
+        "text": "Writer Options And Encodings",
+        "level": 2
+      },
+      {
+        "id": "format-and-producer-matrix",
+        "text": "Format And Producer Matrix",
+        "level": 2
+      },
+      {
+        "id": "compatibility-definitions",
+        "text": "Compatibility Definitions",
+        "level": 2
+      },
+      {
+        "id": "backward-compatibility",
+        "text": "Backward compatibility",
+        "level": 3
+      },
+      {
+        "id": "forward-compatibility",
+        "text": "Forward compatibility",
+        "level": 3
+      },
+      {
+        "id": "schema-evolution",
+        "text": "Schema evolution",
+        "level": 3
+      },
+      {
+        "id": "semantic-compatibility",
+        "text": "Semantic compatibility",
+        "level": 3
+      },
+      {
+        "id": "apache-arrow-recordbatch-ingestion-experimental-177",
+        "text": "Apache Arrow RecordBatch Ingestion (Experimental, 177)",
+        "level": 2
+      },
+      {
+        "id": "conditional-emission",
+        "text": "Conditional emission",
+        "level": 3
+      },
+      {
+        "id": "supported-apachearrow-floor",
+        "text": "Supported Apache.Arrow floor",
+        "level": 3
+      },
+      {
+        "id": "physical-type-mapping",
+        "text": "Physical type mapping",
+        "level": 3
+      },
+      {
+        "id": "rejected-inputs",
+        "text": "Rejected inputs",
+        "level": 3
+      },
+      {
+        "id": "deliberate-deviation-from-the-issues-signature",
+        "text": "Deliberate deviation from the issue's signature",
+        "level": 3
+      },
+      {
+        "id": "evidence-and-test-ownership",
+        "text": "Evidence And Test Ownership",
+        "level": 2
+      },
+      {
+        "id": "related-work",
+        "text": "Related Work",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 13
+  },
+  {
+    "slug": "15-NESTED-TYPES-SPIKE-FINDINGS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "15 - Nested Types: M0 Spike Findings",
+    "category": "Guides",
+    "order": 15,
+    "headings": [
+      {
+        "id": "1-the-level-convention-both-engines-standard-dremel",
+        "text": "1. The level convention (both engines, standard Dremel)",
+        "level": 2
+      },
+      {
+        "id": "11-what-each-def-level-means",
+        "text": "1.1 What each def level means",
+        "level": 3
+      },
+      {
+        "id": "12-the-rep-array",
+        "text": "1.2 The rep array",
+        "level": 3
+      },
+      {
+        "id": "13-worked-example-row-set-anullb-null-plus-struct-nyc10001-null-null55",
+        "text": "1.3 Worked example (row set: a,null,b /  / null, plus struct {NYC,10001} / null / {null,55})",
+        "level": 3
+      },
+      {
+        "id": "14-depth-composition-is-additive",
+        "text": "1.4 Depth composition is additive",
+        "level": 3
+      },
+      {
+        "id": "2-parquetnet-610-api-facts",
+        "text": "2. Parquet.Net 6.1.0 API facts",
+        "level": 2
+      },
+      {
+        "id": "3-parquetnet-4250-legacy-backend-api-facts",
+        "text": "3. Parquet.Net 4.25.0 (legacy backend) API facts",
+        "level": 2
+      },
+      {
+        "id": "4-consequences-for-the-176-design-feeds-m1",
+        "text": "4. Consequences for the 176 design (feeds M1)",
+        "level": 2
+      },
+      {
+        "id": "5-reproduction",
+        "text": "5. Reproduction",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 8
+  },
+  {
+    "slug": "16-VERSION-AND-SCHEMA-EVOLUTION",
+    "projectId": "parquet-sourcegenerator",
+    "title": "16 - Version And Schema-Evolution Matrix",
+    "category": "Reference",
+    "order": 16,
+    "headings": [
+      {
+        "id": "schema-evolution-behaviour",
+        "text": "Schema-Evolution Behaviour",
+        "level": 2
+      },
+      {
+        "id": "outcome-vocabulary",
+        "text": "Outcome vocabulary",
+        "level": 3
+      },
+      {
+        "id": "producer-consumer-axis",
+        "text": "Producer / Consumer Axis",
+        "level": 2
+      },
+      {
+        "id": "cross-version-interoperability",
+        "text": "Cross-Version Interoperability",
+        "level": 2
+      },
+      {
+        "id": "forward-compatibility",
+        "text": "Forward Compatibility",
+        "level": 2
+      },
+      {
+        "id": "recorded-results",
+        "text": "Recorded Results",
+        "level": 2
+      },
+      {
+        "id": "known-gaps",
+        "text": "Known Gaps",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 5
+  },
+  {
+    "slug": "17-GENERATED-API-BASELINES",
+    "projectId": "parquet-sourcegenerator",
+    "title": "17 - Generated Public API Baselines",
+    "category": "Reference",
+    "order": 17,
+    "headings": [
+      {
+        "id": "why-this-file-format-exists",
+        "text": "Why this file format exists",
+        "level": 2
+      },
+      {
+        "id": "the-grammar",
+        "text": "The grammar",
+        "level": 2
+      },
+      {
+        "id": "two-deliberate-deviations-from-publicapitxt",
+        "text": "Two deliberate deviations from PublicAPI.txt",
+        "level": 3
+      },
+      {
+        "id": "how-the-files-are-produced",
+        "text": "How the files are produced",
+        "level": 2
+      },
+      {
+        "id": "determinism",
+        "text": "Determinism",
+        "level": 3
+      },
+      {
+        "id": "refreshing",
+        "text": "Refreshing",
+        "level": 3
+      },
+      {
+        "id": "the-gate",
+        "text": "The gate",
+        "level": 3
+      },
+      {
+        "id": "what-the-baselines-currently-say",
+        "text": "What the baselines currently say",
+        "level": 2
+      },
+      {
+        "id": "stability-contract",
+        "text": "Stability contract",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 7
+  },
+  {
+    "slug": "18-API-CHANGE-CONTRACT",
+    "projectId": "parquet-sourcegenerator",
+    "title": "18 - The API Change Contract",
+    "category": "Reference",
+    "order": 18,
+    "headings": [
+      {
+        "id": "the-rule",
+        "text": "The rule",
+        "level": 2
+      },
+      {
+        "id": "the-three-surfaces",
+        "text": "The three surfaces",
+        "level": 2
+      },
+      {
+        "id": "what-triggers-a-gate-and-what-does-not",
+        "text": "What triggers a gate, and what does not",
+        "level": 2
+      },
+      {
+        "id": "division-of-labour-between-the-build-and-ci",
+        "text": "Division of labour between the build and CI",
+        "level": 3
+      },
+      {
+        "id": "the-buckets",
+        "text": "The buckets",
+        "level": 2
+      },
+      {
+        "id": "pre-10-stance",
+        "text": "Pre-1.0 stance",
+        "level": 3
+      },
+      {
+        "id": "docsapiledgermd",
+        "text": "docs/api/LEDGER.md",
+        "level": 2
+      },
+      {
+        "id": "2026-09-11-readparquetbatchesasyncstream-parquetserializeroptions-int-cancellationtoken",
+        "text": "2026-09-11 — ReadParquetBatchesAsync(Stream, ParquetSerializerOptions?, int, CancellationToken)",
+        "level": 3
+      },
+      {
+        "id": "the-retrospective-seed-stated-plainly",
+        "text": "The retrospective seed, stated plainly",
+        "level": 3
+      },
+      {
+        "id": "the-escape-hatch",
+        "text": "The escape hatch",
+        "level": 2
+      },
+      {
+        "id": "2026-09-12-tryreadcolumnsliceint-int",
+        "text": "2026-09-12 — TryReadColumnSlice(int, int)",
+        "level": 3
+      },
+      {
+        "id": "what-counts-as-a-seam",
+        "text": "What counts as a seam",
+        "level": 2
+      },
+      {
+        "id": "the-author-process",
+        "text": "The author process",
+        "level": 2
+      },
+      {
+        "id": "mechanism-and-why",
+        "text": "Mechanism, and why",
+        "level": 2
+      },
+      {
+        "id": "one-renderer-not-two",
+        "text": "One renderer, not two",
+        "level": 3
+      },
+      {
+        "id": "why-it-can-never-run-in-a-consumers-compilation",
+        "text": "Why it can never run in a consumer's compilation",
+        "level": 3
+      },
+      {
+        "id": "reference",
+        "text": "Reference",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 11
+  },
+  {
+    "slug": "19-PUBLIC-API-SURFACE",
+    "projectId": "parquet-sourcegenerator",
+    "title": "19 - Public API Surface & Naming Grammar",
+    "category": "Guides",
+    "order": 19,
+    "headings": [
+      {
+        "id": "why-this-document-exists",
+        "text": "Why this document exists",
+        "level": 2
+      },
+      {
+        "id": "the-grid",
+        "text": "The grid",
+        "level": 2
+      },
+      {
+        "id": "defects",
+        "text": "Defects",
+        "level": 2
+      },
+      {
+        "id": "1-stream-denotes-two-different-things",
+        "text": "1. \"Stream\" denotes two different things",
+        "level": 3
+      },
+      {
+        "id": "2-the-naming-grammar-is-inconsistent-across-axes",
+        "text": "2. The naming grammar is inconsistent across axes",
+        "level": 3
+      },
+      {
+        "id": "3-pushdown-is-populated-arbitrarily",
+        "text": "3. Pushdown is populated arbitrarily",
+        "level": 3
+      },
+      {
+        "id": "4-predicate-sits-after-cancellationtoken",
+        "text": "4. predicate sits after cancellationToken",
+        "level": 3
+      },
+      {
+        "id": "5-parallel-over-a-stream-is-sequential-and-ignores-its-own-argument",
+        "text": "5. Parallel over a Stream is sequential, and ignores its own argument",
+        "level": 3
+      },
+      {
+        "id": "6-reads-and-writes-are-discovered-differently",
+        "text": "6. Reads and writes are discovered differently",
+        "level": 3
+      },
+      {
+        "id": "7-two-batch-types-differently-shaped-and-differently-named",
+        "text": "7. Two batch types, differently shaped and differently named",
+        "level": 3
+      },
+      {
+        "id": "8-the-raw-columnar-write-form-is-positional-per-column",
+        "text": "8. The raw columnar write form is positional, per column",
+        "level": 3
+      },
+      {
+        "id": "decisions",
+        "text": "Decisions",
+        "level": 2
+      },
+      {
+        "id": "d1-options-versus-parameters-settled-by-239-with-one-amendment-open",
+        "text": "D1 — Options versus parameters (settled by 239, with one amendment open)",
+        "level": 3
+      },
+      {
+        "id": "d2-axes-become-members-not-name-segments-217",
+        "text": "D2 — Axes become members, not name segments (217)",
+        "level": 3
+      },
+      {
+        "id": "d3-fate-of-the-existing-flat-methods",
+        "text": "D3 — Fate of the existing flat methods",
+        "level": 3
+      },
+      {
+        "id": "d4-the-decision-is-kept-honest-by-the-baselines",
+        "text": "D4 — The decision is kept honest by the baselines",
+        "level": 3
+      },
+      {
+        "id": "a-note-on-this-documents-own-number",
+        "text": "A note on this document's own number",
+        "level": 2
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 8
+  },
+  {
+    "slug": "20-UNIFIED-PUSHDOWN-API",
+    "projectId": "parquet-sourcegenerator",
+    "title": "20 - Unified Pushdown & the Generated/Shipped Boundary",
+    "category": "Reference",
+    "order": 20,
+    "headings": [
+      {
+        "id": "1-the-problem-stated-as-api",
+        "text": "1. The problem, stated as API",
+        "level": 2
+      },
+      {
+        "id": "11-root-cause",
+        "text": "1.1 Root cause",
+        "level": 3
+      },
+      {
+        "id": "2-principle",
+        "text": "2. Principle",
+        "level": 2
+      },
+      {
+        "id": "3-api-shape",
+        "text": "3. API shape",
+        "level": 2
+      },
+      {
+        "id": "31-column-tokens-generated-data",
+        "text": "3.1 Column tokens — generated data",
+        "level": 3
+      },
+      {
+        "id": "32-filters-shipped-inspectable-allocation-irrelevant",
+        "text": "3.2 Filters — shipped, inspectable, allocation-irrelevant",
+        "level": 3
+      },
+      {
+        "id": "33-the-call-site",
+        "text": "3.3 The call site",
+        "level": 3
+      },
+      {
+        "id": "34-capability-is-declared-on-the-model-not-chosen-at-the-call-site",
+        "text": "3.4 Capability is declared on the model, not chosen at the call site",
+        "level": 3
+      },
+      {
+        "id": "35-capability-gating-without-generated-api-surface",
+        "text": "3.5 Capability gating without generated API surface",
+        "level": 3
+      },
+      {
+        "id": "36-sources-and-terminals-four-shipped-generic-structs",
+        "text": "3.6 Sources and terminals — four shipped generic structs",
+        "level": 3
+      },
+      {
+        "id": "37-observability-replaces-the-out-parameter",
+        "text": "3.7 Observability replaces the out-parameter",
+        "level": 3
+      },
+      {
+        "id": "4-what-folds",
+        "text": "4. What folds",
+        "level": 2
+      },
+      {
+        "id": "5-why-the-performance-requirements-permit-this",
+        "text": "5. Why the performance requirements permit this",
+        "level": 2
+      },
+      {
+        "id": "51-the-gate-cannot-currently-see-a-regression-here",
+        "text": "5.1 The gate cannot currently see a regression here",
+        "level": 3
+      },
+      {
+        "id": "6-open-question-the-spike-must-answer",
+        "text": "6. Open question the spike must answer",
+        "level": 2
+      },
+      {
+        "id": "7-migration",
+        "text": "7. Migration",
+        "level": 2
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 12
+  },
+  {
+    "slug": "21-CODE-METRICS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "21 - Code Metrics Baselines & The Complexity Ratchet",
+    "category": "Internals & Engineering Spikes",
+    "order": 21,
+    "headings": [
+      {
+        "id": "why-this-exists",
+        "text": "Why this exists",
+        "level": 2
+      },
+      {
+        "id": "the-metrics",
+        "text": "The metrics",
+        "level": 2
+      },
+      {
+        "id": "what-these-numbers-do-not-tell-you",
+        "text": "What these numbers do NOT tell you",
+        "level": 3
+      },
+      {
+        "id": "where-the-numbers-live",
+        "text": "Where the numbers live",
+        "level": 2
+      },
+      {
+        "id": "a-normalised-rendering-not-the-tools-xml",
+        "text": "A normalised rendering, not the tool's XML",
+        "level": 3
+      },
+      {
+        "id": "determinism",
+        "text": "Determinism",
+        "level": 3
+      },
+      {
+        "id": "why-not-microsoftcodeanalysismetrics",
+        "text": "Why not Microsoft.CodeAnalysis.Metrics",
+        "level": 3
+      },
+      {
+        "id": "refreshing",
+        "text": "Refreshing",
+        "level": 2
+      },
+      {
+        "id": "the-tolerance-and-why-it-is-what-it-is",
+        "text": "The tolerance, and why it is what it is",
+        "level": 2
+      },
+      {
+        "id": "the-analyzer-rules",
+        "text": "The analyzer rules",
+        "level": 2
+      },
+      {
+        "id": "where-the-thresholds-came-from-honestly",
+        "text": "Where the thresholds came from, honestly",
+        "level": 3
+      },
+      {
+        "id": "the-ratchet-policy",
+        "text": "The ratchet policy",
+        "level": 3
+      },
+      {
+        "id": "the-baseline-as-it-stands",
+        "text": "The baseline as it stands",
+        "level": 2
+      },
+      {
+        "id": "what-this-says-about-codeemittercs-and-about-targetparsercs",
+        "text": "What this says about CodeEmitter.cs — and about TargetParser.cs",
+        "level": 3
+      },
+      {
+        "id": "what-a-large-method-does-and-does-not-cost-and-which-half-of-this-is-actionable",
+        "text": "What a large method does and does not cost — and which half of this is actionable",
+        "level": 3
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 15
+  },
+  {
+    "slug": "22-GENERATED-CODE-METRICS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "22 - Generated Code Metrics",
+    "category": "Internals & Engineering Spikes",
+    "order": 22,
+    "headings": [
+      {
+        "id": "the-question-this-answers",
+        "text": "The question this answers",
+        "level": 2
+      },
+      {
+        "id": "where-the-numbers-live",
+        "text": "Where the numbers live",
+        "level": 2
+      },
+      {
+        "id": "the-format",
+        "text": "The format",
+        "level": 3
+      },
+      {
+        "id": "the-size-per-capability-ratio",
+        "text": "The size-per-capability ratio",
+        "level": 2
+      },
+      {
+        "id": "which-metrics-carry-signal-for-generated-code-measured-not-assumed",
+        "text": "Which metrics carry signal for generated code — measured, not assumed",
+        "level": 2
+      },
+      {
+        "id": "why-the-maintainability-index-is-reported-but-not-gated",
+        "text": "Why the Maintainability Index is reported but not gated",
+        "level": 3
+      },
+      {
+        "id": "errors-is-a-metric-not-an-exception",
+        "text": "ERRORS is a metric, not an exception",
+        "level": 2
+      },
+      {
+        "id": "how-the-emitted-code-is-compiled-in-order-to-be-measured",
+        "text": "How the emitted code is compiled in order to be measured",
+        "level": 2
+      },
+      {
+        "id": "determinism",
+        "text": "Determinism",
+        "level": 2
+      },
+      {
+        "id": "the-tolerance-and-the-gate",
+        "text": "The tolerance, and the gate",
+        "level": 2
+      },
+      {
+        "id": "refreshing",
+        "text": "Refreshing",
+        "level": 2
+      },
+      {
+        "id": "the-baseline-as-it-stands",
+        "text": "The baseline as it stands",
+        "level": 2
+      },
+      {
+        "id": "the-most-complex-emitted-methods",
+        "text": "The most complex emitted methods",
+        "level": 3
+      },
+      {
+        "id": "-what-that-first-row-means",
+        "text": "⚠️ What that first row means",
+        "level": 3
+      },
+      {
+        "id": "is-emitted-method-size-actionable-no-watch-it-do-not-fix-it",
+        "text": "Is emitted method size actionable? No. Watch it; do not fix it.",
+        "level": 2
+      },
+      {
+        "id": "what-was-measured",
+        "text": "What was measured",
+        "level": 3
+      },
+      {
+        "id": "the-fact-that-reframes-the-whole-question",
+        "text": "The fact that reframes the whole question",
+        "level": 3
+      },
+      {
+        "id": "h1-splitting-into-smaller-async-methods",
+        "text": "H1 — splitting into smaller async methods",
+        "level": 3
+      },
+      {
+        "id": "h2-extracting-non-async-chunks-into-plain-helpers",
+        "text": "H2 — extracting non-async chunks into plain helpers",
+        "level": 3
+      },
+      {
+        "id": "h3-does-size-materially-affect-throughput",
+        "text": "H3 — does size materially affect throughput?",
+        "level": 3
+      },
+      {
+        "id": "h4-native-code-size-and-aot-cold-start",
+        "text": "H4 — native code size and AOT cold start",
+        "level": 3
+      },
+      {
+        "id": "h5-are-the-emitted-helpers-inlined-and-does-forcing-it-change-anything",
+        "text": "H5 — are the emitted helpers inlined, and does forcing it change anything?",
+        "level": 3
+      },
+      {
+        "id": "h6-does-a-very-large-method-delay-tier-1-promotion-enough-to-matter",
+        "text": "H6 — does a very large method delay tier-1 promotion enough to matter?",
+        "level": 3
+      },
+      {
+        "id": "the-verdict",
+        "text": "The verdict",
+        "level": 3
+      },
+      {
+        "id": "reproducing-it",
+        "text": "Reproducing it",
+        "level": 3
+      },
+      {
+        "id": "machine-and-conditions-stated-because-they-were-not-ideal",
+        "text": "Machine and conditions — stated, because they were not ideal",
+        "level": 3
+      },
+      {
+        "id": "what-is-deliberately-not-here",
+        "text": "What is deliberately not here",
+        "level": 2
+      },
+      {
+        "id": "related",
+        "text": "Related",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 23
+  },
+  {
+    "slug": "23-DUPLICATION",
+    "projectId": "parquet-sourcegenerator",
+    "title": "23 — Duplication Measurement & The Drift Gate (Layer 3 of #251)",
+    "category": "Internals & Engineering Spikes",
+    "order": 23,
+    "headings": [
+      {
+        "id": "why-this-repo-specifically",
+        "text": "Why this repo, specifically",
+        "level": 2
+      },
+      {
+        "id": "what-is-measured",
+        "text": "What is measured",
+        "level": 2
+      },
+      {
+        "id": "what-is-deliberately-not-measured",
+        "text": "What is deliberately NOT measured",
+        "level": 2
+      },
+      {
+        "id": "calibration-the-test-the-tool-had-to-pass-first",
+        "text": "Calibration — the test the tool had to pass first",
+        "level": 2
+      },
+      {
+        "id": "the-drift-gate",
+        "text": "The drift gate",
+        "level": 2
+      },
+      {
+        "id": "honest-limits",
+        "text": "Honest limits",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 5
+  },
+  {
+    "slug": "24-METRICS-ORACLE",
+    "projectId": "parquet-sourcegenerator",
+    "title": "24 — The Metrics Oracle (#254): Metrics.exe against CodeMetrics.cs",
+    "category": "Internals & Engineering Spikes",
+    "order": 24,
+    "headings": [
+      {
+        "id": "the-mechanism",
+        "text": "The mechanism",
+        "level": 2
+      },
+      {
+        "id": "what-is-gated-and-what-is-only-reported",
+        "text": "What is gated, and what is only reported",
+        "level": 2
+      },
+      {
+        "id": "the-schema-so-the-next-reader-does-not-guess",
+        "text": "The schema, so the next reader does not guess",
+        "level": 2
+      },
+      {
+        "id": "known-first-run-risk-stated-plainly",
+        "text": "Known first-run risk, stated plainly",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 3
+  },
+  {
+    "slug": "25-CALL-GRAPH",
+    "projectId": "parquet-sourcegenerator",
+    "title": "25 — The Call Graph (#252): structure as a first-class, gated artifact",
+    "category": "Internals & Engineering Spikes",
+    "order": 25,
+    "headings": [
+      {
+        "id": "the-artifacts",
+        "text": "The artifacts",
+        "level": 2
+      },
+      {
+        "id": "the-four-gates",
+        "text": "The four gates",
+        "level": 2
+      },
+      {
+        "id": "what-this-graph-does-not-capture-read-this-before-trusting-an-absence",
+        "text": "What this graph does NOT capture — read this before trusting an absence",
+        "level": 2
+      },
+      {
+        "id": "why-the-generated-graph-is-documentation-not-a-gate",
+        "text": "Why the generated graph is documentation, not a gate",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 4
+  },
+  {
+    "slug": "26-MUTATION-TESTING",
+    "projectId": "parquet-sourcegenerator",
+    "title": "26 — Mutation Testing the Behavioural Suite (Layer 4 of #251)",
+    "category": "Internals & Engineering Spikes",
+    "order": 26,
+    "headings": [
+      {
+        "id": "the-trap-golden-files-make-mutation-scores-meaningless",
+        "text": "The trap: golden files make mutation scores meaningless",
+        "level": 2
+      },
+      {
+        "id": "what-runs-and-where-it-is-configured",
+        "text": "What runs, and where it is configured",
+        "level": 2
+      },
+      {
+        "id": "reporting-pr-never-a-red-build",
+        "text": "Reporting: PR, never a red build",
+        "level": 2
+      },
+      {
+        "id": "what-is-deliberately-not-gated-yet",
+        "text": "What is deliberately NOT gated yet",
+        "level": 2
+      },
+      {
+        "id": "reading-a-score-honestly",
+        "text": "Reading a score honestly",
+        "level": 2
+      },
+      {
+        "id": "practical-notes",
+        "text": "Practical notes",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 4
+  },
+  {
+    "slug": "BENCHMARKS",
+    "projectId": "parquet-sourcegenerator",
+    "title": "Performance Benchmarks & Baseline Reports",
+    "category": "General",
+    "order": 99,
+    "headings": [
+      {
+        "id": "-headline-performance-baseline",
+        "text": "⚡ Headline Performance Baseline",
+        "level": 2
+      },
+      {
+        "id": "-real-world-provenanced-dataset-benchmarks",
+        "text": "🌐 Real-World Provenanced Dataset Benchmarks",
+        "level": 2
+      },
+      {
+        "id": "-real-world-deserialization-parallel-performance",
+        "text": "📈 Real-World Deserialization & Parallel Performance",
+        "level": 3
+      },
+      {
+        "id": "-tpc-h-lineitem-multi-codec-serialization-throughput-60175-rows",
+        "text": "🗜️ TPC-H LineItem Multi-Codec Serialization Throughput (60,175 rows)",
+        "level": 3
+      },
+      {
+        "id": "-re-baseline-2026-09-08-dev-host",
+        "text": "📏 Re-baseline (2026-09-08, dev host)",
+        "level": 2
+      },
+      {
+        "id": "-running-benchmarks-locally",
+        "text": "🛠️ Running Benchmarks Locally",
+        "level": 2
+      },
+      {
+        "id": "-automated-ci-benchmark-updates",
+        "text": "🤖 Automated CI Benchmark Updates",
+        "level": 2
+      },
+      {
+        "id": "-related-documentation",
+        "text": "🔗 Related Documentation",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 6
+  },
+  {
+    "slug": "callgraph-generated",
+    "projectId": "parquet-sourcegenerator",
+    "title": "The generated code's call graph — documentation (#252)",
+    "category": "General",
+    "order": 99,
+    "headings": [
+      {
+        "id": "legacyrecordparquetlegacyextensionsg",
+        "text": "LegacyRecordParquetLegacyExtensions.g",
+        "level": 2
+      },
+      {
+        "id": "listorderparquetextensionsg",
+        "text": "ListOrderParquetExtensions.g",
+        "level": 2
+      },
+      {
+        "id": "nestedorderparquetextensionsg",
+        "text": "NestedOrderParquetExtensions.g",
+        "level": 2
+      },
+      {
+        "id": "ordereventparquetextensionsg",
+        "text": "OrderEventParquetExtensions.g",
+        "level": 2
+      },
+      {
+        "id": "pocoorderparquetextensionsg",
+        "text": "PocoOrderParquetExtensions.g",
+        "level": 2
+      },
+      {
+        "id": "scalarmetricparquetextensionsg",
+        "text": "ScalarMetricParquetExtensions.g",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 1
+  },
+  {
+    "slug": "callgraph",
+    "projectId": "parquet-sourcegenerator",
+    "title": "Call Graph — the shape #252 makes visible",
+    "category": "General",
+    "order": 99,
+    "headings": [],
+    "readingMinutes": 1
+  }
+]

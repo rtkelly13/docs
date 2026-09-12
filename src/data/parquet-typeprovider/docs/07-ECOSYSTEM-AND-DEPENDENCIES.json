@@ -1,0 +1,51 @@
+{
+  "slug": "07-ECOSYSTEM-AND-DEPENDENCIES",
+  "projectId": "parquet-typeprovider",
+  "title": "07 - F# Software Foundation Ecosystem & Dependency Standards",
+  "category": "Reference",
+  "order": 7,
+  "headings": [
+    {
+      "id": "1-language-baseline-f-60",
+      "text": "1. Language Baseline: F 6.0+",
+      "level": 2
+    },
+    {
+      "id": "rationale-for-f-60-baseline",
+      "text": "Rationale for F 6.0 Baseline:",
+      "level": 3
+    },
+    {
+      "id": "2-the-f-software-foundation-fsprojects-governance",
+      "text": "2. The F Software Foundation (fsprojects) Governance",
+      "level": 2
+    },
+    {
+      "id": "3-technical-evaluation-of-foundation-dependencies",
+      "text": "3. Technical Evaluation of Foundation Dependencies",
+      "level": 2
+    },
+    {
+      "id": "fsharpcontroltaskseq-fsprojectsfsharpcontroltaskseq",
+      "text": "FSharp.Control.TaskSeq (fsprojects/FSharp.Control.TaskSeq)",
+      "level": 3
+    },
+    {
+      "id": "fsharptypeproviderssdk-fsprojectsfsharptypeproviderssdk",
+      "text": "FSharp.TypeProviders.SDK (fsprojects/FSharp.TypeProviders.SDK)",
+      "level": 3
+    },
+    {
+      "id": "4-dependency-selection-matrix-policy",
+      "text": "4. Dependency Selection Matrix & Policy",
+      "level": 2
+    },
+    {
+      "id": "5-guidelines-for-future-f-extension-packages",
+      "text": "5. Guidelines for Future F Extension Packages",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 07 - F# Software Foundation Ecosystem & Dependency Standards\n\nThis document establishes the architectural standards, language baselines, and rationale for external dependencies in `Parquet.TypeProvider`, specifically emphasizing the role of the **F# Software Foundation (FSSF)** and the `fsprojects` community ecosystem.\n\n---\n\n## 1. Language Baseline: F# 6.0+\n\n`Parquet.TypeProvider` establishes **F# 6.0** (shipped with .NET 6 / `FSharp.Core >= 6.0.0`) as the minimum language baseline.\n\n### Rationale for F# 6.0 Baseline:\n1. **Native `task { ... }` Computation Expressions**:\n   - Starting in F# 6.0, `task { ... }` is built directly into the core language compiler via *resumable code*.\n   - Generates high-performance, low-allocation struct state machines without requiring legacy computation expression shims (e.g., `TaskBuilder.fs` or `Ply`).\n2. **Direct Interoperability with .NET Asynchronous APIs**:\n   - `Parquet.Net` v6 low-level readers (`ParquetReader.CreateAsync`, `groupReader.ReadAsync`) return standard .NET `Task<'T>`, which are awaited with native `let!` / `do!` in F# 6+ with zero overhead.\n\n---\n\n## 2. The F# Software Foundation (`fsprojects`) Governance\n\nThe [F# Software Foundation](https://fsharp.org/) is the independent, non-profit organization dedicated to advancing the F# language and ecosystem. Projects hosted under the [`fsprojects`](https://github.com/fsprojects) GitHub organization adhere to specific community governance standards:\n\n1. **Long-Term Maintainability**: Not tied to single-author abandonment; shared maintainer access across the core F# community.\n2. **First-Class Compiler Compatibility**: Built to evolve in lockstep with `FSharp.Core` and the F# Compiler Service (`FCS`).\n3. **Idiomatic Language Design**: Built specifically for F# idioms (algebraic data types, computation expressions, immutability, pipeline operators).\n\n---\n\n## 3. Technical Evaluation of Foundation Dependencies\n\n### `FSharp.Control.TaskSeq` (`fsprojects/FSharp.Control.TaskSeq`)\n* **Role in `Parquet.TypeProvider`**: Powers the non-blocking asynchronous streaming engine (`readRowsStream` / `loadFromFileAsync` / `AsyncLoad`).\n* **Why it was selected**:\n  - **The Missing Piece in `FSharp.Core`**: While F# 6.0 introduced native `task { ... }` for scalar tasks (`Task<'T>`), it did not introduce a native `taskSeq` builder for asynchronous streams (`IAsyncEnumerable<'T>`).\n  - **Zero OS Thread Blocking**: Completely eliminates the anti-pattern of calling `.GetAwaiter().GetResult()` inside sequence expressions.\n  - **Standard Interface**: Produces and consumes standard .NET `IAsyncEnumerable<'T>`, ensuring seamless interop with ASP.NET Core streaming, channels, and cloud SDKs.\n\n### `FSharp.TypeProviders.SDK` (`fsprojects/FSharp.TypeProviders.SDK`)\n* **Role in `Parquet.TypeProvider`**: Provides the type generation and compiler infrastructure for `Parquet.TypeProvider.DesignTime`.\n* **Why it was selected**:\n  - The official, canonical framework maintained by the F# community for creating generative and erased Type Providers.\n  - Manages design-time vs. runtime assembly separation, caching, and quotation tree generation.\n\n---\n\n## 4. Dependency Selection Matrix & Policy\n\nTo guarantee enterprise stability and prevent dependency bloat, all dependencies must meet these criteria:\n\n```mermaid\nflowchart TD\n    Candidate[Third-Party Dependency Candidate] --> CheckFSSF{Hosted under fsprojects or .NET Foundation?}\n    CheckFSSF -- Yes --> VerifyAOT{Zero trim/AOT warnings?}\n    CheckFSSF -- No --> CheckMaint{Multi-maintainer & active CI?}\n    CheckMaint -- Yes --> VerifyAOT\n    CheckMaint -- No --> Reject[Reject or Vendor Minimal Implementation]\n    VerifyAOT -- Yes --> Approve[Approved for Dependency Inclusion]\n    VerifyAOT -- No --> Reject\n```\n\n| Dependency | Category | Governance | Purpose |\n| :--- | :--- | :--- | :--- |\n| **`Parquet.Net`** | Core Engine | Managed .NET / AloneGuid | Low-level Parquet format chunk reader & writer |\n| **`FSharp.TypeProviders.SDK`** | Design-Time SDK | F# Software Foundation (`fsprojects`) | Type Provider compiler infrastructure |\n| **`FSharp.Control.TaskSeq`** | Async Streaming | F# Software Foundation (`fsprojects`) | `taskSeq { ... }` computation expressions |\n| **`BenchmarkDotNet`** | Benchmarks | .NET Foundation | Multi-scale performance baseline verification |\n| **`xUnit`** | Test Framework | .NET Foundation | Automated unit and integration testing |\n\n---\n\n## 5. Guidelines for Future F# Extension Packages\n\nWhen extending `Parquet.TypeProvider` (e.g., adding railway-oriented error handling, cancellable tasks, or property testing), priority is given to:\n1. **Error Handling**: [`FsToolkit.ErrorHandling`](https://github.com/demystifyfp/FsToolkit.ErrorHandling) (`taskResult { ... }`, `taskOption { ... }`).\n2. **Cancellable Async**: [`IcedTasks`](https://github.com/TheAngryByrd/IcedTasks) (`cancellableTask { ... }`).\n3. **Property Testing**: [`FsCheck`](https://github.com/fscheck/FsCheck) (`fsprojects`).\n",
+  "readingMinutes": 3
+}

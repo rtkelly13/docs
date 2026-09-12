@@ -1,0 +1,96 @@
+{
+  "slug": "06-TESTING-AND-CONSUMPTION-PLAN",
+  "projectId": "parquet-typeprovider",
+  "title": "06 - Testing, Consumption, and F# Language Integration Plan",
+  "category": "Internals & Engineering Spikes",
+  "order": 6,
+  "headings": [
+    {
+      "id": "1-f-bespoke-language-behaviors",
+      "text": "1. F-Bespoke Language Behaviors",
+      "level": 2
+    },
+    {
+      "id": "a-idiomatic-option-handling-t-option-t-voption",
+      "text": "A. Idiomatic Option Handling ('T option & 'T voption)",
+      "level": 3
+    },
+    {
+      "id": "b-units-of-measure-support",
+      "text": "B. Units of Measure Support",
+      "level": 3
+    },
+    {
+      "id": "c-structural-equality-comparisons",
+      "text": "C. Structural Equality & Comparisons",
+      "level": 3
+    },
+    {
+      "id": "d-pipeline-functional-combinators",
+      "text": "D. Pipeline & Functional Combinators",
+      "level": 3
+    },
+    {
+      "id": "2-multi-tier-testing-machinery",
+      "text": "2. Multi-Tier Testing Machinery",
+      "level": 2
+    },
+    {
+      "id": "layer-1-schema-provided-type-unit-tests-testsparquettypeprovidertests",
+      "text": "Layer 1: Schema & Provided Type Unit Tests (tests/Parquet.TypeProvider.Tests)",
+      "level": 3
+    },
+    {
+      "id": "layer-2-cross-engine-binary-parity-tests",
+      "text": "Layer 2: Cross-Engine Binary Parity Tests",
+      "level": 3
+    },
+    {
+      "id": "layer-3-memory-resource-leak-tests",
+      "text": "Layer 3: Memory & Resource Leak Tests",
+      "level": 3
+    },
+    {
+      "id": "3-end-to-end-package-consumption-testing",
+      "text": "3. End-to-End Package Consumption Testing",
+      "level": 2
+    },
+    {
+      "id": "a-local-packaging-pipeline",
+      "text": "A. Local Packaging Pipeline",
+      "level": 3
+    },
+    {
+      "id": "b-ide-tooling-verification-matrix",
+      "text": "B. IDE & Tooling Verification Matrix",
+      "level": 3
+    },
+    {
+      "id": "4-multi-scale-benchmarking-suite",
+      "text": "4. Multi-Scale Benchmarking Suite",
+      "level": 2
+    },
+    {
+      "id": "multi-scale-testing-1k-10k-100k-1000000-rows",
+      "text": "Multi-Scale Testing (1K, 10K, 100K, 1,000,000 Rows)",
+      "level": 3
+    },
+    {
+      "id": "benchmarked-candidates",
+      "text": "Benchmarked Candidates:",
+      "level": 3
+    },
+    {
+      "id": "measured-metrics",
+      "text": "Measured Metrics:",
+      "level": 3
+    },
+    {
+      "id": "5-planned-sample-applications",
+      "text": "5. Planned Sample Applications",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 06 - Testing, Consumption, and F# Language Integration Plan\n\nThis document details the test strategy, consumption validation, performance benchmarking, and F#-specific language features for `Parquet.TypeProvider`.\n\n---\n\n## 1. F#-Bespoke Language Behaviors\n\nF# data engineers and developers expect idioms distinct from C# object-oriented paradigms. `Parquet.TypeProvider` natively integrates with the F# type system:\n\n```mermaid\nmindmap\n  root((F# Parquet Behaviors))\n    Nullability\n      ::icon(fa fa-check)\n      'T option default\n      'T voption support\n      No nulls in F# domain\n    Units of Measure\n      int64&lt;ms&gt; for timestamps\n      decimal&lt;USD&gt; for monetary fields\n      float&lt;m&gt; for coordinates\n    Structural Semantics\n      IStructuralEquatable\n      IComparable\n      Set / Map / distinct compatibility\n    Active Patterns\n      Partial patterns for enums\n      Pattern matching on schemas\n    Execution Pipelines\n      Seq.map / filter / fold\n      taskSeq / AsyncSeq streaming\n```\n\n### A. Idiomatic Option Handling (`'T option` & `'T voption`)\n* **Parquet `OPTIONAL` Columns:** Automatically mapped to F# `Some('value)` or `None`.\n* **Zero-allocation `voption`:** For tight loops, users can specify `PreferStructOption = true` to emit `ValueOption<'T>` to avoid heap allocations.\n\n### B. Units of Measure Support\n* **Timestamp Precision:** Timestamps and duration fields can be tagged with measure units:\n  ```fsharp\n  [<Measure>] type ms\n  [<Measure>] type us\n  [<Measure>] type ns\n  [<Measure>] type USD\n  ```\n* **Compile-Time Type Safety:** Prevents accidental mathematical operations mixing milliseconds with seconds or mismatched currencies.\n\n### C. Structural Equality & Comparisons\n* Generated erased row instances implement `IStructuralEquatable` and `IComparable`.\n* Rows can be directly placed into F# `Set`, used as keys in `Map`, or deduplicated using `Seq.distinct`.\n\n### D. Pipeline & Functional Combinators\n* Direct integration with `Seq`, `Array`, and `List` modules:\n  ```fsharp\n  let highValueOrders =\n      Orders.Load(\"orders.parquet\")\n      |> Seq.filter (fun o -> o.Amount > 1000.0m<USD>)\n      |> Seq.groupBy (fun o -> o.CustomerId)\n      |> Seq.map (fun (cid, group) -> cid, Seq.sumBy (fun o -> o.Amount) group)\n  ```\n\n---\n\n## 2. Multi-Tier Testing Machinery\n\n```mermaid\nflowchart TD\n    subgraph Layer1 [1. Schema & Design-Time Tests]\n        T1[Sample File Resolution]\n        T2[Thrift / FileMetaData Parser]\n        T3[ProvidedTypeDefinition Verification]\n    end\n\n    subgraph Layer2 [2. Binary Data & Cross-Engine Parity]\n        T4[Parquet.Net v6 Generated Files]\n        T5[PyArrow / Pandas Generated Files]\n        T6[DuckDB Generated Files]\n        T7[ParquetSharp C++ Generated Files]\n    end\n\n    subgraph Layer3 [3. Memory & Streaming Tests]\n        T8[10M Row Stream Memory Ceiling]\n        T9[Row Group Disposal & GC Verification]\n    end\n\n    subgraph Layer4 [4. Package Consumption Tests]\n        T10[Local NuGet Package Build]\n        T11[Consumer F# Project Integration]\n        T12[F# Interactive .fsx Out-of-Process Test]\n    end\n```\n\n### Layer 1: Schema & Provided Type Unit Tests (`tests/Parquet.TypeProvider.Tests`)\n- Validates all 13 core Parquet physical and logical types (Boolean, Int32, Int64, Float, Double, Decimal, Guid, String, Byte[], Date, Time, Timestamp, List).\n- Verifies compiler diagnostic reporting for missing files or corrupted footers.\n\n### Layer 2: Cross-Engine Binary Parity Tests\n- Tests ingestion against standard files produced by:\n  1. **Python `pyarrow` / `fastparquet`**\n  2. **DuckDB**\n  3. **Apache Spark**\n  4. **ParquetSharp (C++ Arrow)**\n\n### Layer 3: Memory & Resource Leak Tests\n- Streams a 10-million row dataset across 1,000 row groups.\n- Asserts that memory remains constant (`GC.GetTotalMemory(true)` delta < 50MB) proving row groups are streamed and discarded rather than retained.\n\n---\n\n## 3. End-to-End Package Consumption Testing\n\nTo ensure the packaged NuGet asset functions seamlessly in consumer applications and developer tooling:\n\n### A. Local Packaging Pipeline\n1. Output `.nupkg` into local `./artifacts` directory via `dotnet pack`.\n2. Configure `test/Parquet.TypeProvider.ConsumerApp` with a local `nuget.config`:\n   ```xml\n   <configuration>\n     <packageSources>\n       <add key=\"local-artifacts\" value=\"../../artifacts\" />\n     </packageSources>\n   </configuration>\n   ```\n\n### B. IDE & Tooling Verification Matrix\n- **F# Interactive (`dotnet fsi`):** Script `#r \"nuget: Parquet.TypeProvider, 0.0.1\"` executes cleanly.\n- **Rider / Ionide / Visual Studio:** Verifies type completion, parameter info, and tooltips load without design-time host lockups.\n\n---\n\n## 4. Multi-Scale Benchmarking Suite\n\nLocated in `benchmarks/Parquet.TypeProvider.Benchmarks` utilizing **BenchmarkDotNet**:\n\n### Multi-Scale Testing (1K, 10K, 100K, 1,000,000 Rows)\n\n```mermaid\ngantt\n    title Benchmark Comparison Workloads\n    dateFormat X\n    axisFormat %s\n    section 1K Rows (Micro-latency)\n    Baseline vs TypeProvider : 0, 1000\n    section 100K Rows (ETL Batch)\n    Memory & Throughput : 0, 100000\n    section 1M Rows (High-Throughput)\n    Streaming Execution : 0, 1000000\n```\n\n### Benchmarked Candidates:\n1. **`ParquetSerializer.DeserializeAsync`** (Parquet.Net Reflection Baseline).\n2. **`Parquet.FSharp`** (F# Runtime Reflection Mapper).\n3. **Manual `ParquetReader` Loop** (Hand-optimized raw C# / F# baseline).\n4. **`Parquet.TypeProvider` `seq<Row>`** (Idiomatic row traversal).\n5. **`Parquet.TypeProvider` `Columns.*`** (Direct columnar array extraction).\n\n### Measured Metrics:\n- Mean Execution Time (ms / μs).\n- Memory Allocated per Operation (MB / KB).\n- Gen 0, Gen 1, Gen 2 GC Collections.\n\n---\n\n## 5. Planned Sample Applications\n\n1. **`samples/Exploration.fsx`**: Interactive analytics notebook script.\n2. **`samples/StreamingETL/`**: Multi-gigabyte streaming pipeline using `IAsyncEnumerable`.\n3. **`samples/UnitsOfMeasure/`**: Financial/telemetry modeling with strongly-typed units (`<ms>`, `<USD>`).\n",
+  "readingMinutes": 4
+}

@@ -1,0 +1,13 @@
+{
+  "projectId": "parquet-typeprovider",
+  "projectName": "Parquet.TypeProvider",
+  "version": "0.2.0",
+  "updatedAt": "2026-09-12T16:23:30.703Z",
+  "stats": {
+    "docCount": 7,
+    "apiSymbolCount": 0,
+    "modelCount": 0,
+    "ledgerEntryCount": 0
+  },
+  "models": []
+}
