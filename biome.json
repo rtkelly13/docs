@@ -7,7 +7,14 @@
   },
   "files": {
     "ignoreUnknown": false,
-    "includes": ["**", "!out", "!.next", "!public", "!src/data"]
+    "includes": [
+      "**",
+      "!out",
+      "!.next",
+      "!public",
+      "!src/data",
+      "!next-env.d.ts"
+    ]
   },
   "formatter": {
     "enabled": true,
