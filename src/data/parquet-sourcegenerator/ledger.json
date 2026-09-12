@@ -1,17 +1,6 @@
 [
   {
-    "id": "ledger-1-2026-09-12",
-    "date": "2026-09-12",
-    "title": "`SortedShipmentParquetExtensions` catalogued golden model (#264)",
-    "surface": "emitted",
-    "semver": "generated-shape",
-    "issue": "#264",
-    "issueUrl": "https://github.com/rtkelly13/Parquet.SourceGenerator/issues/264",
-    "rationale": "Adds **75** emitted members by cataloguing one new combined driver model\n  (`SortedShipment`, a prunable and sorted-key model) alongside the existing golden models.\n  Demonstrates that models carrying both `[ParquetSortKey]` and prunable columns receive both\n  the predicate pushdown zone-map struct and the sorted lookup overloads over the shared statistics hook.",
-    "rawText": "2026-09-12 — `SortedShipmentParquetExtensions` catalogued golden model (#264)\n\n- **Surface:** emitted\n- **Semver:** generated-shape\n- **Issue:** [#264](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/264)\n- **Rationale:** Adds **75** emitted members by cataloguing one new combined driver model\n  (`SortedShipment`, a prunable and sorted-key model) alongside the existing golden models.\n  Demonstrates that models carrying both `[ParquetSortKey]` and prunable columns receive both\n  the predicate pushdown zone-map struct and the sorted lookup overloads over the shared statistics hook."
-  },
-  {
-    "id": "ledger-2-2026-09-11",
+    "id": "ledger-1-2026-09-11",
     "date": "2026-09-11",
     "title": "`PocoOrderParquetExtensions` catalogued golden model (#176 M3b-2)",
     "surface": "emitted",
@@ -22,7 +11,7 @@
     "rawText": "2026-09-11 — `PocoOrderParquetExtensions` catalogued golden model (#176 M3b-2)\n\n- **Surface:** emitted\n- **Semver:** generated-shape\n- **Issue:** [#176](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/176)\n- **Rationale:** Adds **47** emitted members by cataloguing one new driver model\n  (`PocoOrder`, a `List<POCO>`/`POCO[]` shape) alongside the existing five — the same member\n  families every catalogued model already carries (entry point, builders, flat reads, writer\n  trio). No signature *shape* is new: the catalogue exists so drift in emitted surface is\n  diffable, and this model's drift is exactly the stack that introduced it."
   },
   {
-    "id": "ledger-3-2026-09-10",
+    "id": "ledger-2-2026-09-10",
     "date": "2026-09-10",
     "title": "Read entry point and builder (#217)",
     "surface": "emitted",
@@ -33,7 +22,7 @@
     "rawText": "2026-09-10 — Read entry point and builder (#217)\n\n- **Surface:** emitted\n- **Semver:** generated-shape\n- **Issue:** [#217](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/217),\n  [#216](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/216)\n- **Rationale:** Adds **104** emitted members across the five catalogued models: a `{T}Parquet`\n  entry point and four builder structs per model. Reads previously encoded source, shape and\n  execution into method names — twelve members for a four-axis grid, heading for forty-five once\n  #146, #148 and #178 land. Each axis becomes a member instead, so a new axis adds members linearly\n  rather than multiplying names. The full argument is in\n  [docs/19](../19-PUBLIC-API-SURFACE.md) decision D2.\n\n  Purely additive: no existing member changes or is removed. The flat `Read*` methods remain and are\n  what the builders delegate to for one release, per docs/19 decision D3, which is when this\n  addition is repaid — the twelve flat read members are removed at the `0.1.0` freeze.\n\n  The structs are type-state rather than one builder validating at runtime, so the grid's four empty\n  cells are absent members rather than members that throw: no `Parallel()` on a stream source, no\n  `Where()`/`Parallel()` on each other's results, no streaming or batch shape after `Parallel()`.\n  `Parallel()` deliberately takes no degree argument — `MaxDegreeOfParallelism` is an option after\n  #239, and an argument here would give the knob two homes again. #241 decides where it settles."
   },
   {
-    "id": "ledger-4-2026-09-10",
+    "id": "ledger-3-2026-09-10",
     "date": "2026-09-10",
     "title": "`ReadParquetParallelAsync(...)` / `ReadParquetParallelArrayAsync(...)`: `maxDegreeOfParallelism` parameter removed",
     "surface": "emitted",
@@ -44,7 +33,7 @@
     "rawText": "2026-09-10 — `ReadParquetParallelAsync(...)` / `ReadParquetParallelArrayAsync(...)`: `maxDegreeOfParallelism` parameter removed\n\n- **Surface:** emitted\n- **Semver:** breaking-major\n- **Issue:** [#218](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/218)\n- **Change:** the `int maxDegreeOfParallelism = -1` parameter is **removed** from four signatures\n  per model — `ReadParquetParallelAsync(Stream, …)`,\n  `ReadParquetParallelAsync(ReadOnlyMemory<byte>, …)`,\n  `ReadParquetParallelArrayAsync(Stream, …)` and\n  `ReadParquetParallelArrayAsync(ReadOnlyMemory<byte>, …)`. 16 catalogue lines change across the\n  four modern golden models; no line is added or deleted, because the members still exist with one\n  fewer parameter. `ParquetSerializerOptions.MaxDegreeOfParallelism` is unchanged and is now the\n  only home for the setting.\n- **Rationale:** the option had two homes and the precedence between them was invisible from the\n  signature. It was `mdop > 0 ? mdop : (options.MaxDegreeOfParallelism > 0 ? … : ProcessorCount)`,\n  so the argument won when positive and was **silently discarded** when zero or negative — a caller\n  passing `0` got neither an error nor their value. On the `Stream` overloads the parameter was\n  inert entirely: that reader is sequential by construction. No caller loses expressiveness; the\n  options property says everything the parameter said.\n- **Alternatives considered:** *Keep the parameter and document the precedence in XML docs* —\n  rejected: a documented precedence rule is only as good as the reader, and the package is `0.0.x`\n  where the duplicate can simply be deleted. *Remove the options property instead and keep the\n  parameter* — rejected: `ParquetSerializerOptions` is the surface every other setting already uses\n  and the one an application can configure once and pass everywhere, and the parameter cannot be\n  reached from `ReadParquetAsync` at all. *Keep it on the `ReadOnlyMemory<byte>` overloads only,\n  where it does something* — rejected: two overloads of one method taking different parameter lists\n  for the same concept is the discoverability defect #216 catalogues, not a fix for it.\n- **Note:** pre-1.0 break. `0.0.x` permits it without a major bump; the bucket records that the\n  call was made deliberately. The rule it applies is\n  [19 - Public API Surface](../19-PUBLIC-API-SURFACE.md)."
   },
   {
-    "id": "ledger-5-2026-09-10",
+    "id": "ledger-4-2026-09-10",
     "date": "2026-09-10",
     "title": "`WriteParquetBatchedAsync(...)` / `WriteParquetAsync(IAsyncEnumerable<T>, ...)`: `rowGroupSize` parameter removed",
     "surface": "emitted",
@@ -55,7 +44,7 @@
     "rawText": "2026-09-10 — `WriteParquetBatchedAsync(...)` / `WriteParquetAsync(IAsyncEnumerable<T>, ...)`: `rowGroupSize` parameter removed\n\n- **Surface:** emitted\n- **Semver:** breaking-major\n- **Issue:** [#218](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/218)\n- **Change:** the `int? rowGroupSize = null` parameter is **removed** from\n  `WriteParquetBatchedAsync(this IEnumerable<T>, Stream, …)` and from\n  `WriteParquetAsync(this IAsyncEnumerable<T>, Stream, …)`. 9 catalogue lines change — two per\n  modern golden model plus `WriteParquetBatchedAsync` on the classic emitter's\n  `LegacyRecordParquetLegacyExtensions`; again no line is added or deleted.\n  `ParquetSerializerOptions.RowGroupSize` is unchanged and is now the only home for the setting.\n- **Rationale:** same defect as the entry above. Resolution was `rowGroupSize ?? options.RowGroupSize`,\n  so the parameter won whenever supplied — the opposite of the caller's likely reading of\n  `WriteParquetBatchedAsync(stream, 1_000, myConfiguredOptions)`, where the explicitly configured\n  options object looks like the more considered instruction. The `ArgumentOutOfRangeException` for\n  a non-positive size now always names `options`, since that is the only source it can come from.\n- **Alternatives considered:** *Keep the parameter on `WriteParquetBatchedAsync` only, since row\n  group size is arguably that method's subject rather than its configuration* — rejected: the same\n  argument applies to the `IAsyncEnumerable` overload, which would leave the pair inconsistent, and\n  the parameter sat behind `stream` and in front of `options`, so it was already passed by name at\n  every call site in this repository. `new ParquetSerializerOptions { RowGroupSize = 10_000 }` is\n  the same shape of expression as `rowGroupSize: 10_000`. *Deprecate with `[Obsolete]` for one\n  release* — rejected: the members are emitted into the consumer's own compilation, so an\n  `[Obsolete]` overload is generated code the consumer cannot suppress per-call-site cleanly, and\n  `0.0.x` has no deprecation window to honour.\n- **Note:** pre-1.0 break, as above.\n\n#### Ledger-format note, recorded rather than fudged\n\nThe contract's phrasing — \"one entry per added or changed signature\" — and\n`scripts/CheckApiLedger.cs`'s counting of *added* catalogue lines both assume additions. This\nchange removes a parameter from 25 signatures across five models, which is **one decision**, not\n25. Written literally it would be 25 near-identical entries whose repetition would bury the two\ndecisions actually taken. Two entries are written instead, one per option removed, each naming the\naffected signatures and the line count. Note also that a pure removal adds no catalogue line, so\n`CheckApiLedger.cs` would have demanded nothing at all had these signatures not also changed — the\nCI half of the contract is blind to removals by construction, and only\n`GoldenCodeGenRegressionTests` catches them. Both points are raised on\n[#218](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/218) for\n[#230](https://github.com/rtkelly13/Parquet.SourceGenerator/issues/230) to settle."
   },
   {
-    "id": "ledger-6-2026-09-10",
+    "id": "ledger-5-2026-09-10",
     "date": "2026-09-10",
     "title": "`0.0.x inherited surface`",
     "surface": "unspecified",
