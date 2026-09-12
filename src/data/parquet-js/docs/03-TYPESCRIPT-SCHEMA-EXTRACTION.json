@@ -1,0 +1,21 @@
+{
+  "slug": "03-TYPESCRIPT-SCHEMA-EXTRACTION",
+  "projectId": "parquet-js",
+  "title": "03 - TypeScript Schema Codegen & Typing",
+  "category": "Internals & Engineering Spikes",
+  "order": 3,
+  "headings": [
+    {
+      "id": "-schema-to-typescript-translation",
+      "text": "📐 Schema to TypeScript Translation",
+      "level": 2
+    },
+    {
+      "id": "-zero-copy-columnar-access-with-arrow-js",
+      "text": "⚡ Zero-Copy Columnar Access with Arrow JS",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 03 - TypeScript Schema Codegen & Typing\n\nCompile-time type safety is the core value proposition of both `Parquet.SourceGenerator` in C# and TypeScript in the JavaScript ecosystem. This guide explains how Parquet schema metadata translates into strongly-typed TypeScript interfaces.\n\n---\n\n## 📐 Schema to TypeScript Translation\n\nWhen reading Parquet metadata from footer metadata or Arrow schemas, types map directly:\n\n```typescript\n// Generated TypeScript interface matching Parquet schema\nexport interface OrderRecord {\n  id: number;\n  orderNumber: string;\n  totalAmount: number; // Decimal mapped to JavaScript number\n  createdAt: Date;\n  status: 'Pending' | 'Shipped' | 'Delivered'; // Dictionary-encoded enum\n  notes?: string; // Nullable column\n}\n```\n\n---\n\n## ⚡ Zero-Copy Columnar Access with Arrow JS\n\nRather than converting entire columnar record batches into JavaScript object arrays (which allocates thousands of small GC objects), Arrow JS provides zero-copy columnar vector slicing:\n\n```typescript\nimport * as arrow from 'apache-arrow';\n\nexport function computeTotalRevenue(table: arrow.Table<OrderRecord>): number {\n  const amountColumn = table.getChild('totalAmount');\n  if (!amountColumn) return 0;\n\n  let total = 0;\n  // Iterate directly over TypedArray chunks\n  for (const chunk of amountColumn.data) {\n    const values = chunk.values; // Float64Array\n    for (let i = 0; i < values.length; i++) {\n      total += values[i];\n    }\n  }\n  return total;\n}\n```\n",
+  "readingMinutes": 1
+}

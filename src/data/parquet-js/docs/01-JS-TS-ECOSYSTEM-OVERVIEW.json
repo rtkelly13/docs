@@ -1,0 +1,41 @@
+{
+  "slug": "01-JS-TS-ECOSYSTEM-OVERVIEW",
+  "projectId": "parquet-js",
+  "title": "01 - JavaScript & TypeScript Parquet Ecosystem Overview",
+  "category": "Guides",
+  "order": 1,
+  "headings": [
+    {
+      "id": "-the-prevalence-of-parquet-in-javascript",
+      "text": "🌐 The Prevalence of Parquet in JavaScript",
+      "level": 2
+    },
+    {
+      "id": "-key-architectural-engines",
+      "text": "🛠️ Key Architectural Engines",
+      "level": 2
+    },
+    {
+      "id": "1-duckdb-wasm",
+      "text": "1. DuckDB-Wasm",
+      "level": 3
+    },
+    {
+      "id": "2-parquet-wasm-hyparquet",
+      "text": "2. parquet-wasm & hyparquet",
+      "level": 3
+    },
+    {
+      "id": "3-apache-arrow-js",
+      "text": "3. Apache Arrow JS",
+      "level": 3
+    },
+    {
+      "id": "-cross-ecosystem-pipeline-net-to-typescript",
+      "text": "🔄 Cross-Ecosystem Pipeline: .NET to TypeScript",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 01 - JavaScript & TypeScript Parquet Ecosystem Overview\n\nThis guide outlines the modern landscape for Apache Parquet execution, query acceleration, and schema handling within the **JavaScript and TypeScript ecosystems** across Browser, Node.js, Bun, and Edge runtime environments.\n\n---\n\n## 🌐 The Prevalence of Parquet in JavaScript\n\nWhile Apache Parquet originated in the Hadoop and JVM ecosystems and achieved massive adoption in Python (PyArrow, Polars, DuckDB) and .NET (`Parquet.Net`, `Parquet.SourceGenerator`), the JavaScript ecosystem has evolved into a premier client-side and edge analytical environment.\n\nFour architectural revolutions have enabled high-throughput Parquet in JS:\n1. **WebAssembly (WASM)**: Near-native execution speeds for columnar decoders, Snappy decompression, and Zstandard codecs inside browser tabs and Cloudflare Workers.\n2. **Apache Arrow JS**: Zero-copy in-memory columnar representation enabling columnar sharing between Parquet readers and analytical compute kernels.\n3. **DuckDB-Wasm**: Full vectorized SQL engine running directly in WebAssembly inside the browser, capable of streaming HTTP range requests against remote Parquet files.\n4. **TypeScript Type System**: Generative typing and schema validation ensuring compile-time safety when decoding columnar byte buffers into typed record arrays.\n\n---\n\n## 🛠️ Key Architectural Engines\n\n```mermaid\nflowchart TD\n    ParquetFile[Remote Parquet File (HTTP Range)] --> EngineRouter{Execution Context}\n    EngineRouter -->|Browser / Web Worker| DuckDBWasm[DuckDB-Wasm Vectorized SQL]\n    EngineRouter -->|Browser Zero-Copy| HyParquet[hyparquet / parquet-wasm]\n    EngineRouter -->|Node.js / Bun / Server| ArrowPipeline[Apache Arrow JS + Parquet Reader]\n    EngineRouter -->|Edge Runtime / Worker| StreamingEdge[Range-Request Streamer]\n    \n    DuckDBWasm --> ArrowBatch[Apache Arrow RecordBatches]\n    HyParquet --> ArrowBatch\n    ArrowPipeline --> ArrowBatch\n    \n    ArrowBatch --> TSModel[Typed TypeScript Objects / Canvas / UI]\n```\n\n### 1. DuckDB-Wasm\n- **Role**: Full analytical database engine compiled to WebAssembly.\n- **Strength**: Issues HTTP byte-range requests directly against cloud blob stores (S3, Cloudflare R2, Azure Blob), reading only required column chunks without downloading multi-gigabyte files.\n- **Synergy**: Works seamlessly with Parquet files written by `Parquet.SourceGenerator` carrying zone-map statistics and dictionary encodings.\n\n### 2. `parquet-wasm` & `hyparquet`\n- **Role**: Lightweight, fast zero-dependency readers and WebAssembly-backed decoders.\n- **Strength**: Minimal bundle footprint for web applications that need direct columnar access without shipping a full SQL engine.\n\n### 3. Apache Arrow JS\n- **Role**: In-memory columnar data structure standard.\n- **Strength**: Provides SIMD-friendly contiguous memory buffers for Float64, Int32, Date, and Dictionary arrays.\n\n---\n\n## 🔄 Cross-Ecosystem Pipeline: .NET to TypeScript\n\nA common architecture in modern data platforms:\n1. **Ingestion & ETL (.NET)**: High-scale backend microservices use `Parquet.SourceGenerator` to serialize millions of rows per second with zero allocations and upload to object storage.\n2. **Client Exploration (TypeScript)**: Web analytics dashboards load the emitted Parquet files directly into DuckDB-Wasm and Arrow JS, rendering sub-second interactive charts without backend server roundtrips.\n",
+  "readingMinutes": 2
+}

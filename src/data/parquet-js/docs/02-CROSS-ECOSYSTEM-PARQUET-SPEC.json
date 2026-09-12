@@ -1,0 +1,26 @@
+{
+  "slug": "02-CROSS-ECOSYSTEM-PARQUET-SPEC",
+  "projectId": "parquet-js",
+  "title": "02 - Cross-Ecosystem Parquet Compatibility Specification",
+  "category": "Guides",
+  "order": 2,
+  "headings": [
+    {
+      "id": "-interoperability-matrix",
+      "text": "🎯 Interoperability Matrix",
+      "level": 2
+    },
+    {
+      "id": "-compression-codecs-across-runtimes",
+      "text": "🗜️ Compression Codecs Across Runtimes",
+      "level": 2
+    },
+    {
+      "id": "-nullability-definition-levels",
+      "text": "🛡️ Nullability & Definition Levels",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 02 - Cross-Ecosystem Parquet Compatibility Specification\n\nThis specification establishes the interoperability rules, physical encodings, logical type mappings, and compression codecs for Parquet files produced in **.NET** and consumed in **JavaScript/TypeScript** (or vice versa).\n\n---\n\n## 🎯 Interoperability Matrix\n\n| Data Type / Feature | .NET (`Parquet.SourceGenerator`) | TypeScript (`Arrow JS / DuckDB-Wasm`) | Wire Representation |\n|:---|:---|:---|:---|\n| **`int` / `long`** | `int`, `long` | `Int32Array`, `BigInt64Array` | Plain / Delta Binary Packed |\n| **`float` / `double`** | `float`, `double` | `Float32Array`, `Float64Array` | IEEE 754 float/double |\n| **`string`** | `string` / UTF-8 | `Utf8` / `LargeUtf8` Arrow Vector | Plain string / Dictionary |\n| **`bool`** | `bool` | `Boolean` BitVector | 1-bit packed boolean |\n| **`decimal`** | `decimal` (`[ParquetDecimal(p, s)]`) | `Decimal128(precision, scale)` | Fixed-length byte array or Int64 |\n| **`DateTime` (UTC)** | `DateTime` / `DateTimeOffset` | `Timestamp(TimeUnit.MILLISECOND)` | Int64 Unix timestamp |\n| **`DateOnly`** | `DateOnly` | `DateDay` (32-bit epoch days) | Int32 days since 1970-01-01 |\n| **`Guid`** | `System.Guid` | `FixedSizeBinary(16)` / UUID String | 16-byte fixed binary |\n| **Dictionary Categoricals** | `[ParquetColumn]` string enum | `Dictionary<Int32, Utf8>` | Dict encoding with RLE keys |\n\n---\n\n## 🗜️ Compression Codecs Across Runtimes\n\nWhen writing Parquet files in .NET intended for consumption by browser-based TypeScript engines:\n\n1. **Snappy (Recommended for Web & Speed)**:\n   - Supported natively across .NET CoreCLR, WASM decoders, and DuckDB-Wasm.\n   - Lowest decompression CPU overhead inside browser main/worker threads.\n2. **Zstandard (ZSTD - Recommended for Storage Efficiency)**:\n   - Excellent compression ratios for archival datasets.\n   - Supported in DuckDB-Wasm and modern WebAssembly builds.\n3. **GZIP**:\n   - Universally supported, but higher CPU overhead during decompression in WASM.\n\n---\n\n## 🛡️ Nullability & Definition Levels\n\nIn both .NET and TypeScript, explicit nullability tracking is essential:\n- In C#, `string?` emits optional column definitions with definition level 1. Non-nullable `string` emits definition level 0.\n- In TypeScript, optional columns map to nullable Arrow vectors (`vector.isValid(i) === true`).\n- Both runtimes guarantee that no null values trigger unexpected runtime pointer exceptions.\n",
+  "readingMinutes": 2
+}

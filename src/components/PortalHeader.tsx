@@ -3,7 +3,7 @@
 import { DocsHeader } from '@rtkelly13/design-system';
 import { Layers } from 'lucide-react';
 import { usePathname, useRouter } from 'next/navigation';
-import { PROJECTS, type ProjectConfig } from '@/config/projects';
+import { ECOSYSTEMS, PROJECTS, type ProjectConfig } from '@/config/projects';
 
 function GitHubIcon({ size = 16 }: { size?: number }) {
   return (
@@ -83,22 +83,46 @@ export function PortalHeader({
             ]
           : []),
       ]
-    : PROJECTS.map((p) => ({
-        label: p.shortName.toUpperCase(),
-        href: `/${p.id}`,
-        active: pathname.startsWith(`/${p.id}`),
-      }));
+    : [
+        {
+          label: 'ALL PARQUET PROJECTS',
+          href: '/',
+          active: pathname === '/',
+        },
+        {
+          label: '.NET ECOSYSTEM',
+          href: '/parquet-sourcegenerator',
+          active:
+            pathname.includes('parquet-sourcegenerator') ||
+            pathname.includes('parquet-typeprovider'),
+        },
+        {
+          label: 'JS / TS ECOSYSTEM',
+          href: '/parquet-js',
+          active: pathname.includes('parquet-js'),
+        },
+      ];
+
+  const currentEcosystem = currentProject
+    ? ECOSYSTEMS[currentProject.ecosystem]
+    : undefined;
 
   return (
     <DocsHeader
-      title="DOCS.RYANKELLY.DEV"
+      title="PARQUET // DOCS"
       titleHref="/"
       nav={navItems}
       sidebarOpen={sidebarOpen}
       onToggleSidebar={onToggleSidebar}
     >
-      {/* Project Switcher Select */}
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-3">
+        {currentEcosystem && (
+          <span className="hidden md:inline-flex items-center text-[10px] font-mono px-2 py-0.5 border border-[var(--ds-border-default)] text-[var(--ds-text-muted)]">
+            [ {currentEcosystem.shortName} ]
+          </span>
+        )}
+
+        {/* Project Switcher Select */}
         <div className="relative flex items-center">
           <Layers
             size={14}
@@ -115,14 +139,23 @@ export function PortalHeader({
               }
             }}
             className="bg-[var(--ds-surface-subtle)] text-[var(--ds-text-primary)] border border-[var(--ds-border-default)] px-2 py-1 text-xs font-mono rounded-none focus:outline-none focus:border-[var(--ds-border-strong)] cursor-pointer"
-            aria-label="Switch documentation project"
+            aria-label="Switch Parquet project"
           >
-            <option value="">[ ALL PROJECTS ]</option>
-            {PROJECTS.map((p) => (
-              <option key={p.id} value={p.id}>
-                {p.name} ({p.version})
-              </option>
-            ))}
+            <option value="">[ SELECT PROJECT ]</option>
+            <optgroup label=".NET Ecosystem">
+              {PROJECTS.filter((p) => p.ecosystem === 'dotnet').map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.language})
+                </option>
+              ))}
+            </optgroup>
+            <optgroup label="JavaScript / TypeScript Ecosystem">
+              {PROJECTS.filter((p) => p.ecosystem === 'javascript').map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name} ({p.language})
+                </option>
+              ))}
+            </optgroup>
           </select>
         </div>
 

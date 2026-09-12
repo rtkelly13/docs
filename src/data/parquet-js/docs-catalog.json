@@ -1,0 +1,107 @@
+[
+  {
+    "slug": "01-JS-TS-ECOSYSTEM-OVERVIEW",
+    "projectId": "parquet-js",
+    "title": "01 - JavaScript & TypeScript Parquet Ecosystem Overview",
+    "category": "Guides",
+    "order": 1,
+    "headings": [
+      {
+        "id": "-the-prevalence-of-parquet-in-javascript",
+        "text": "🌐 The Prevalence of Parquet in JavaScript",
+        "level": 2
+      },
+      {
+        "id": "-key-architectural-engines",
+        "text": "🛠️ Key Architectural Engines",
+        "level": 2
+      },
+      {
+        "id": "1-duckdb-wasm",
+        "text": "1. DuckDB-Wasm",
+        "level": 3
+      },
+      {
+        "id": "2-parquet-wasm-hyparquet",
+        "text": "2. parquet-wasm & hyparquet",
+        "level": 3
+      },
+      {
+        "id": "3-apache-arrow-js",
+        "text": "3. Apache Arrow JS",
+        "level": 3
+      },
+      {
+        "id": "-cross-ecosystem-pipeline-net-to-typescript",
+        "text": "🔄 Cross-Ecosystem Pipeline: .NET to TypeScript",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 2
+  },
+  {
+    "slug": "02-CROSS-ECOSYSTEM-PARQUET-SPEC",
+    "projectId": "parquet-js",
+    "title": "02 - Cross-Ecosystem Parquet Compatibility Specification",
+    "category": "Guides",
+    "order": 2,
+    "headings": [
+      {
+        "id": "-interoperability-matrix",
+        "text": "🎯 Interoperability Matrix",
+        "level": 2
+      },
+      {
+        "id": "-compression-codecs-across-runtimes",
+        "text": "🗜️ Compression Codecs Across Runtimes",
+        "level": 2
+      },
+      {
+        "id": "-nullability-definition-levels",
+        "text": "🛡️ Nullability & Definition Levels",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 2
+  },
+  {
+    "slug": "03-TYPESCRIPT-SCHEMA-EXTRACTION",
+    "projectId": "parquet-js",
+    "title": "03 - TypeScript Schema Codegen & Typing",
+    "category": "Internals & Engineering Spikes",
+    "order": 3,
+    "headings": [
+      {
+        "id": "-schema-to-typescript-translation",
+        "text": "📐 Schema to TypeScript Translation",
+        "level": 2
+      },
+      {
+        "id": "-zero-copy-columnar-access-with-arrow-js",
+        "text": "⚡ Zero-Copy Columnar Access with Arrow JS",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 1
+  },
+  {
+    "slug": "04-BROWSER-AND-WASM-QUERYING",
+    "projectId": "parquet-js",
+    "title": "04 - Browser & WebAssembly Parquet Querying",
+    "category": "Internals & Engineering Spikes",
+    "order": 4,
+    "headings": [
+      {
+        "id": "-the-http-byte-range-architecture",
+        "text": "🚀 The HTTP Byte-Range Architecture",
+        "level": 2
+      },
+      {
+        "id": "-sample-implementation",
+        "text": "💻 Sample Implementation",
+        "level": 2
+      }
+    ],
+    "readingMinutes": 1
+  }
+]

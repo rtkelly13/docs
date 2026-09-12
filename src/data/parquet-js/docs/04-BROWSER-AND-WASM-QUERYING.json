@@ -1,0 +1,21 @@
+{
+  "slug": "04-BROWSER-AND-WASM-QUERYING",
+  "projectId": "parquet-js",
+  "title": "04 - Browser & WebAssembly Parquet Querying",
+  "category": "Internals & Engineering Spikes",
+  "order": 4,
+  "headings": [
+    {
+      "id": "-the-http-byte-range-architecture",
+      "text": "🚀 The HTTP Byte-Range Architecture",
+      "level": 2
+    },
+    {
+      "id": "-sample-implementation",
+      "text": "💻 Sample Implementation",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# 04 - Browser & WebAssembly Parquet Querying\n\nThis guide details how to query remote Apache Parquet files directly inside the browser using **DuckDB-Wasm** and HTTP range requests, eliminating the need for server-side SQL query proxies.\n\n---\n\n## 🚀 The HTTP Byte-Range Architecture\n\nBecause Parquet stores column chunks and metadata footers contiguously, WebAssembly query engines do not need to download the full file:\n\n1. **Footer Range Request**: The engine requests the final few kilobytes containing the `FileMetaData` footer and schema.\n2. **Page Index / Zone-Map Check**: The engine inspects min/max statistics for row groups to eliminate non-matching data.\n3. **Targeted Column Chunks**: Only the byte ranges of projected and filtered columns are requested via HTTP `Range: bytes=start-end`.\n\n```mermaid\nsequenceDiagram\n    participant Browser as Browser / DuckDB-Wasm\n    participant Cloud as Cloud Storage (S3 / R2 / Blob)\n    \n    Browser->>Cloud: GET /orders.parquet (Range: bytes=-4096)\n    Cloud-->>Browser: File Footer & Column Metadata\n    Note over Browser: Parse Schema & Zone-Map Statistics\n    Browser->>Cloud: GET /orders.parquet (Range: bytes=12000-18400)\n    Cloud-->>Browser: Column 'totalAmount' Data Page\n    Note over Browser: Vectorized SIMD Aggregation in WASM\n```\n\n---\n\n## 💻 Sample Implementation\n\n```typescript\nimport * as duckdb from '@duckdb/duckdb-wasm';\n\nexport async function queryParquetFile(url: string, minAmount: number) {\n  const db = await initDuckDB();\n  const conn = await db.connect();\n\n  // Query remote file directly via HTTP range requests\n  const results = await conn.query(`\n    SELECT status, COUNT(*) AS count, SUM(totalAmount) AS total\n    FROM parquet_scan('${url}')\n    WHERE totalAmount >= ${minAmount}\n    GROUP BY status\n    ORDER BY total DESC\n  `);\n\n  return results.toArray();\n}\n```\n",
+  "readingMinutes": 1
+}

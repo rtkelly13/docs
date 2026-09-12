@@ -79,10 +79,17 @@ export default async function ProjectOverviewPage({ params }: PageProps) {
         {/* Project Hero Header */}
         <div className="mb-10 space-y-4">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-mono text-[var(--ds-text-muted)] uppercase">
-              {project.category}
+            <span className="text-xs font-mono text-[var(--ds-text-muted)] uppercase border border-[var(--ds-border-default)] px-2 py-0.5">
+              {project.ecosystem === 'dotnet'
+                ? '.NET ECOSYSTEM'
+                : 'JAVASCRIPT / TS ECOSYSTEM'}
             </span>
-            <Badge accent="primary">v{project.version}</Badge>
+            <Badge
+              accent={project.ecosystem === 'dotnet' ? 'primary' : 'secondary'}
+            >
+              {project.language}
+            </Badge>
+            <Badge accent="quiet">v{project.version}</Badge>
             {project.badge && <Badge accent="secondary">{project.badge}</Badge>}
           </div>
 
