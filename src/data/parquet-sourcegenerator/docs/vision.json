@@ -1,0 +1,46 @@
+{
+  "slug": "vision",
+  "projectId": "parquet-sourcegenerator",
+  "title": "Vision & Design Tenets",
+  "category": "General",
+  "order": 99,
+  "headings": [
+    {
+      "id": "1-the-problem-reflection-bottlenecks-in-data-pipelines",
+      "text": "1. The Problem: Reflection Bottlenecks in Data Pipelines",
+      "level": 2
+    },
+    {
+      "id": "2-the-solution-compile-time-code-generation",
+      "text": "2. The Solution: Compile-Time Code Generation",
+      "level": 2
+    },
+    {
+      "id": "key-capabilities-benefits",
+      "text": "Key Capabilities & Benefits",
+      "level": 3
+    },
+    {
+      "id": "3-core-design-tenets",
+      "text": "3. Core Design Tenets",
+      "level": 2
+    },
+    {
+      "id": "the-member-test",
+      "text": "The Member Test",
+      "level": 3
+    },
+    {
+      "id": "three-visibility-tiers",
+      "text": "Three Visibility Tiers",
+      "level": 3
+    },
+    {
+      "id": "4-architectural-deep-dives",
+      "text": "4. Architectural Deep Dives",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "# Vision & Design Tenets\n\n`Parquet.SourceGenerator` is a compile-time Roslyn source generator for C# targeting the [Parquet.Net](https://github.com/aloneguid/parquet-dotnet) ecosystem. Its primary objective is to replace reflection-based object serialization and runtime schema discovery with zero-allocation, strongly-typed compile-time column reader and writer implementations.\n\n---\n\n## 1. The Problem: Reflection Bottlenecks in Data Pipelines\n\nThe standard high-level API in `Parquet.Net` (`ParquetConvert.SerializeAsync<T>` and `ParquetConvert.DeserializeAsync<T>`) relies on runtime reflection:\n\n1. **Runtime Property Scanning**: At runtime, `ParquetConvert` uses `typeof(T).GetProperties()` to discover fields, inspect attributes, and construct `DataField` schema representations.\n2. **Dynamic Value Dereferencing**: Reading and writing property values requires invoking `PropertyInfo.GetValue` and `PropertyInfo.SetValue`, causing boxing overhead for every primitive value (`int`, `double`, `DateTime`, etc.).\n3. **Array Allocations & Transposition**: High-throughput Parquet storage relies on column-oriented batching. Converting a row-oriented collection (`List<T>`) into columnar arrays via reflection forces severe GC pressure and cache thrashing.\n4. **Native AOT & Trimming Incompatibility**: Reflection-heavy serialization fails when publishing with `PublishAot=true` or trimming enabled in modern .NET (.NET 8/9/10+), because trimming linkers cannot trace dynamic property access.\n\n---\n\n## 2. The Solution: Compile-Time Code Generation\n\n`Parquet.SourceGenerator` leverages Roslyn's `IIncrementalGenerator` API to inspect annotated types (`[ParquetSerializable]`) during compilation and emit dedicated serializer extensions:\n\n```text\n+-------------------+      Roslyn Incremental      +--------------------------------+\n| User POCO / Record| ---- Generator Pipeline ---> | Generated Extension Methods    |\n| [ParquetClass]    |                              | - Schema Discovery             |\n+-------------------+                              | - Column Batch Writer          |\n                                                   | - Fluent Column Batch Reader   |\n                                                   +--------------------------------+\n```\n\n### Key Capabilities & Benefits\n\n- **Zero Reflection at Runtime**: Member access and column array mappings are emitted as plain C# code at compile time.\n- **High Throughput**: Directly transposes primitive arrays between memory buffers and Parquet `DataColumn` instances.\n- **Minimal Allocations**: Eliminates object boxing and intermediate collection allocations through disciplined `ArrayPool.Shared` buffer recycling.\n- **Full Native AOT & Trimming Support**: Fully deterministic compile-time C# code with zero dynamic code emission (`Reflection.Emit`).\n- **Compile-Time Diagnostics**: Emits Roslyn compiler errors and warnings (`PARQ001` to `PARQ016`, catalogued in [Compiler Diagnostics Reference](reference/compiler-diagnostics.md)) whenever unsupported types or invalid attributes are encountered.\n\n---\n\n## 3. Core Design Tenets\n\nTo ensure the public API remains durable and ergonomic while enabling deep internal optimization, all design decisions are guided by two tenets:\n\n### The Member Test\n\nEvery candidate public member must pass one essential question:\n\n> **Does this member describe user intent, or an implementation strategy?**\n\nThe stable public surface answers user questions:\n- *How do I annotate a type?* (`[ParquetColumn]`, `[ParquetTimestamp]`)\n- *How do I read, stream, or filter rows?* (`<Model>Parquet.From(source).Where(...).ToArrayAsync()`)\n- *How do I write rows or columnar arrays?* (`<Model>Parquet.WriteAsync(stream, items)`)\n- *How do I configure serialization limits and codecs?* (`ParquetSerializerOptions`)\n\nIt never exposes internal strategies: which reader state type is active, which emitter slot a column occupies, which pooled array backs a batch, or which SIMD helper performs a transform. Implementation strategy stays internal.\n\n### Three Visibility Tiers\n\n| Tier | Scope | Governed By |\n|:---|:---|:---|\n| **Stable Public Contract** | Attributes, `ParquetSerializerOptions`, fluent read builders, write entry points, and `<Model>Batch` | Derived `*.api.txt` PR diffs, `PublicAPI.*.txt`, and [API Governance](architecture/api-governance.md) |\n| **Internal Generated Capability** | Generated into consumer assemblies as `internal`: low-level row-group writers, conversion helpers, pruning lookups | Golden `.g.cs` review diffs |\n| **Repository Implementation Detail** | Parser models, emitters, planning types, SIMD helpers, test adapters | `internal` + `InternalsVisibleTo` |\n\n---\n\n## 4. Architectural Deep Dives\n\nTo explore the mechanics behind this vision, see:\n\n- [System Architecture Overview](architecture/overview.md) — The subsystem pipeline, emitter components, and dual-backend topology.\n- [Roslyn Incremental Pipeline](architecture/roslyn-pipeline.md) — How the generator achieves fine-grained Roslyn caching.\n- [Memory & Buffer Management](architecture/memory-and-performance.md) — Buffer rental, pinned arrays, and zero-allocation columnar writes.\n- [API Governance & Ledger](architecture/api-governance.md) — The strict change contract governing public and internal API surfaces.\n- [Architecture Decision Records (ADRs)](architecture/adrs/0001-generator-tooling-evaluation.md) — Architectural trade-off records and peer studies.\n",
+  "readingMinutes": 3
+}

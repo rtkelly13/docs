@@ -1,0 +1,12 @@
+{
+  "projectId": "parquet-sourcegenerator",
+  "latest": "0.1.0",
+  "versions": [
+    {
+      "version": "0.1.0",
+      "releasedAt": "2026-10-05T16:18:36.6285060Z",
+      "isLatest": true,
+      "typeCount": 16
+    }
+  ]
+}

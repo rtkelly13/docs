@@ -33,3 +33,15 @@ pnpm-debug.log*
 
 # Ingestion cache / temp
 .cache/
+
+# Temporary files, databases, scratch files, and worktrees
+temp/
+.temp/
+
+# Local TODO files
+TODO.md
+todo.md
+
+# Agent scratch / plans
+superpowers/
+

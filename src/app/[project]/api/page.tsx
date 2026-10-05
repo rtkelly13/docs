@@ -79,6 +79,28 @@ export default async function ProjectApiPage({ params }: PageProps) {
             <code className="font-mono text-cyan-400">*.api.txt</code>) directly
             into a searchable and filterable type registry.
           </p>
+
+          {/* Versioned Class Breakdown Callout */}
+          <div className="bg-[var(--ds-surface-sunken)] border-2 border-cyan-500/40 p-4 sm:p-6 mt-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+            <div className="space-y-1">
+              <span className="text-xs font-mono font-bold text-cyan-400 uppercase tracking-wider">
+                Full .NET SDK Reference Available
+              </span>
+              <h3 className="text-base sm:text-lg font-mono font-bold text-[var(--ds-text-primary)]">
+                Structured UML Class Breakdown & Type Hierarchy
+              </h3>
+              <p className="text-xs sm:text-sm text-[var(--ds-text-secondary)]">
+                Browse detailed inheritance trees, syntax declarations, XML doc
+                comments, and live Mermaid UML diagrams.
+              </p>
+            </div>
+            <a
+              href={`/${project.id}/api/0.1.0`}
+              className="inline-flex items-center justify-center px-4 py-2.5 bg-cyan-500 hover:bg-cyan-400 text-black font-mono font-bold text-xs uppercase tracking-wider transition-colors whitespace-nowrap"
+            >
+              Browse SDK Breakdown →
+            </a>
+          </div>
         </div>
 
         <ApiTableExplorer symbols={symbols} models={models} />

@@ -1,0 +1,41 @@
+{
+  "slug": "index",
+  "projectId": "parquet-sourcegenerator",
+  "title": "Parquet.SourceGenerator Documentation Hub",
+  "category": "General",
+  "order": 99,
+  "headings": [
+    {
+      "id": "-documentation-portal",
+      "text": "📚 Documentation Portal",
+      "level": 2
+    },
+    {
+      "id": "-getting-started",
+      "text": "🚀 Getting Started",
+      "level": 3
+    },
+    {
+      "id": "-guides",
+      "text": "📖 Guides",
+      "level": 3
+    },
+    {
+      "id": "-reference",
+      "text": "📋 Reference",
+      "level": 3
+    },
+    {
+      "id": "-architecture-internals",
+      "text": "🏛️ Architecture & Internals",
+      "level": 3
+    },
+    {
+      "id": "-release-status-governance",
+      "text": "🎯 Release Status & Governance",
+      "level": 2
+    }
+  ],
+  "rawMarkdown": "<p align=\"center\">\n  <img src=\"./assets/logo.svg\" alt=\"Parquet.SourceGenerator\" width=\"104\" height=\"104\">\n</p>\n\n# Parquet.SourceGenerator Documentation Hub\n\nWelcome to the documentation portal for **Parquet.SourceGenerator** — a high-performance, zero-reflection Roslyn source generator emitting strongly-typed serializers and deserializers for [Parquet.Net](https://github.com/aloneguid/parquet-dotnet).\n\n---\n\n## 📚 Documentation Portal\n\nThe documentation is organized into four distinct sections:\n- **[Getting Started](#-getting-started)** — Installation, quickstart, and configuration.\n- **[Guides](#-guides)** — Task-oriented walkthroughs for annotating models, reading, streaming, and Native AOT.\n- **[Reference](#-reference)** — Technical specifications, compiler diagnostics, compatibility matrix, and benchmarks.\n- **[Architecture & Internals](#-architecture--internals)** — Deep-dives into compiler pipeline design, memory pooling, testing machinery, and governance.\n\n---\n\n### 🚀 Getting Started\n\n1. **[Installation & Quickstart](./getting-started/installation.md)**\n   - Package installation for modern .NET and .NET Framework.\n   - First annotated model and basic read/write examples.\n\n2. **[Configuration & Generator Switches](./getting-started/configuration.md)**\n   - Configuring `ParquetGeneratorFlatOnly` via MSBuild.\n   - Flat-only schema enforcement and compiler output verification.\n\n---\n\n### 📖 Guides\n\n1. **[Model Attributes & Serialization API](./guides/model-attributes.md)**\n   - Annotating target classes, records, and structs with `[ParquetSerializable]`.\n   - Column naming, ordering, custom decimal precision/scale, and timestamp units.\n\n2. **[Reading Parquet Guide](./guides/reading-parquet.md)**\n   - Modern fluent reader: `<Model>Parquet.From(stream)...`.\n   - Materializing arrays (`ToArrayAsync`), memory-bounded streaming (`AsAsyncEnumerable`), and borrowed batch iteration (`AsBatches`).\n   - Predicate pushdown filtering (`Where`) and in-memory buffer reads.\n\n3. **[Writing Parquet Guide](./guides/writing-parquet.md)**\n   - Serializing in-memory collections, spans, and arrays (`WriteParquetAsync`).\n   - High-throughput chunked writes (`WriteParquetAsync`) and asynchronous stream feeds (`IAsyncEnumerable<T>`).\n   - Direct zero-allocation columnar batch writing (`<Model>Batch`) and row group compression tuning.\n\n4. **[Native AOT & Trimming Guide](./guides/native-aot.md)**\n   - Zero-reflection ahead-of-time compilation for CoreCLR and Linux x64 containers.\n   - Trimming analysis, linker safety, and Native Directives (`rd.xml`).\n\n5. **[Nested Types & Compound Models](./guides/nested-types.md)**\n   - Serializing nested POCOs, struct fields, and collections (`List<T>`).\n   - Definition and repetition level ladder mechanics and backend support boundaries.\n\n6. **[Legacy Backend & .NET Framework Support](./guides/legacy-support.md)**\n   - Targeting .NET Framework 4.7.2+, .NET Standard 2.0, and Parquet.Net 4.x/5.x.\n   - Single-calling-contract parity between modern and classic emitters.\n\n---\n\n### 📋 Reference\n\n1. **[Compiler Diagnostics Reference](./reference/compiler-diagnostics.md)**\n   - Complete catalog of compiler diagnostics (`PARQ001` through `PARQ016`).\n   - Diagnostic severities, root causes, and remediation code samples.\n\n2. **[Parquet Compatibility & Types Matrix](./reference/compatibility-matrix.md)**\n   - Interoperability guarantees with PyArrow, DuckDB, and Apache Parquet CLI.\n   - Comprehensive 23-type support matrix across execution paths.\n\n3. **[Schema Evolution & Versioning Contract](./reference/schema-evolution.md)**\n   - Backwards and forwards compatibility across evolving schemas and producer engines.\n   - Column reordering, missing optional fields, and strict required-field validation.\n\n4. **[Known Limitations & Upstream Constraints](./reference/known-limitations.md)**\n   - Audited gaps, unverified edge-case types, and tracked upstream Parquet.Net issues.\n\n5. **[Benchmarks & Performance Baselines](./reference/benchmarks.md)**\n   - BenchmarkDotNet multi-scale sweeps (1K, 10K, 100K, 1M rows).\n   - Provenanced public datasets (TPC-H LineItem, Adult Census Income, Diamonds).\n\n---\n\n### 🏛️ Architecture & Internals\n\n1. **[Vision & Design Tenets](/parquet-sourcegenerator/guides/vision)**\n   - Zero-reflection philosophy, high-throughput columnar transposition, and the Member Test.\n   - The Three Visibility Tiers: Public Contract, Internal Capability, and Repository Implementation.\n\n2. **[System Architecture Overview](./architecture/overview.md)**\n   - Subsystem compilation stages (`SyntaxValueProvider`, `TargetParser`, `EmissionPlan`, `CodeEmitter`).\n   - Modern (`Parquet.Net` 6.x) vs Legacy (`Parquet.Net` 4.x) dual-backend generator topology.\n   - Component emitter layout and zero-allocation memory recycling.\n\n3. **[Roslyn Incremental Generator Pipeline](./architecture/roslyn-pipeline.md)**\n   - Roslyn 4.0 `IIncrementalGenerator` caching pipeline and value-equatable syntax models.\n   - Incrementality proofs under unrelated file, whitespace, and per-model edits.\n\n4. **[Memory Architecture & Buffer Management](./architecture/memory-and-performance.md)**\n   - `ArrayPool.Shared` recycling, eager progressive buffer returns, and single-pass traversal.\n   - Empirical analysis of branchless null extraction and SIMD vectorization.\n\n5. **[Testing Strategy & Quality Machinery](./architecture/testing-strategy.md)**\n   - Multi-tier testing pyramid: package consumption, Roslyn driver tests, property-based fuzzing, and corrupted-file assertions.\n   - Deterministic fixture corpus and zero-boxing IL bytecode verification.\n\n6. **[API Governance & Change Contract](./architecture/api-governance.md)**\n   - Governing public API evolution: the catalogue rule, semver buckets, and the API Change Ledger.\n   - Derived `.api.txt` signature baselines and PR review diffs.\n\n7. **[CI Gate Matrix & Branch Protection](./internals/ci-gate-matrix.md)**\n   - Exhaustive audit of all GitHub Actions workflows, branch protection rulesets, and aggregate `build` job wiring.\n\n8. **[Code Quality & Complexity Ratchets](./internals/code-quality-and-metrics.md)**\n   - Roslyn complexity gates (`CA1502`, `CA1505`, `CA1506`) and emitted code static analysis.\n\n9. **[Coverage Envelope Map](./internals/coverage-envelope.md)**\n   - Source-derived property, nullability, and shape matrix generated by `scripts/CoverageMap.cs`.\n\n10. **[Memory Triage Runbook](./internals/runbooks/memory-triage.md)**\n    - Runbook for SOS memory inspection, Large Object Heap analysis, and `dotnet-dump` triage.\n\n11. **Architectural Decision Records (ADRs)**\n    - [ADR 0001: Roslyn Generator Tooling Evaluation](./architecture/adrs/0001-generator-tooling-evaluation.md)\n    - [ADR 0002: Architectural Peer Study: Protobuf & Serialization Engines](./architecture/adrs/0002-peer-study-protobuf.md)\n    - [ADR 0003: SonarAnalyzer.CSharp Removal & Permissive Replacement](./architecture/adrs/0003-sonar-removal.md)\n\n---\n\n## 🎯 Release Status & Governance\n\n- **Milestone & Release Tracking**: **[GitHub 0.1 Milestone](https://github.com/rtkelly-labs/Parquet.SourceGenerator/milestones)** (Tracks release gates, blocking issues, and roadmap).\n- **Public API Change Ledger**: **[docs/api/LEDGER.md](api/LEDGER.md)** (Governed by `PARQAPI002`).\n",
+  "readingMinutes": 4
+}
