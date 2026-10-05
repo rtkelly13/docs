@@ -12,6 +12,7 @@
     "build": "pnpm ingest:local && next build",
     "ingest": "tsx scripts/ingest.ts",
     "ingest:local": "tsx scripts/ingest.ts --local",
+    "ingest:main": "tsx scripts/ingest.ts --local --from-main",
     "start": "next start",
     "lint": "biome check .",
     "format": "biome format --write .",

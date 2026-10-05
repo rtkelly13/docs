@@ -1,7 +1,13 @@
+import { execSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { PROJECTS, type ProjectConfig } from '../src/config/projects.js';
+import type {
+  ApiDocProject,
+  VersionInfo,
+  VersionManifest,
+} from '../src/lib/ingest/parseApiModel.js';
 import { type ApiSymbol, parseApiTxt } from '../src/lib/ingest/parseApiTxt.js';
 import { type ParsedDoc, parseDoc } from '../src/lib/ingest/parseDocs.js';
 import {
@@ -28,7 +34,54 @@ interface ProjectManifest {
   models: string[];
 }
 
-async function ingestProject(project: ProjectConfig) {
+function fetchMainDump(project: ProjectConfig): string | null {
+  const repoName = project.githubUrl.replace('https://github.com/', '');
+  const dumpDir = path.resolve(ROOT_DIR, '.cache/main-dump', project.id);
+  fs.mkdirSync(dumpDir, { recursive: true });
+
+  try {
+    console.log(
+      `[--from-main] Checking latest successful CI run on main for ${repoName}...`,
+    );
+    const runListJson = execSync(
+      `gh run list --repo ${repoName} --branch main --workflow "CI & PR E2E Checks" --status success --limit 1 --json databaseId`,
+      { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] },
+    );
+    const runs = JSON.parse(runListJson);
+    if (!runs || runs.length === 0) {
+      console.warn(
+        `[WARN] No successful CI runs found on main for ${repoName}`,
+      );
+      return null;
+    }
+    const runId = runs[0].databaseId;
+    console.log(
+      `[--from-main] Downloading derived-outputs artifact from run ${runId}...`,
+    );
+    execSync(
+      `gh run download ${runId} --repo ${repoName} -n derived-outputs --dir "${dumpDir}"`,
+      { stdio: 'inherit' },
+    );
+    const headDir = path.join(dumpDir, 'head');
+    if (fs.existsSync(headDir)) {
+      console.log(
+        `✓ [--from-main] Successfully loaded up-to-date dump from main: ${headDir}`,
+      );
+      return headDir;
+    }
+    return dumpDir;
+  } catch (err: any) {
+    console.warn(
+      `[WARN] Failed to fetch main dump via gh CLI: ${err?.message || err}`,
+    );
+    return null;
+  }
+}
+
+async function ingestProject(
+  project: ProjectConfig,
+  fromMain: boolean = false,
+) {
   console.log(`\n======================================================`);
   console.log(`Ingesting project: [ ${project.name} ] (${project.id})`);
   console.log(`======================================================`);
@@ -38,7 +91,9 @@ async function ingestProject(project: ProjectConfig) {
   fs.mkdirSync(docsOutDir, { recursive: true });
 
   const projectSourcePath = path.resolve(ROOT_DIR, project.localPath);
-  if (!fs.existsSync(projectSourcePath)) {
+  const mainDumpDir = fromMain ? fetchMainDump(project) : null;
+
+  if (!fs.existsSync(projectSourcePath) && !mainDumpDir) {
     console.warn(
       `[WARN] Source path not found for ${project.id}: ${projectSourcePath}. Generating stub data.`,
     );
@@ -118,22 +173,28 @@ async function ingestProject(project: ProjectConfig) {
   const allSymbols: ApiSymbol[] = [];
   const modelsSet = new Set<string>();
 
-  if (project.apiBaselinesDir) {
-    const apiDir = path.join(projectSourcePath, project.apiBaselinesDir);
-    if (fs.existsSync(apiDir)) {
-      const apiFiles = fs
-        .readdirSync(apiDir)
-        .filter((f) => f.endsWith('.api.txt'));
-      for (const apiFile of apiFiles) {
-        const modelName = apiFile.replace(
-          /(ParquetExtensions|ParquetLegacyExtensions|\.api\.txt)/g,
-          '',
-        );
-        modelsSet.add(modelName);
-        const content = fs.readFileSync(path.join(apiDir, apiFile), 'utf-8');
-        const symbols = parseApiTxt(content, modelName);
-        allSymbols.push(...symbols);
-      }
+  const candidateApiDirs = [
+    mainDumpDir ? path.join(mainDumpDir, 'golden') : null,
+    path.join(projectSourcePath, 'artifacts/golden'),
+    project.apiBaselinesDir
+      ? path.join(projectSourcePath, project.apiBaselinesDir)
+      : null,
+  ].filter((d): d is string => Boolean(d && fs.existsSync(d)));
+
+  if (candidateApiDirs.length > 0) {
+    const apiDir = candidateApiDirs[0];
+    const apiFiles = fs
+      .readdirSync(apiDir)
+      .filter((f) => f.endsWith('.api.txt'));
+    for (const apiFile of apiFiles) {
+      const modelName = apiFile.replace(
+        /(ParquetExtensions|ParquetLegacyExtensions|\.api\.txt)/g,
+        '',
+      );
+      modelsSet.add(modelName);
+      const content = fs.readFileSync(path.join(apiDir, apiFile), 'utf-8');
+      const symbols = parseApiTxt(content, modelName);
+      allSymbols.push(...symbols);
     }
   }
 
@@ -168,20 +229,31 @@ async function ingestProject(project: ProjectConfig) {
     chart: string;
     description?: string;
   }[] = [];
-  if (project.callgraphFile) {
-    const cgPath = path.join(projectSourcePath, project.callgraphFile);
-    if (fs.existsSync(cgPath)) {
-      const content = fs.readFileSync(cgPath, 'utf-8');
-      const mermaidMatches = Array.from(
-        content.matchAll(/```mermaid\s*([\s\S]*?)\s*```/g),
-      );
-      for (let i = 0; i < mermaidMatches.length; i++) {
-        diagrams.push({
-          id: `diag-${i + 1}`,
-          title: `Generated Call Graph Architecture ${i + 1}`,
-          chart: mermaidMatches[i][1].trim(),
-        });
-      }
+
+  const candidateCallgraphs = [
+    mainDumpDir
+      ? path.join(mainDumpDir, 'callgraph/callgraph-generated.md')
+      : null,
+    mainDumpDir ? path.join(mainDumpDir, 'callgraph/callgraph.md') : null,
+    path.join(projectSourcePath, 'artifacts/callgraph/callgraph-generated.md'),
+    path.join(projectSourcePath, 'artifacts/callgraph/callgraph.md'),
+    project.callgraphFile
+      ? path.join(projectSourcePath, project.callgraphFile)
+      : null,
+  ].filter((f): f is string => Boolean(f && fs.existsSync(f)));
+
+  if (candidateCallgraphs.length > 0) {
+    const cgPath = candidateCallgraphs[0];
+    const content = fs.readFileSync(cgPath, 'utf-8');
+    const mermaidMatches = Array.from(
+      content.matchAll(/```mermaid\s*([\s\S]*?)\s*```/g),
+    );
+    for (let i = 0; i < mermaidMatches.length; i++) {
+      diagrams.push({
+        id: `diag-${i + 1}`,
+        title: `Generated Call Graph Architecture ${i + 1}`,
+        chart: mermaidMatches[i][1].trim(),
+      });
     }
   }
 
@@ -191,7 +263,71 @@ async function ingestProject(project: ProjectConfig) {
   );
   console.log(`✓ Extracted ${diagrams.length} architecture diagrams`);
 
-  // 5. Write Project Manifest
+  // 5. Ingest Versioned API Model & Baselines
+  const versionsOutDir = path.join(projectOutDir, 'versions');
+  fs.mkdirSync(versionsOutDir, { recursive: true });
+
+  const candidateApiModelPaths = [
+    mainDumpDir ? path.join(mainDumpDir, 'api-model.json') : null,
+    path.join(projectSourcePath, 'artifacts/api-model.json'),
+  ].filter((f): f is string => Boolean(f && fs.existsSync(f)));
+
+  if (candidateApiModelPaths.length > 0) {
+    const localApiModelPath = candidateApiModelPaths[0];
+    const rawModel = fs.readFileSync(localApiModelPath, 'utf-8');
+    const apiDoc: ApiDocProject = JSON.parse(rawModel);
+    const versionTag = `v${apiDoc.version}`;
+
+    // Write current version snapshot
+    fs.writeFileSync(path.join(versionsOutDir, `${versionTag}.json`), rawModel);
+    // Write latest.json
+    fs.writeFileSync(path.join(versionsOutDir, 'latest.json'), rawModel);
+
+    // Read or initialize versions manifest
+    const manifestPath = path.join(versionsOutDir, 'versions.json');
+    let versionManifest: VersionManifest = {
+      projectId: project.id,
+      latest: apiDoc.version,
+      versions: [],
+    };
+    if (fs.existsSync(manifestPath)) {
+      try {
+        versionManifest = JSON.parse(fs.readFileSync(manifestPath, 'utf-8'));
+      } catch {}
+    }
+
+    const typeCount = apiDoc.namespaces.reduce(
+      (acc, ns) => acc + ns.types.length,
+      0,
+    );
+    const existingIdx = versionManifest.versions.findIndex(
+      (v) => v.version === apiDoc.version,
+    );
+    const versionEntry: VersionInfo = {
+      version: apiDoc.version,
+      releasedAt: apiDoc.generatedAt,
+      isLatest: true,
+      typeCount,
+    };
+
+    if (existingIdx >= 0) {
+      versionManifest.versions[existingIdx] = versionEntry;
+    } else {
+      versionManifest.versions.push(versionEntry);
+    }
+
+    for (const v of versionManifest.versions) {
+      v.isLatest = v.version === apiDoc.version;
+    }
+
+    versionManifest.latest = apiDoc.version;
+    fs.writeFileSync(manifestPath, JSON.stringify(versionManifest, null, 2));
+    console.log(
+      `✓ Ingested versioned API model for ${versionTag} (${typeCount} types)`,
+    );
+  }
+
+  // 6. Write Project Manifest
   const manifest: ProjectManifest = {
     projectId: project.id,
     projectName: project.name,
@@ -216,6 +352,7 @@ async function ingestProject(project: ProjectConfig) {
 async function main() {
   fs.mkdirSync(DATA_DIR, { recursive: true });
 
+  const fromMain = process.argv.includes('--from-main');
   const targetProjectArg = process.argv.indexOf('--project');
   const targetProjectId =
     targetProjectArg !== -1 ? process.argv[targetProjectArg + 1] : null;
@@ -232,7 +369,7 @@ async function main() {
   }
 
   for (const p of targetProjects) {
-    await ingestProject(p);
+    await ingestProject(p, fromMain);
   }
 
   console.log(

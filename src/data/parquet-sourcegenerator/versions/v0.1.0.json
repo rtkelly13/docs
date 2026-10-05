@@ -1,0 +1,1211 @@
+{
+  "projectName": "Parquet.SourceGenerator",
+  "version": "0.1.0",
+  "generatedAt": "2026-10-05T16:18:36.6285060Z",
+  "namespaces": [
+    {
+      "name": "Parquet.SourceGenerator",
+      "types": [
+        {
+          "id": "Parquet.SourceGenerator.ParquetColumnAttribute",
+          "name": "ParquetColumnAttribute",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Controls column binding parameters such as field name override and ordering.",
+          "syntax": "ParquetColumnAttribute",
+          "inheritanceHierarchy": [
+            "object",
+            "System.Attribute",
+            "Parquet.SourceGenerator.ParquetColumnAttribute"
+          ],
+          "interfaces": [],
+          "constructors": [
+            {
+              "name": "ParquetColumnAttribute",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetColumnAttribute.ParquetColumnAttribute()",
+              "summary": "Initializes a new instance of <see cref=\"ParquetColumnAttribute\"/> without renaming the column.",
+              "remarks": "Exists so ordering can be expressed on its own — <c>[ParquetColumn(Order = 2)]</c>. With only the name-taking constructor available, reordering a column forced you to restate its name.",
+              "parameters": []
+            },
+            {
+              "name": "ParquetColumnAttribute",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetColumnAttribute.ParquetColumnAttribute(string name)",
+              "summary": "Initializes a new instance of <see cref=\"ParquetColumnAttribute\"/> with the specified column name.",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": "string",
+                  "summary": "The name of the column in the Parquet schema."
+                }
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "name": "Deduplicate",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnAttribute.Deduplicate",
+              "summary": "Gets or sets whether string values in this column should be deduplicated during deserialization. When true, identical string values within a row group share the same object reference, reducing managed heap allocations and memory footprint for low-cardinality columns. <para> Precedence with <c>ParquetSerializerOptions.DeduplicateStrings</c>: the two are combined with \"or\". <c>true</c> here deduplicates this column even when the option is <c>false</c>; the option set to <c>true</c> deduplicates every string column, and there is no way to switch a column off that this attribute switched on. </para>"
+            },
+            {
+              "name": "Encoding",
+              "kind": "Property",
+              "returnType": "Parquet.SourceGenerator.ParquetColumnEncoding",
+              "isStatic": false,
+              "syntax": "ParquetColumnEncoding ParquetColumnAttribute.Encoding",
+              "summary": "Gets or sets the physical column encoding hint to use when serializing this column. <para> Precedence with <c>ParquetSerializerOptions.ColumnEncodingHints</c>: the attribute is applied first and a hint in the options for the same column name replaces it, so the runtime option wins when both are set (including an explicit <see cref=\"ParquetColumnEncoding.Default\"/>). Only top-level columns carry the attribute hint today; one on a member inside a nested struct or list element is not emitted. </para>"
+            },
+            {
+              "name": "Name",
+              "kind": "Property",
+              "returnType": "string?",
+              "isStatic": false,
+              "syntax": "string? ParquetColumnAttribute.Name",
+              "summary": "Gets or sets the name of the column in the Parquet schema. When null, the member name is used."
+            },
+            {
+              "name": "Order",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetColumnAttribute.Order",
+              "summary": "Gets or sets the explicit column index order."
+            }
+          ],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetColumnEncoding",
+          "name": "ParquetColumnEncoding",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Specifies the physical column encoding hint to apply when serializing column data.",
+          "syntax": "ParquetColumnEncoding",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.ParquetColumnEncoding"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "ByteSplitStream",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetColumnEncoding",
+              "isStatic": true,
+              "syntax": "ParquetColumnEncoding.ByteSplitStream",
+              "summary": "Byte stream split encoding (BYTE_STREAM_SPLIT). Applies to floating-point (float, double) and integer fields. Transposes floating point bytes to group exponent and mantissa bytes contiguously.",
+              "constantValue": "3"
+            },
+            {
+              "name": "Default",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetColumnEncoding",
+              "isStatic": true,
+              "syntax": "ParquetColumnEncoding.Default",
+              "summary": "Default encoding, chosen automatically based on data type and cardinality heuristics.",
+              "constantValue": "0"
+            },
+            {
+              "name": "DeltaBinaryPacked",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetColumnEncoding",
+              "isStatic": true,
+              "syntax": "ParquetColumnEncoding.DeltaBinaryPacked",
+              "summary": "Delta binary packed encoding (DELTA_BINARY_PACKED). Applies to 32-bit and 64-bit integer fields. Highly effective for monotonic sequence numbers, IDs, and timestamps.",
+              "constantValue": "2"
+            },
+            {
+              "name": "Dictionary",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetColumnEncoding",
+              "isStatic": true,
+              "syntax": "ParquetColumnEncoding.Dictionary",
+              "summary": "Dictionary encoding (PLAIN_DICTIONARY / RLE_DICTIONARY). Applies to string and byte[] fields.",
+              "constantValue": "1"
+            }
+          ]
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetColumnStatistics<T>",
+          "name": "ParquetColumnStatistics",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Struct",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "The <c>min_value</c> / <c>max_value</c> / <c>null_count</c> zone map a Parquet writer records for one column chunk, projected onto the CLR type of the generated model property (issue #149).",
+          "remarks": "<para> Statistics are advisory: a writer may omit them, and a file produced by another engine may record them in a physical type this projection cannot map. Both cases surface as <see cref=\"HasMinMax\"/> being <see langword=\"false\"/>, and the generated readers never prune a row group whose statistics are incomplete. </para> <para> Prefer the <c>May*</c> helpers over raw <see cref=\"Min\"/> / <see cref=\"Max\"/> in a pruning predicate: they answer \"could this row group contain a matching row?\", and answer <see langword=\"true\"/> whenever statistics are missing, so a predicate built from them can never prune away real data. </para> <para> Ordering uses <see cref=\"Comparer{T}.Default\"/>, except for <see cref=\"string\"/>, which uses <see cref=\"StringComparer.Ordinal\"/>. Parquet orders binary columns by unsigned UTF-8 bytes; an ordinal UTF-16 comparison agrees with that across all of ASCII and disagrees only where surrogate pairs meet the U+E000..U+FFFF range. </para>",
+          "syntax": "ParquetColumnStatistics<T>",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "Parquet.SourceGenerator.ParquetColumnStatistics<T>"
+          ],
+          "interfaces": [
+            "System.IEquatable<Parquet.SourceGenerator.ParquetColumnStatistics<T>>"
+          ],
+          "constructors": [
+            {
+              "name": "ParquetColumnStatistics",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetColumnStatistics<T>.ParquetColumnStatistics(bool hasMin, T min, bool hasMax, T max, long? nullCount, long? distinctCount)",
+              "summary": "Creates a projected column-chunk zone map.",
+              "parameters": [
+                {
+                  "name": "hasMin",
+                  "type": "bool",
+                  "summary": "Whether <paramref name=\"min\"/> carries a recorded minimum."
+                },
+                {
+                  "name": "min",
+                  "type": "T",
+                  "summary": "The chunk minimum, when <paramref name=\"hasMin\"/> is set."
+                },
+                {
+                  "name": "hasMax",
+                  "type": "bool",
+                  "summary": "Whether <paramref name=\"max\"/> carries a recorded maximum."
+                },
+                {
+                  "name": "max",
+                  "type": "T",
+                  "summary": "The chunk maximum, when <paramref name=\"hasMax\"/> is set."
+                },
+                {
+                  "name": "nullCount",
+                  "type": "long?",
+                  "summary": "The chunk's recorded null count, when present."
+                },
+                {
+                  "name": "distinctCount",
+                  "type": "long?",
+                  "summary": "The chunk's recorded distinct count, when present."
+                }
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "name": "DistinctCount",
+              "kind": "Property",
+              "returnType": "long?",
+              "isStatic": false,
+              "syntax": "long? ParquetColumnStatistics<T>.DistinctCount",
+              "summary": "The chunk's recorded distinct count, when the writer stored one."
+            },
+            {
+              "name": "HasMinMax",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.HasMinMax",
+              "summary": "Whether the chunk recorded both a minimum and a maximum this projection could map."
+            },
+            {
+              "name": "IsKnownNonNull",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.IsKnownNonNull",
+              "summary": "Whether the chunk is known to hold no nulls at all."
+            },
+            {
+              "name": "Max",
+              "kind": "Property",
+              "returnType": "T?",
+              "isStatic": false,
+              "syntax": "T? ParquetColumnStatistics<T>.Max",
+              "summary": "The recorded maximum, or <c>default</c> when <see cref=\"HasMinMax\"/> is false."
+            },
+            {
+              "name": "Min",
+              "kind": "Property",
+              "returnType": "T?",
+              "isStatic": false,
+              "syntax": "T? ParquetColumnStatistics<T>.Min",
+              "summary": "The recorded minimum, or <c>default</c> when <see cref=\"HasMinMax\"/> is false."
+            },
+            {
+              "name": "NullCount",
+              "kind": "Property",
+              "returnType": "long?",
+              "isStatic": false,
+              "syntax": "long? ParquetColumnStatistics<T>.NullCount",
+              "summary": "The chunk's recorded null count, when the writer stored one."
+            }
+          ],
+          "methods": [
+            {
+              "name": "Equals",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.Equals(ParquetColumnStatistics<T> other)",
+              "parameters": [
+                {
+                  "name": "other",
+                  "type": "Parquet.SourceGenerator.ParquetColumnStatistics<T>"
+                }
+              ]
+            },
+            {
+              "name": "Equals",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.Equals(object? obj)",
+              "parameters": [
+                {
+                  "name": "obj",
+                  "type": "object?"
+                }
+              ]
+            },
+            {
+              "name": "GetHashCode",
+              "kind": "Method",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetColumnStatistics<T>.GetHashCode()",
+              "parameters": []
+            },
+            {
+              "name": "MayContain",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.MayContain(T value)",
+              "summary": "Could this chunk hold a value equal to <paramref name=\"value\"/>? (<c>x == value</c>)",
+              "parameters": [
+                {
+                  "name": "value",
+                  "type": "T"
+                }
+              ]
+            },
+            {
+              "name": "MayContainAny",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.MayContainAny(params T[]? values)",
+              "summary": "Could this chunk hold any value from <paramref name=\"values\"/>? (<c>IN (...)</c>)",
+              "parameters": [
+                {
+                  "name": "values",
+                  "type": "T[]?",
+                  "summary": "The candidate values. A null or empty set is treated as \"no match possible\"."
+                }
+              ]
+            },
+            {
+              "name": "MayContainAtLeast",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.MayContainAtLeast(T threshold)",
+              "summary": "Could this chunk hold a value <c>&gt;= threshold</c>?",
+              "parameters": [
+                {
+                  "name": "threshold",
+                  "type": "T"
+                }
+              ]
+            },
+            {
+              "name": "MayContainAtMost",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.MayContainAtMost(T threshold)",
+              "summary": "Could this chunk hold a value <c>&lt;= threshold</c>?",
+              "parameters": [
+                {
+                  "name": "threshold",
+                  "type": "T"
+                }
+              ]
+            },
+            {
+              "name": "MayContainBetween",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.MayContainBetween(T low, T high)",
+              "summary": "Could this chunk hold a value in the inclusive range <c>[low, high]</c>?",
+              "parameters": [
+                {
+                  "name": "low",
+                  "type": "T"
+                },
+                {
+                  "name": "high",
+                  "type": "T"
+                }
+              ]
+            },
+            {
+              "name": "MayContainGreaterThan",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.MayContainGreaterThan(T threshold)",
+              "summary": "Could this chunk hold a value <c>&gt; threshold</c>?",
+              "parameters": [
+                {
+                  "name": "threshold",
+                  "type": "T"
+                }
+              ]
+            },
+            {
+              "name": "MayContainLessThan",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetColumnStatistics<T>.MayContainLessThan(T threshold)",
+              "summary": "Could this chunk hold a value <c>&lt; threshold</c>?",
+              "parameters": [
+                {
+                  "name": "threshold",
+                  "type": "T"
+                }
+              ]
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetColumnStatistics",
+          "name": "ParquetColumnStatistics",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": true,
+          "isSealed": false,
+          "isAbstract": false,
+          "summary": "Projects the loosely typed <c>MinValue</c> / <c>MaxValue</c> objects Parquet.Net hands back onto the CLR type of a generated model property. Called only by generated code, once per row group.",
+          "syntax": "ParquetColumnStatistics",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.SourceGenerator.ParquetColumnStatistics"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [],
+          "methods": [
+            {
+              "name": "FromRaw",
+              "kind": "Method",
+              "returnType": "Parquet.SourceGenerator.ParquetColumnStatistics<T>",
+              "isStatic": true,
+              "syntax": "ParquetColumnStatistics<T> ParquetColumnStatistics.FromRaw<T>(object? min, object? max, long? nullCount, long? distinctCount)",
+              "summary": "Builds a typed zone map from raw column-chunk statistics. A value that is neither already a <typeparamref name=\"T\"/> nor losslessly convertible to one is dropped, which leaves <see cref=\"ParquetColumnStatistics{T}.HasMinMax\"/> false and therefore disables pruning for that column rather than risking a wrong skip.",
+              "parameters": [
+                {
+                  "name": "min",
+                  "type": "object?",
+                  "summary": "The raw recorded minimum, or <see langword=\"null\"/>."
+                },
+                {
+                  "name": "max",
+                  "type": "object?",
+                  "summary": "The raw recorded maximum, or <see langword=\"null\"/>."
+                },
+                {
+                  "name": "nullCount",
+                  "type": "long?",
+                  "summary": "The recorded null count, when present."
+                },
+                {
+                  "name": "distinctCount",
+                  "type": "long?",
+                  "summary": "The recorded distinct count, when present."
+                }
+              ]
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetCompressionLevel",
+          "name": "ParquetCompressionLevel",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Specifies how hard the chosen compression method should work.",
+          "remarks": "Mirrors <c>System.IO.Compression.CompressionLevel</c>. Declared here rather than reused so this assembly's netstandard2.0 and netstandard2.1 targets do not have to reason about <c>SmallestSize</c>, which only exists from .NET 6 onwards.",
+          "syntax": "ParquetCompressionLevel",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.ParquetCompressionLevel"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "Fastest",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionLevel",
+              "isStatic": true,
+              "syntax": "ParquetCompressionLevel.Fastest",
+              "summary": "Favours speed over compression ratio.",
+              "constantValue": "1"
+            },
+            {
+              "name": "NoCompression",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionLevel",
+              "isStatic": true,
+              "syntax": "ParquetCompressionLevel.NoCompression",
+              "summary": "Performs no compression, whatever the compression method.",
+              "constantValue": "2"
+            },
+            {
+              "name": "Optimal",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionLevel",
+              "isStatic": true,
+              "syntax": "ParquetCompressionLevel.Optimal",
+              "summary": "Balances compression ratio against speed.",
+              "constantValue": "0"
+            },
+            {
+              "name": "SmallestSize",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionLevel",
+              "isStatic": true,
+              "syntax": "ParquetCompressionLevel.SmallestSize",
+              "summary": "Favours compression ratio over speed.",
+              "constantValue": "3"
+            }
+          ]
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetCompressionMethod",
+          "name": "ParquetCompressionMethod",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Specifies compression method for Parquet serialization.",
+          "syntax": "ParquetCompressionMethod",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.ParquetCompressionMethod"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "Brotli",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionMethod",
+              "isStatic": true,
+              "syntax": "ParquetCompressionMethod.Brotli",
+              "summary": "Brotli compression.",
+              "constantValue": "4"
+            },
+            {
+              "name": "Gzip",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionMethod",
+              "isStatic": true,
+              "syntax": "ParquetCompressionMethod.Gzip",
+              "summary": "Gzip compression.",
+              "constantValue": "2"
+            },
+            {
+              "name": "Lz4",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionMethod",
+              "isStatic": true,
+              "syntax": "ParquetCompressionMethod.Lz4",
+              "summary": "Lz4 compression.",
+              "constantValue": "3"
+            },
+            {
+              "name": "None",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionMethod",
+              "isStatic": true,
+              "syntax": "ParquetCompressionMethod.None",
+              "summary": "No compression (uncompressed raw bytes).",
+              "constantValue": "0"
+            },
+            {
+              "name": "Snappy",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionMethod",
+              "isStatic": true,
+              "syntax": "ParquetCompressionMethod.Snappy",
+              "summary": "Snappy compression (default).",
+              "constantValue": "1"
+            },
+            {
+              "name": "Zstd",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionMethod",
+              "isStatic": true,
+              "syntax": "ParquetCompressionMethod.Zstd",
+              "summary": "Zstd compression.",
+              "constantValue": "5"
+            }
+          ]
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetDecimalAttribute",
+          "name": "ParquetDecimalAttribute",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Configures precision and scale parameters for decimal columns.",
+          "syntax": "ParquetDecimalAttribute",
+          "inheritanceHierarchy": [
+            "object",
+            "System.Attribute",
+            "Parquet.SourceGenerator.ParquetDecimalAttribute"
+          ],
+          "interfaces": [],
+          "constructors": [
+            {
+              "name": "ParquetDecimalAttribute",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetDecimalAttribute.ParquetDecimalAttribute(int precision, int scale)",
+              "summary": "Initializes a new instance of <see cref=\"ParquetDecimalAttribute\"/>.",
+              "parameters": [
+                {
+                  "name": "precision",
+                  "type": "int",
+                  "summary": "The total number of digits."
+                },
+                {
+                  "name": "scale",
+                  "type": "int",
+                  "summary": "The number of digits to the right of the decimal point."
+                }
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "name": "Precision",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetDecimalAttribute.Precision",
+              "summary": "Gets the precision (total digits)."
+            },
+            {
+              "name": "Scale",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetDecimalAttribute.Scale",
+              "summary": "Gets the scale (fractional digits)."
+            }
+          ],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetIgnoreAttribute",
+          "name": "ParquetIgnoreAttribute",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Excludes a property or field from being serialized to or deserialized from Parquet streams.",
+          "syntax": "ParquetIgnoreAttribute",
+          "inheritanceHierarchy": [
+            "object",
+            "System.Attribute",
+            "Parquet.SourceGenerator.ParquetIgnoreAttribute"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetPruneStatistics",
+          "name": "ParquetPruneStatistics",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Diagnostics recorded by the generated sorted-column lookup overloads (<c>ReadParquetBy&lt;Column&gt;Async</c> / <c>ReadParquet&lt;Column&gt;RangeAsync</c>). <para> Pass an instance to a lookup call to learn whether the file's row-group <c>[Min, Max]</c> statistics certified the key column as sorted, and how many row groups actually had to be decompressed. Nothing on the read path depends on it — it exists so callers, tests and benchmarks can prove that pruning happened rather than infer it from wall-clock time. </para>",
+          "syntax": "ParquetPruneStatistics",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.SourceGenerator.ParquetPruneStatistics"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [
+            {
+              "name": "FirstRowGroupRead",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.FirstRowGroupRead",
+              "summary": "Index of the first row group read, or -1 when nothing matched."
+            },
+            {
+              "name": "LastRowGroupRead",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.LastRowGroupRead",
+              "summary": "Index of the last row group read, or -1 when nothing matched."
+            },
+            {
+              "name": "RowGroupCount",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.RowGroupCount",
+              "summary": "Total row groups present in the file."
+            },
+            {
+              "name": "RowGroupsPruned",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.RowGroupsPruned",
+              "summary": "Row groups skipped without being decompressed."
+            },
+            {
+              "name": "RowGroupsScanned",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.RowGroupsScanned",
+              "summary": "Row groups actually opened and decompressed for the answer."
+            },
+            {
+              "name": "SortedColumnDetected",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetPruneStatistics.SortedColumnDetected",
+              "summary": "True when every row group carried usable <c>[Min, Max]</c> statistics for the key column and the intervals were non-overlapping and non-decreasing, so binary search was valid. False means the read fell back to a full linear scan."
+            },
+            {
+              "name": "StrictlyMonotonic",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetPruneStatistics.StrictlyMonotonic",
+              "summary": "True when the certified intervals were additionally <em>strictly</em> monotonic (<c>Max(i) &lt; Min(i+1)</c>), i.e. no key value straddles a row-group boundary."
+            }
+          ],
+          "methods": [
+            {
+              "name": "Reset",
+              "kind": "Method",
+              "returnType": "void",
+              "isStatic": false,
+              "syntax": "void ParquetPruneStatistics.Reset()",
+              "summary": "Restores the instance to its pre-read state so it can be reused.",
+              "parameters": []
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetSerializableAttribute",
+          "name": "ParquetSerializableAttribute",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Triggers compile-time Parquet schema discovery, column serializer, and deserializer generation.",
+          "remarks": "There is deliberately no <c>SchemaName</c> here. One existed, was parsed, was carried on the target model — and was never read by the emitter, because Parquet.Net's <c>ParquetSchema</c> has no name to set: both its constructors take fields and nothing else. It was removed rather than left as a public property that silently does nothing.",
+          "syntax": "ParquetSerializableAttribute",
+          "inheritanceHierarchy": [
+            "object",
+            "System.Attribute",
+            "Parquet.SourceGenerator.ParquetSerializableAttribute"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetSerializerOptions",
+          "name": "ParquetSerializerOptions",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Configurable options for Parquet source generator serialization and deserialization operations.",
+          "syntax": "ParquetSerializerOptions",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.SourceGenerator.ParquetSerializerOptions"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [
+            {
+              "name": "ColumnEncodingHints",
+              "kind": "Property",
+              "returnType": "System.Collections.Generic.IDictionary<string, Parquet.SourceGenerator.ParquetColumnEncoding>",
+              "isStatic": false,
+              "syntax": "IDictionary<string, ParquetColumnEncoding> ParquetSerializerOptions.ColumnEncodingHints",
+              "summary": "Specifies runtime encoding hints to the writer for specific columns by column path or name. Precedence with <c>[ParquetColumn(Encoding = ...)]</c>: the attribute is applied first and an entry here for the same column name replaces it, so this wins when both are set (an explicit <see cref=\"ParquetColumnEncoding.Default\"/> removes the attribute's hint). Columns without an entry keep their attribute hint. Applies to writes only, and to top-level columns: an <c>Encoding</c> on a member inside a nested struct or list element is not emitted today."
+            },
+            {
+              "name": "CompressionLevel",
+              "kind": "Property",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionLevel?",
+              "isStatic": false,
+              "syntax": "ParquetCompressionLevel? ParquetSerializerOptions.CompressionLevel",
+              "summary": "Gets or sets how hard the compression method should work. Null leaves Parquet.Net's own default in place, which is <c>SmallestSize</c>.",
+              "remarks": "Nullable rather than defaulted so that \"not specified\" stays distinguishable from any legal value — the same mistake the row group size sentinel used to make."
+            },
+            {
+              "name": "CompressionMethod",
+              "kind": "Property",
+              "returnType": "Parquet.SourceGenerator.ParquetCompressionMethod",
+              "isStatic": false,
+              "syntax": "ParquetCompressionMethod ParquetSerializerOptions.CompressionMethod",
+              "summary": "Gets or sets the compression method to apply when creating Parquet files (default is Snappy)."
+            },
+            {
+              "name": "DeduplicateStrings",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetSerializerOptions.DeduplicateStrings",
+              "summary": "Gets or sets whether to deduplicate string instances during deserialization (default is false). When enabled, identical string values within a row group share the same object reference, dramatically reducing managed heap allocations and memory footprint for low-cardinality columns. <para> Precedence with <c>[ParquetColumn(Deduplicate = true)]</c>: the two are combined with \"or\". The attribute deduplicates its column even when this is <c>false</c>; this set to <c>true</c> deduplicates every string column. Applies to reads only. </para>"
+            },
+            {
+              "name": "Default",
+              "kind": "Property",
+              "returnType": "Parquet.SourceGenerator.ParquetSerializerOptions",
+              "isStatic": true,
+              "syntax": "ParquetSerializerOptions ParquetSerializerOptions.Default",
+              "summary": "Gets a new configuration instance carrying the default values.",
+              "remarks": "Deliberately a fresh instance per access rather than a shared singleton. The properties below are settable, so a shared instance let any caller rewrite the defaults for every serializer in the process — <c>ParquetSerializerOptions.Default.RowGroupSize = 1;</c> in one library silently reconfigured every other one. The allocation is negligible beside the megabytes a Parquet read or write moves, and it is only taken when a caller omits options entirely. <para> The properties are not <c>init</c>-only because this assembly targets netstandard2.0 and netstandard2.1, neither of which carries <c>IsExternalInit</c>; making them init-only would break object-initializer use for exactly the .NET Framework consumers this package is meant to keep serving. </para>"
+            },
+            {
+              "name": "DictionaryEncodingSampleSize",
+              "kind": "Property",
+              "returnType": "int?",
+              "isStatic": false,
+              "syntax": "int? ParquetSerializerOptions.DictionaryEncodingSampleSize",
+              "summary": "Gets or sets the number of values to sample before attempting full dictionary encoding. When positive, a quick uniqueness check is performed on the first sample to determine if dictionary encoding should be applied, avoiding expensive full-column scans on high-cardinality data. Default is null (leaving Parquet.Net's default of 0 / full scan)."
+            },
+            {
+              "name": "DictionaryEncodingThreshold",
+              "kind": "Property",
+              "returnType": "double?",
+              "isStatic": false,
+              "syntax": "double? ParquetSerializerOptions.DictionaryEncodingThreshold",
+              "summary": "Gets or sets the dictionary uniqueness threshold, which is a value from 0 (no unique values) to 1 (all values are unique) indicating when dictionary encoding is applied. Uniqueness factor needs to be less than or equal to this threshold. Null leaves Parquet.Net's default in place (0.8)."
+            },
+            {
+              "name": "MaxAllocationBytes",
+              "kind": "Property",
+              "returnType": "long",
+              "isStatic": false,
+              "syntax": "long ParquetSerializerOptions.MaxAllocationBytes",
+              "summary": "Gets or sets the maximum number of bytes a read may allocate for one row group's column buffers, computed from the row and value counts the file declares before any of them is allocated (default is 268,435,456, which is 256 MiB).",
+              "remarks": "<see cref=\"MaxAllocationValues\"/> bounds a count, and a count is the same number for a <c>bool</c> column and a <c>Guid</c> column, so on its own it lets a small file with a lying footer reserve about a gigabyte. This bounds the bytes: the generated reader multiplies the row group's row count by the model's per-row buffer size (an upper estimate of the pooled arrays, not of the objects built from them) and throws <see cref=\"System.IO.InvalidDataException\"/> naming this option when the product exceeds the budget. Repeated (list) columns are checked as their chunks are read, for the growth of their buffers beyond the row-sized estimate, and that growth is added to the row group's running total. The budget applies to each row group and, in a parallel read, to each worker. <para> The default admits any realistic row group (a million rows of a ten column model is on the order of 100 MiB) while refusing the ten million rows a hostile footer can declare for a few hundred bytes. A file with genuinely larger row groups needs this raised, for example <c>MaxAllocationBytes = 1_073_741_824</c>. </para>"
+            },
+            {
+              "name": "MaxAllocationValues",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxAllocationValues",
+              "summary": "Gets or sets the maximum number of values permitted in a single column chunk allocation or total collection size (default is 10,000,000)."
+            },
+            {
+              "name": "MaxDecompressedPageSize",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxDecompressedPageSize",
+              "summary": "Gets or sets the maximum uncompressed size of an individual page read from a Parquet file (default is 67,108,864 bytes / 64 MiB).",
+              "remarks": "This limit is enforced before Parquet.Net allocates a page decompression buffer. It applies to generated deserialization paths only; writing is unaffected."
+            },
+            {
+              "name": "MaxDecompressionExpansionRatio",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxDecompressionExpansionRatio",
+              "summary": "Gets or sets the maximum uncompressed-to-compressed size ratio permitted for an individual compressed page (default is 500).",
+              "remarks": "This limit is enforced before Parquet.Net decompresses a page. It applies to generated deserialization paths only; writing is unaffected."
+            },
+            {
+              "name": "MaxDegreeOfParallelism",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxDegreeOfParallelism",
+              "summary": "Gets or sets the maximum degree of parallelism for parallel row group reading (default is -1, using <c>Environment.ProcessorCount</c>).",
+              "remarks": "<para> Applies to the generated <c>From(ReadOnlyMemory&lt;byte&gt;).Parallel()</c> read, where each worker gets its own reader over its own view of the buffer. Stream reads are sequential and ignore this: a stream cannot be shared between readers, so <c>Parallel()</c> on a stream source throws <see cref=\"System.NotSupportedException\"/>. The effective worker count is capped at the file's row-group count. </para> <para> This is the only place the degree of parallelism can be set. The parallel read methods carried a duplicate <c>maxDegreeOfParallelism</c> parameter until <c>0.0.x</c>; it was removed so the setting has one home. </para>"
+            },
+            {
+              "name": "MaxDictionaryEntries",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxDictionaryEntries",
+              "summary": "Gets or sets the maximum number of values permitted in a dictionary page before the reader rejects the column (default is 1,000,000)."
+            },
+            {
+              "name": "MaxNestingDepth",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxNestingDepth",
+              "summary": "Gets or sets the maximum compound schema nesting depth permitted (default is 64)."
+            },
+            {
+              "name": "MaxRowGroupCount",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxRowGroupCount",
+              "summary": "Gets or sets the maximum number of row groups permitted in a single Parquet file (default is 100,000)."
+            },
+            {
+              "name": "MaxStringLengthBytes",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.MaxStringLengthBytes",
+              "summary": "Gets or sets the maximum UTF-8 byte length permitted for a decoded string value before the reader materializes it (default is 1,048,576 bytes)."
+            },
+            {
+              "name": "RowGroupSize",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetSerializerOptions.RowGroupSize",
+              "summary": "Gets or sets the target row group size for batched writing operations (default is 50,000 rows).",
+              "remarks": "This is the only place the row group size can be set. <c>WriteParquetBatchedAsync</c> and the <c>IAsyncEnumerable</c> overload of <c>WriteParquetAsync</c> carried a duplicate <c>rowGroupSize</c> parameter until <c>0.0.x</c>; it was removed so the setting has one home. <para> It does not apply to the columnar <c>&lt;Model&gt;Batch.WriteParquetAsync</c>: a batch is written as one complete row group. </para>"
+            }
+          ],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetSortKeyAttribute",
+          "name": "ParquetSortKeyAttribute",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Opts a property or field in to sorted row-group pruning (issue #151), asking the generator to emit <c>ReadParquetBy&lt;Member&gt;Async</c> (point lookup) and <c>ReadParquet&lt;Member&gt;RangeAsync</c> (inclusive slice) for it.",
+          "remarks": "<para> The marker is opt-in on purpose. Both overloads are public API on the generated extension class, and emitting them for every eligible column would grow a wide model's surface by two methods per column whether or not anyone ever looks that column up. Declaring the lookup keys keeps the emitted API to the ones the model author actually wants. </para> <para> A marked member must be a flat, non-nullable root column of a totally ordered type whose Parquet statistics order matches <c>Comparer&lt;T&gt;.Default</c>: the integral types, <c>float</c>, <c>double</c>, or <see cref=\"DateTime\"/>. Marking anything else is a compile-time error (PARQ014) rather than a silent no-op. <c>string</c> is deliberately excluded — Parquet orders <c>BYTE_ARRAY</c> statistics bytewise while <c>string.CompareTo</c> is culture-sensitive, so the two orders can disagree and pruning could drop matching rows. </para> <para> Marking a member changes nothing about the file that is written; pruning is a read-time optimisation that reads the footer statistics the writer already emits. It pays off only when the data is actually written in that column's order. </para>",
+          "syntax": "ParquetSortKeyAttribute",
+          "inheritanceHierarchy": [
+            "object",
+            "System.Attribute",
+            "Parquet.SourceGenerator.ParquetSortKeyAttribute"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetTimestampAttribute",
+          "name": "ParquetTimestampAttribute",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Configures timestamp resolution for DateTime properties.",
+          "syntax": "ParquetTimestampAttribute",
+          "inheritanceHierarchy": [
+            "object",
+            "System.Attribute",
+            "Parquet.SourceGenerator.ParquetTimestampAttribute"
+          ],
+          "interfaces": [],
+          "constructors": [
+            {
+              "name": "ParquetTimestampAttribute",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetTimestampAttribute.ParquetTimestampAttribute(ParquetTimestampUnit unit)",
+              "summary": "Initializes a new instance of <see cref=\"ParquetTimestampAttribute\"/>.",
+              "parameters": [
+                {
+                  "name": "unit",
+                  "type": "Parquet.SourceGenerator.ParquetTimestampUnit",
+                  "summary": "The timestamp unit resolution."
+                }
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "name": "Unit",
+              "kind": "Property",
+              "returnType": "Parquet.SourceGenerator.ParquetTimestampUnit",
+              "isStatic": false,
+              "syntax": "ParquetTimestampUnit ParquetTimestampAttribute.Unit",
+              "summary": "Gets the timestamp resolution unit."
+            }
+          ],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetTimestampUnit",
+          "name": "ParquetTimestampUnit",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Specifies timestamp unit resolution for DateTime fields.",
+          "syntax": "ParquetTimestampUnit",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.ParquetTimestampUnit"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "Microseconds",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetTimestampUnit",
+              "isStatic": true,
+              "syntax": "ParquetTimestampUnit.Microseconds",
+              "summary": "Microseconds since Unix epoch.",
+              "constantValue": "1"
+            },
+            {
+              "name": "Milliseconds",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.ParquetTimestampUnit",
+              "isStatic": true,
+              "syntax": "ParquetTimestampUnit.Milliseconds",
+              "summary": "Milliseconds since Unix epoch.",
+              "constantValue": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Parquet.SourceGenerator.Emitter",
+      "types": [
+        {
+          "id": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+          "name": "NullableReadShape",
+          "namespace": "Parquet.SourceGenerator.Emitter",
+          "assembly": "Parquet.SourceGenerator",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "The per-column value kinds the nullable read helpers dispatch on.",
+          "syntax": "NullableReadShape",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "ByteArray",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+              "isStatic": true,
+              "syntax": "NullableReadShape.ByteArray",
+              "constantValue": "2"
+            },
+            {
+              "name": "String",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+              "isStatic": true,
+              "syntax": "NullableReadShape.String",
+              "constantValue": "1"
+            },
+            {
+              "name": "Struct",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+              "isStatic": true,
+              "syntax": "NullableReadShape.Struct",
+              "summary": "A nullable value type: <c>T?[]</c> read through <c>ReadAsync&lt;T&gt;</c>.",
+              "constantValue": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Parquet.SourceGenerator.Emitter.Columnar",
+      "types": [
+        {
+          "id": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+          "name": "LaneKind",
+          "namespace": "Parquet.SourceGenerator.Emitter.Columnar",
+          "assembly": "Parquet.SourceGenerator",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "The shape a column takes inside the batch, which decides how the read path decodes it and how the writer hands it to Parquet.Net.",
+          "syntax": "LaneKind",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "Binary",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Binary",
+              "summary": "A byte-array column: inline-nullable (or plain) binary memory per row.",
+              "constantValue": "3"
+            },
+            {
+              "name": "Direct",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Direct",
+              "summary": "A required fixed-width column: one value per row.",
+              "constantValue": "0"
+            },
+            {
+              "name": "Packed",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Packed",
+              "summary": "A nullable value column: packed non-null values plus definition levels.",
+              "constantValue": "1"
+            },
+            {
+              "name": "Text",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Text",
+              "summary": "A string column: inline-nullable (or plain) text memory per row.",
+              "constantValue": "2"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
