@@ -7,6 +7,12 @@
       "releasedAt": "2026-10-05T16:18:36.6285060Z",
       "isLatest": true,
       "typeCount": 16
+    },
+    {
+      "version": "0.0.1",
+      "releasedAt": "2026-10-05T22:19:54.9352239Z",
+      "isLatest": false,
+      "typeCount": 13
     }
   ]
 }

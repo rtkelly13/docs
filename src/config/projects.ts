@@ -76,7 +76,7 @@ export const PROJECTS: ProjectConfig[] = [
     description:
       'Zero-allocation incremental Roslyn source generator for Parquet.Net. Emits high-performance column readers, row group predicates, and prunable schemas at compile time.',
     version: '0.1.0',
-    githubUrl: 'https://github.com/rtkelly13/Parquet.SourceGenerator',
+    githubUrl: 'https://github.com/rtkelly-labs/Parquet.SourceGenerator',
     badge: 'Core Engine',
     featured: true,
     color: '#06b6d4',
