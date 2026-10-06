@@ -37,6 +37,9 @@ interface ProjectManifest {
 function fetchMainDump(project: ProjectConfig): string | null {
   const repoName = project.githubUrl.replace('https://github.com/', '');
   const dumpDir = path.resolve(ROOT_DIR, '.cache/main-dump', project.id);
+  if (fs.existsSync(dumpDir)) {
+    fs.rmSync(dumpDir, { recursive: true, force: true });
+  }
   fs.mkdirSync(dumpDir, { recursive: true });
 
   try {
