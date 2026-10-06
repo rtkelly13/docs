@@ -19,14 +19,19 @@ export function TypeDetailView({
   manifest,
 }: TypeDetailViewProps) {
   const isLatest = manifest.latest === version;
+  const isPrereleaseVersion = version.includes('-');
 
   return (
     <article className="space-y-8">
       {/* Deprecated / Older version notice */}
       {!isLatest && (
-        <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 text-xs font-mono text-yellow-200 flex items-center justify-between">
+        <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 text-xs font-mono text-yellow-200 flex flex-wrap items-center justify-between gap-2">
           <span>
-            ⚠️ You are viewing documentation for <strong>v{version}</strong>.
+            ⚠️ You are viewing{' '}
+            {isPrereleaseVersion
+              ? 'an archived pre-release'
+              : 'an older release'}{' '}
+            (<strong>v{version}</strong>).
           </span>
           <Link
             href={`/${projectId}/api/${manifest.latest}/${typeDoc.name}`}
@@ -41,6 +46,7 @@ export function TypeDetailView({
       <header className="space-y-3 border-b border-[var(--ds-border-subtle)] pb-6">
         <div className="flex flex-wrap items-center gap-2">
           <Badge accent="primary">{typeDoc.kind.toUpperCase()}</Badge>
+          {isPrereleaseVersion && <Badge accent="warning">PREVIEW</Badge>}
           {typeDoc.isSealed && <Badge accent="quiet">SEALED</Badge>}
           {typeDoc.isAbstract && <Badge accent="warning">ABSTRACT</Badge>}
           {typeDoc.isStatic && <Badge accent="secondary">STATIC</Badge>}

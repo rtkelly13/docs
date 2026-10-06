@@ -1,0 +1,523 @@
+{
+  "projectName": "Parquet.TypeProvider",
+  "version": "0.0.1",
+  "generatedAt": "2026-10-06T19:46:59.9731170Z",
+  "namespaces": [
+    {
+      "name": "Parquet.TypeProvider",
+      "types": [
+        {
+          "id": "Parquet.TypeProvider.ParquetColumnBatch",
+          "name": "ParquetColumnBatch",
+          "namespace": "Parquet.TypeProvider",
+          "assembly": "Parquet.TypeProvider.Runtime",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Represents the internal column batch backing a sequence of erased Parquet rows.",
+          "syntax": "ParquetColumnBatch",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.TypeProvider.ParquetColumnBatch"
+          ],
+          "interfaces": [
+            "System.Collections.IStructuralEquatable",
+            "System.IEquatable<Parquet.TypeProvider.ParquetColumnBatch>"
+          ],
+          "constructors": [
+            {
+              "name": "ParquetColumnBatch",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetColumnBatch.ParquetColumnBatch(string[] columnNames, Type[] columnTypes, Array[] columns, int rowCount)",
+              "parameters": [
+                {
+                  "name": "columnNames",
+                  "type": "string[]"
+                },
+                {
+                  "name": "columnTypes",
+                  "type": "System.Type[]"
+                },
+                {
+                  "name": "columns",
+                  "type": "System.Array[]"
+                },
+                {
+                  "name": "rowCount",
+                  "type": "int"
+                }
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "name": "ColumnNames",
+              "kind": "Property",
+              "returnType": "string[]",
+              "isStatic": false,
+              "syntax": "string[] ParquetColumnBatch.ColumnNames"
+            },
+            {
+              "name": "ColumnTypes",
+              "kind": "Property",
+              "returnType": "System.Type[]",
+              "isStatic": false,
+              "syntax": "Type[] ParquetColumnBatch.ColumnTypes"
+            },
+            {
+              "name": "Columns",
+              "kind": "Property",
+              "returnType": "System.Array[]",
+              "isStatic": false,
+              "syntax": "Array[] ParquetColumnBatch.Columns"
+            },
+            {
+              "name": "RowCount",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetColumnBatch.RowCount"
+            }
+          ],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.TypeProvider.ParquetReaderCore",
+          "name": "ParquetReaderCore",
+          "namespace": "Parquet.TypeProvider",
+          "assembly": "Parquet.TypeProvider.Runtime",
+          "kind": "Class",
+          "isStatic": true,
+          "isSealed": false,
+          "isAbstract": false,
+          "syntax": "ParquetReaderCore",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.TypeProvider.ParquetReaderCore"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [],
+          "methods": [
+            {
+              "name": "loadFromFile",
+              "kind": "Method",
+              "returnType": "System.Collections.Generic.IEnumerable<Parquet.TypeProvider.ParquetRow>",
+              "isStatic": true,
+              "syntax": "IEnumerable<ParquetRow> ParquetReaderCore.loadFromFile(string filePath, bool preferOption)",
+              "summary": "Loads a Parquet file from path as a sequence of rows.",
+              "parameters": [
+                {
+                  "name": "filePath",
+                  "type": "string"
+                },
+                {
+                  "name": "preferOption",
+                  "type": "bool"
+                }
+              ]
+            },
+            {
+              "name": "loadFromFileAsync",
+              "kind": "Method",
+              "returnType": "System.Collections.Generic.IAsyncEnumerable<Parquet.TypeProvider.ParquetRow>",
+              "isStatic": true,
+              "syntax": "IAsyncEnumerable<ParquetRow> ParquetReaderCore.loadFromFileAsync(string filePath, bool preferOption)",
+              "summary": "Asynchronously streams rows from a file path using taskSeq.",
+              "parameters": [
+                {
+                  "name": "filePath",
+                  "type": "string"
+                },
+                {
+                  "name": "preferOption",
+                  "type": "bool"
+                }
+              ]
+            },
+            {
+              "name": "normalizeClrType",
+              "kind": "Method",
+              "returnType": "System.Type",
+              "isStatic": true,
+              "syntax": "Type ParquetReaderCore.normalizeClrType(Type t)",
+              "summary": "Normalizes Parquet.Net 6 internal ClrTypes to standard .NET types for F# consumption.",
+              "parameters": [
+                {
+                  "name": "t",
+                  "type": "System.Type"
+                }
+              ]
+            },
+            {
+              "name": "readColumnArray",
+              "kind": "Method",
+              "returnType": "T[]",
+              "isStatic": true,
+              "syntax": "T[] ParquetReaderCore.readColumnArray<T>(string filePath, string columnName)",
+              "summary": "Reads a specific column as a contiguous typed array from a file.",
+              "parameters": [
+                {
+                  "name": "filePath",
+                  "type": "string"
+                },
+                {
+                  "name": "columnName",
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "readColumnArrayAsync",
+              "kind": "Method",
+              "returnType": "System.Threading.Tasks.Task<T[]>",
+              "isStatic": true,
+              "syntax": "Task<T[]> ParquetReaderCore.readColumnArrayAsync<T>(string filePath, string columnName)",
+              "summary": "Reads a specific column as a contiguous typed array from a file asynchronously.",
+              "parameters": [
+                {
+                  "name": "filePath",
+                  "type": "string"
+                },
+                {
+                  "name": "columnName",
+                  "type": "string"
+                }
+              ]
+            },
+            {
+              "name": "readColumnDataAsync",
+              "kind": "Method",
+              "returnType": "System.Threading.Tasks.Task<System.Array>",
+              "isStatic": true,
+              "syntax": "Task<Array> ParquetReaderCore.readColumnDataAsync(ParquetRowGroupReader groupReader, DataField field, int rowCount)",
+              "summary": "Reads a single column chunk from a row group asynchronously into a boxed typed array.",
+              "parameters": [
+                {
+                  "name": "groupReader",
+                  "type": "Parquet.ParquetRowGroupReader"
+                },
+                {
+                  "name": "field",
+                  "type": "Parquet.Schema.DataField"
+                },
+                {
+                  "name": "rowCount",
+                  "type": "int"
+                }
+              ]
+            },
+            {
+              "name": "readRows",
+              "kind": "Method",
+              "returnType": "System.Collections.Generic.IEnumerable<Parquet.TypeProvider.ParquetRow>",
+              "isStatic": true,
+              "syntax": "IEnumerable<ParquetRow> ParquetReaderCore.readRows(Stream stream, bool preferOption)",
+              "summary": "Reads all row groups into a sequence of ParquetRow elements (synchronous wrapper over taskSeq).",
+              "parameters": [
+                {
+                  "name": "stream",
+                  "type": "System.IO.Stream"
+                },
+                {
+                  "name": "preferOption",
+                  "type": "bool"
+                }
+              ]
+            },
+            {
+              "name": "readRowsStream",
+              "kind": "Method",
+              "returnType": "System.Collections.Generic.IAsyncEnumerable<Parquet.TypeProvider.ParquetRow>",
+              "isStatic": true,
+              "syntax": "IAsyncEnumerable<ParquetRow> ParquetReaderCore.readRowsStream(Stream stream, bool preferOption)",
+              "summary": "Asynchronously streams row groups from a Stream using the FSharp.Control taskSeq computation expression.",
+              "parameters": [
+                {
+                  "name": "stream",
+                  "type": "System.IO.Stream"
+                },
+                {
+                  "name": "preferOption",
+                  "type": "bool"
+                }
+              ]
+            },
+            {
+              "name": "readSchemaFieldsAsync",
+              "kind": "Method",
+              "returnType": "System.Threading.Tasks.Task<Parquet.TypeProvider.ParquetSchemaField[]>",
+              "isStatic": true,
+              "syntax": "Task<ParquetSchemaField[]> ParquetReaderCore.readSchemaFieldsAsync(Stream stream)",
+              "summary": "Reads metadata and extracts schema field definitions from a Parquet stream asynchronously.",
+              "parameters": [
+                {
+                  "name": "stream",
+                  "type": "System.IO.Stream"
+                }
+              ]
+            },
+            {
+              "name": "readSchemaFieldsFromFile",
+              "kind": "Method",
+              "returnType": "Parquet.TypeProvider.ParquetSchemaField[]",
+              "isStatic": true,
+              "syntax": "ParquetSchemaField[] ParquetReaderCore.readSchemaFieldsFromFile(string filePath)",
+              "summary": "Reads metadata and extracts schema field definitions from a file path.",
+              "parameters": [
+                {
+                  "name": "filePath",
+                  "type": "string"
+                }
+              ]
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "Parquet.TypeProvider.ParquetRow",
+          "name": "ParquetRow",
+          "namespace": "Parquet.TypeProvider",
+          "assembly": "Parquet.TypeProvider.Runtime",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": false,
+          "isAbstract": false,
+          "summary": "Lightweight erased row representation wrapping a column batch and row index. Implements structural equality and comparison for idiomatic F# behavior.",
+          "syntax": "ParquetRow",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.TypeProvider.ParquetRow"
+          ],
+          "interfaces": [
+            "System.Collections.IStructuralEquatable",
+            "System.IComparable"
+          ],
+          "constructors": [
+            {
+              "name": "ParquetRow",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetRow.ParquetRow(ParquetColumnBatch batch, int rowIndex)",
+              "parameters": [
+                {
+                  "name": "batch",
+                  "type": "Parquet.TypeProvider.ParquetColumnBatch"
+                },
+                {
+                  "name": "rowIndex",
+                  "type": "int"
+                }
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "name": "Batch",
+              "kind": "Property",
+              "returnType": "Parquet.TypeProvider.ParquetColumnBatch",
+              "isStatic": false,
+              "syntax": "ParquetColumnBatch ParquetRow.Batch"
+            },
+            {
+              "name": "Display",
+              "kind": "Property",
+              "returnType": "string",
+              "isStatic": false,
+              "syntax": "string ParquetRow.Display"
+            },
+            {
+              "name": "RowIndex",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetRow.RowIndex"
+            }
+          ],
+          "methods": [
+            {
+              "name": "Equals",
+              "kind": "Method",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetRow.Equals(object? other)",
+              "parameters": [
+                {
+                  "name": "other",
+                  "type": "object?"
+                }
+              ]
+            },
+            {
+              "name": "GetHashCode",
+              "kind": "Method",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetRow.GetHashCode()",
+              "parameters": []
+            },
+            {
+              "name": "GetOptionalValue",
+              "kind": "Method",
+              "returnType": "Microsoft.FSharp.Core.FSharpOption<T>?",
+              "isStatic": false,
+              "syntax": "FSharpOption<T>? ParquetRow.GetOptionalValue<T>(int colIndex)",
+              "summary": "Retrieves an optional typed column value by 0-based column index.",
+              "parameters": [
+                {
+                  "name": "colIndex",
+                  "type": "int"
+                }
+              ]
+            },
+            {
+              "name": "GetTypedValue",
+              "kind": "Method",
+              "returnType": "T",
+              "isStatic": false,
+              "syntax": "T ParquetRow.GetTypedValue<T>(int colIndex)",
+              "summary": "Retrieves a strongly-typed column value by 0-based column index.",
+              "parameters": [
+                {
+                  "name": "colIndex",
+                  "type": "int"
+                }
+              ]
+            },
+            {
+              "name": "GetValue",
+              "kind": "Method",
+              "returnType": "object",
+              "isStatic": false,
+              "syntax": "object ParquetRow.GetValue(int colIndex)",
+              "summary": "Retrieves an untyped column value by 0-based column index.",
+              "parameters": [
+                {
+                  "name": "colIndex",
+                  "type": "int"
+                }
+              ]
+            },
+            {
+              "name": "ToString",
+              "kind": "Method",
+              "returnType": "string",
+              "isStatic": false,
+              "syntax": "string ParquetRow.ToString()",
+              "parameters": []
+            }
+          ],
+          "fields": []
+        },
+        {
+          "id": "Parquet.TypeProvider.ParquetSchemaField",
+          "name": "ParquetSchemaField",
+          "namespace": "Parquet.TypeProvider",
+          "assembly": "Parquet.TypeProvider.Runtime",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Strongly typed schema field representation for F# Type Provider consumption.",
+          "syntax": "ParquetSchemaField",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.TypeProvider.ParquetSchemaField"
+          ],
+          "interfaces": [
+            "System.Collections.IStructuralEquatable",
+            "System.IEquatable<Parquet.TypeProvider.ParquetSchemaField>"
+          ],
+          "constructors": [
+            {
+              "name": "ParquetSchemaField",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetSchemaField.ParquetSchemaField(string name, Type clrType, bool isNullable)",
+              "parameters": [
+                {
+                  "name": "name",
+                  "type": "string"
+                },
+                {
+                  "name": "clrType",
+                  "type": "System.Type"
+                },
+                {
+                  "name": "isNullable",
+                  "type": "bool"
+                }
+              ]
+            }
+          ],
+          "properties": [
+            {
+              "name": "ClrType",
+              "kind": "Property",
+              "returnType": "System.Type",
+              "isStatic": false,
+              "syntax": "Type ParquetSchemaField.ClrType"
+            },
+            {
+              "name": "IsNullable",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetSchemaField.IsNullable"
+            },
+            {
+              "name": "Name",
+              "kind": "Property",
+              "returnType": "string",
+              "isStatic": false,
+              "syntax": "string ParquetSchemaField.Name"
+            }
+          ],
+          "methods": [],
+          "fields": []
+        }
+      ]
+    },
+    {
+      "name": "Parquet.TypeProvider.DesignTime",
+      "types": [
+        {
+          "id": "Parquet.TypeProvider.DesignTime.ParquetTypeProvider",
+          "name": "ParquetTypeProvider",
+          "namespace": "Parquet.TypeProvider.DesignTime",
+          "assembly": "Parquet.TypeProvider.DesignTime",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": false,
+          "isAbstract": false,
+          "syntax": "ParquetTypeProvider",
+          "inheritanceHierarchy": [
+            "ProviderImplementation.ProvidedTypes.TypeProviderForNamespaces",
+            "Parquet.TypeProvider.DesignTime.ParquetTypeProvider"
+          ],
+          "interfaces": [],
+          "constructors": [
+            {
+              "name": "ParquetTypeProvider",
+              "kind": "Constructor",
+              "isStatic": false,
+              "syntax": "ParquetTypeProvider.ParquetTypeProvider(TypeProviderConfig config)",
+              "parameters": [
+                {
+                  "name": "config",
+                  "type": "Microsoft.FSharp.Core.CompilerServices.TypeProviderConfig"
+                }
+              ]
+            }
+          ],
+          "properties": [],
+          "methods": [],
+          "fields": []
+        }
+      ]
+    }
+  ]
+}

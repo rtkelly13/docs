@@ -102,7 +102,7 @@ export const PROJECTS: ProjectConfig[] = [
     description:
       'Generative type provider delivering instant IntelliSense, static typing, and schema validation over Apache Parquet datasets directly in F# scripts and applications.',
     version: '0.2.0',
-    githubUrl: 'https://github.com/rtkelly13/Parquet.TypeProvider',
+    githubUrl: 'https://github.com/rtkelly-labs/Parquet.TypeProvider',
     badge: 'Type Provider',
     featured: true,
     color: '#3b82f6',
@@ -110,7 +110,7 @@ export const PROJECTS: ProjectConfig[] = [
     docsDir: 'docs',
     features: {
       guides: true,
-      apiGrid: false,
+      apiGrid: true,
       ledger: false,
       architecture: false,
     },
