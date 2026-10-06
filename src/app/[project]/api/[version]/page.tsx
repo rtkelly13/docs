@@ -85,10 +85,29 @@ export default async function VersionApiIndexPage({ params }: PageProps) {
             <div className="flex flex-wrap items-center gap-2">
               <Badge accent="primary">API REFERENCE</Badge>
               <Badge accent="secondary">v{version}</Badge>
+              {version.includes('-') && <Badge accent="warning">PREVIEW</Badge>}
               {manifest.latest === version && (
-                <Badge accent="warning">LATEST</Badge>
+                <Badge accent="primary">LATEST</Badge>
               )}
             </div>
+
+            {manifest.latest !== version && (
+              <div className="bg-yellow-500/10 border-l-4 border-yellow-500 p-4 text-xs font-mono text-yellow-200 flex flex-wrap items-center justify-between gap-2">
+                <span>
+                  ⚠️ You are viewing{' '}
+                  {version.includes('-')
+                    ? 'an archived pre-release'
+                    : 'an older release'}{' '}
+                  (<strong>v{version}</strong>).
+                </span>
+                <Link
+                  href={`/${projectId}/api/${manifest.latest}`}
+                  className="underline hover:text-white font-bold ml-2"
+                >
+                  Switch to latest (v{manifest.latest}) →
+                </Link>
+              </div>
+            )}
 
             <h1 className="text-2xl sm:text-4xl font-mono font-bold text-[var(--ds-text-primary)]">
               {project.name} // API BROWSER

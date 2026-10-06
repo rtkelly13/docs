@@ -52,6 +52,7 @@ export interface VersionInfo {
   version: string;
   releasedAt: string;
   isLatest: boolean;
+  isPrerelease: boolean;
   typeCount: number;
 }
 

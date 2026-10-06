@@ -14,6 +14,7 @@ import {
   type LedgerEntry,
   parseLedger,
 } from '../src/lib/ingest/parseLedger.js';
+import { compareSemverDesc, isPrerelease } from '../src/lib/semver.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -306,10 +307,12 @@ async function ingestProject(
     const existingIdx = versionManifest.versions.findIndex(
       (v) => v.version === apiDoc.version,
     );
+    const prerelease = isPrerelease(apiDoc.version);
     const versionEntry: VersionInfo = {
       version: apiDoc.version,
       releasedAt: apiDoc.generatedAt,
-      isLatest: true,
+      isLatest: false,
+      isPrerelease: prerelease,
       typeCount,
     };
 
@@ -319,14 +322,25 @@ async function ingestProject(
       versionManifest.versions.push(versionEntry);
     }
 
+    // Sort versions descending by semver
+    versionManifest.versions.sort((a, b) =>
+      compareSemverDesc(a.version, b.version),
+    );
+
+    // Determine latest stable release (or latest pre-release if no stable exists)
+    const latestStable = versionManifest.versions.find((v) => !v.isPrerelease);
+    const effectiveLatest = latestStable
+      ? latestStable.version
+      : versionManifest.versions[0]?.version || apiDoc.version;
+    versionManifest.latest = effectiveLatest;
+
     for (const v of versionManifest.versions) {
-      v.isLatest = v.version === apiDoc.version;
+      v.isLatest = v.version === effectiveLatest;
     }
 
-    versionManifest.latest = apiDoc.version;
     fs.writeFileSync(manifestPath, JSON.stringify(versionManifest, null, 2));
     console.log(
-      `✓ Ingested versioned API model for ${versionTag} (${typeCount} types)`,
+      `✓ Ingested versioned API model for ${versionTag} (${typeCount} types, prerelease=${prerelease})`,
     );
   }
 
