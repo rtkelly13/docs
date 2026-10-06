@@ -1,7 +1,7 @@
 {
   "projectName": "Parquet.SourceGenerator",
-  "version": "0.0.1",
-  "generatedAt": "2026-10-06T20:07:55.6491050Z",
+  "version": "0.2.0-preview.0",
+  "generatedAt": "2026-10-06T15:00:00Z",
   "namespaces": [
     {
       "name": "Parquet.SourceGenerator",
@@ -108,15 +108,7 @@
             "System.IFormattable",
             "System.ISpanFormattable"
           ],
-          "constructors": [
-            {
-              "name": "ParquetColumnEncoding",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetColumnEncoding.ParquetColumnEncoding()",
-              "parameters": []
-            }
-          ],
+          "constructors": [],
           "properties": [],
           "methods": [],
           "fields": [
@@ -179,13 +171,6 @@
             "System.IEquatable<Parquet.SourceGenerator.ParquetColumnStatistics<T>>"
           ],
           "constructors": [
-            {
-              "name": "ParquetColumnStatistics",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetColumnStatistics<T>.ParquetColumnStatistics()",
-              "parameters": []
-            },
             {
               "name": "ParquetColumnStatistics",
               "kind": "Constructor",
@@ -413,42 +398,6 @@
                   "type": "T"
                 }
               ]
-            },
-            {
-              "name": "op_Equality",
-              "kind": "Operator",
-              "returnType": "bool",
-              "isStatic": true,
-              "syntax": "bool ParquetColumnStatistics<T>.operator ==(ParquetColumnStatistics<T> left, ParquetColumnStatistics<T> right)",
-              "summary": "Equality operator.",
-              "parameters": [
-                {
-                  "name": "left",
-                  "type": "Parquet.SourceGenerator.ParquetColumnStatistics<T>"
-                },
-                {
-                  "name": "right",
-                  "type": "Parquet.SourceGenerator.ParquetColumnStatistics<T>"
-                }
-              ]
-            },
-            {
-              "name": "op_Inequality",
-              "kind": "Operator",
-              "returnType": "bool",
-              "isStatic": true,
-              "syntax": "bool ParquetColumnStatistics<T>.operator !=(ParquetColumnStatistics<T> left, ParquetColumnStatistics<T> right)",
-              "summary": "Inequality operator.",
-              "parameters": [
-                {
-                  "name": "left",
-                  "type": "Parquet.SourceGenerator.ParquetColumnStatistics<T>"
-                },
-                {
-                  "name": "right",
-                  "type": "Parquet.SourceGenerator.ParquetColumnStatistics<T>"
-                }
-              ]
             }
           ],
           "fields": []
@@ -529,15 +478,7 @@
             "System.IFormattable",
             "System.ISpanFormattable"
           ],
-          "constructors": [
-            {
-              "name": "ParquetCompressionLevel",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetCompressionLevel.ParquetCompressionLevel()",
-              "parameters": []
-            }
-          ],
+          "constructors": [],
           "properties": [],
           "methods": [],
           "fields": [
@@ -602,15 +543,7 @@
             "System.IFormattable",
             "System.ISpanFormattable"
           ],
-          "constructors": [
-            {
-              "name": "ParquetCompressionMethod",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetCompressionMethod.ParquetCompressionMethod()",
-              "parameters": []
-            }
-          ],
+          "constructors": [],
           "properties": [],
           "methods": [],
           "fields": [
@@ -746,17 +679,97 @@
             "Parquet.SourceGenerator.ParquetIgnoreAttribute"
           ],
           "interfaces": [],
-          "constructors": [
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": []
+        },
+        {
+          "id": "Parquet.SourceGenerator.ParquetPruneStatistics",
+          "name": "ParquetPruneStatistics",
+          "namespace": "Parquet.SourceGenerator",
+          "assembly": "Parquet.SourceGenerator.Attributes",
+          "kind": "Class",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "Diagnostics recorded by the generated sorted-column lookup overloads (<c>ReadParquetBy&lt;Column&gt;Async</c> / <c>ReadParquet&lt;Column&gt;RangeAsync</c>). <para> Pass an instance to a lookup call to learn whether the file's row-group <c>[Min, Max]</c> statistics certified the key column as sorted, and how many row groups actually had to be decompressed. Nothing on the read path depends on it — it exists so callers, tests and benchmarks can prove that pruning happened rather than infer it from wall-clock time. </para>",
+          "syntax": "ParquetPruneStatistics",
+          "inheritanceHierarchy": [
+            "object",
+            "Parquet.SourceGenerator.ParquetPruneStatistics"
+          ],
+          "interfaces": [],
+          "constructors": [],
+          "properties": [
             {
-              "name": "ParquetIgnoreAttribute",
-              "kind": "Constructor",
+              "name": "FirstRowGroupRead",
+              "kind": "Property",
+              "returnType": "int",
               "isStatic": false,
-              "syntax": "ParquetIgnoreAttribute.ParquetIgnoreAttribute()",
+              "syntax": "int ParquetPruneStatistics.FirstRowGroupRead",
+              "summary": "Index of the first row group read, or -1 when nothing matched."
+            },
+            {
+              "name": "LastRowGroupRead",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.LastRowGroupRead",
+              "summary": "Index of the last row group read, or -1 when nothing matched."
+            },
+            {
+              "name": "RowGroupCount",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.RowGroupCount",
+              "summary": "Total row groups present in the file."
+            },
+            {
+              "name": "RowGroupsPruned",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.RowGroupsPruned",
+              "summary": "Row groups skipped without being decompressed."
+            },
+            {
+              "name": "RowGroupsScanned",
+              "kind": "Property",
+              "returnType": "int",
+              "isStatic": false,
+              "syntax": "int ParquetPruneStatistics.RowGroupsScanned",
+              "summary": "Row groups actually opened and decompressed for the answer."
+            },
+            {
+              "name": "SortedColumnDetected",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetPruneStatistics.SortedColumnDetected",
+              "summary": "True when every row group carried usable <c>[Min, Max]</c> statistics for the key column and the intervals were non-overlapping and non-decreasing, so binary search was valid. False means the read fell back to a full linear scan."
+            },
+            {
+              "name": "StrictlyMonotonic",
+              "kind": "Property",
+              "returnType": "bool",
+              "isStatic": false,
+              "syntax": "bool ParquetPruneStatistics.StrictlyMonotonic",
+              "summary": "True when the certified intervals were additionally <em>strictly</em> monotonic (<c>Max(i) &lt; Min(i+1)</c>), i.e. no key value straddles a row-group boundary."
+            }
+          ],
+          "methods": [
+            {
+              "name": "Reset",
+              "kind": "Method",
+              "returnType": "void",
+              "isStatic": false,
+              "syntax": "void ParquetPruneStatistics.Reset()",
+              "summary": "Restores the instance to its pre-read state so it can be reused.",
               "parameters": []
             }
           ],
-          "properties": [],
-          "methods": [],
           "fields": []
         },
         {
@@ -777,15 +790,7 @@
             "Parquet.SourceGenerator.ParquetSerializableAttribute"
           ],
           "interfaces": [],
-          "constructors": [
-            {
-              "name": "ParquetSerializableAttribute",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetSerializableAttribute.ParquetSerializableAttribute()",
-              "parameters": []
-            }
-          ],
+          "constructors": [],
           "properties": [],
           "methods": [],
           "fields": []
@@ -806,15 +811,7 @@
             "Parquet.SourceGenerator.ParquetSerializerOptions"
           ],
           "interfaces": [],
-          "constructors": [
-            {
-              "name": "ParquetSerializerOptions",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetSerializerOptions.ParquetSerializerOptions()",
-              "parameters": []
-            }
-          ],
+          "constructors": [],
           "properties": [
             {
               "name": "ColumnEncodingHints",
@@ -956,8 +953,8 @@
               "returnType": "int",
               "isStatic": false,
               "syntax": "int ParquetSerializerOptions.RowGroupSize",
-              "summary": "Gets or sets the target row group size for chunked writing operations (default is 50,000 rows).",
-              "remarks": "This is the only place the row group size can be set. <c>WriteParquetAsync</c> chunks rows into row groups using this size when a collection exceeds it or when streaming unbuffered rows. <para> It does not apply to the columnar <c>&lt;Model&gt;Batch.WriteParquetAsync</c>: a batch is written as one complete row group. </para>"
+              "summary": "Gets or sets the target row group size for batched writing operations (default is 50,000 rows).",
+              "remarks": "This is the only place the row group size can be set. <c>WriteParquetBatchedAsync</c> and the <c>IAsyncEnumerable</c> overload of <c>WriteParquetAsync</c> carried a duplicate <c>rowGroupSize</c> parameter until <c>0.0.x</c>; it was removed so the setting has one home. <para> It does not apply to the columnar <c>&lt;Model&gt;Batch.WriteParquetAsync</c>: a batch is written as one complete row group. </para>"
             }
           ],
           "methods": [],
@@ -972,8 +969,8 @@
           "isStatic": false,
           "isSealed": true,
           "isAbstract": false,
-          "summary": "Marks a property or field as a sorted key column for row-group pruning (issue #151, #584). Key lookups and range queries are expressed through <c>Where(m =&gt; m.&lt;Key&gt;.MayContain(...))</c>.",
-          "remarks": "<para> A marked member must be a flat, non-nullable root column of a totally ordered type whose Parquet statistics order matches <c>Comparer&lt;T&gt;.Default</c>: the integral types, <c>float</c>, <c>double</c>, or <see cref=\"DateTime\"/>. Marking anything else is a compile-time error (PARQ014) rather than a silent no-op. <c>string</c> is deliberately excluded — Parquet orders <c>BYTE_ARRAY</c> statistics bytewise while <c>string.CompareTo</c> is culture-sensitive, so the two orders can disagree and pruning could drop matching rows. </para> <para> Marking a member changes nothing about the file that is written; pruning is a read-time optimisation that reads the footer statistics the writer already emits. It pays off only when the data is actually written in that column's order. </para>",
+          "summary": "Opts a property or field in to sorted row-group pruning (issue #151), asking the generator to emit <c>ReadParquetBy&lt;Member&gt;Async</c> (point lookup) and <c>ReadParquet&lt;Member&gt;RangeAsync</c> (inclusive slice) for it.",
+          "remarks": "<para> The marker is opt-in on purpose. Both overloads are public API on the generated extension class, and emitting them for every eligible column would grow a wide model's surface by two methods per column whether or not anyone ever looks that column up. Declaring the lookup keys keeps the emitted API to the ones the model author actually wants. </para> <para> A marked member must be a flat, non-nullable root column of a totally ordered type whose Parquet statistics order matches <c>Comparer&lt;T&gt;.Default</c>: the integral types, <c>float</c>, <c>double</c>, or <see cref=\"DateTime\"/>. Marking anything else is a compile-time error (PARQ014) rather than a silent no-op. <c>string</c> is deliberately excluded — Parquet orders <c>BYTE_ARRAY</c> statistics bytewise while <c>string.CompareTo</c> is culture-sensitive, so the two orders can disagree and pruning could drop matching rows. </para> <para> Marking a member changes nothing about the file that is written; pruning is a read-time optimisation that reads the footer statistics the writer already emits. It pays off only when the data is actually written in that column's order. </para>",
           "syntax": "ParquetSortKeyAttribute",
           "inheritanceHierarchy": [
             "object",
@@ -981,15 +978,7 @@
             "Parquet.SourceGenerator.ParquetSortKeyAttribute"
           ],
           "interfaces": [],
-          "constructors": [
-            {
-              "name": "ParquetSortKeyAttribute",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetSortKeyAttribute.ParquetSortKeyAttribute()",
-              "parameters": []
-            }
-          ],
+          "constructors": [],
           "properties": [],
           "methods": [],
           "fields": []
@@ -1063,15 +1052,7 @@
             "System.IFormattable",
             "System.ISpanFormattable"
           ],
-          "constructors": [
-            {
-              "name": "ParquetTimestampUnit",
-              "kind": "Constructor",
-              "isStatic": false,
-              "syntax": "ParquetTimestampUnit.ParquetTimestampUnit()",
-              "parameters": []
-            }
-          ],
+          "constructors": [],
           "properties": [],
           "methods": [],
           "fields": [
@@ -1092,6 +1073,135 @@
               "syntax": "ParquetTimestampUnit.Milliseconds",
               "summary": "Milliseconds since Unix epoch.",
               "constantValue": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Parquet.SourceGenerator.Emitter",
+      "types": [
+        {
+          "id": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+          "name": "NullableReadShape",
+          "namespace": "Parquet.SourceGenerator.Emitter",
+          "assembly": "Parquet.SourceGenerator",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "The per-column value kinds the nullable read helpers dispatch on.",
+          "syntax": "NullableReadShape",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "ByteArray",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+              "isStatic": true,
+              "syntax": "NullableReadShape.ByteArray",
+              "constantValue": "2"
+            },
+            {
+              "name": "String",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+              "isStatic": true,
+              "syntax": "NullableReadShape.String",
+              "constantValue": "1"
+            },
+            {
+              "name": "Struct",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.ColumnHelpersComponent.NullableReadShape",
+              "isStatic": true,
+              "syntax": "NullableReadShape.Struct",
+              "summary": "A nullable value type: <c>T?[]</c> read through <c>ReadAsync&lt;T&gt;</c>.",
+              "constantValue": "0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Parquet.SourceGenerator.Emitter.Columnar",
+      "types": [
+        {
+          "id": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+          "name": "LaneKind",
+          "namespace": "Parquet.SourceGenerator.Emitter.Columnar",
+          "assembly": "Parquet.SourceGenerator",
+          "kind": "Enum",
+          "isStatic": false,
+          "isSealed": true,
+          "isAbstract": false,
+          "summary": "The shape a column takes inside the batch, which decides how the read path decodes it and how the writer hands it to Parquet.Net.",
+          "syntax": "LaneKind",
+          "inheritanceHierarchy": [
+            "object",
+            "System.ValueType",
+            "System.Enum",
+            "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind"
+          ],
+          "interfaces": [
+            "System.IComparable",
+            "System.IConvertible",
+            "System.IFormattable",
+            "System.ISpanFormattable"
+          ],
+          "constructors": [],
+          "properties": [],
+          "methods": [],
+          "fields": [
+            {
+              "name": "Binary",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Binary",
+              "summary": "A byte-array column: inline-nullable (or plain) binary memory per row.",
+              "constantValue": "3"
+            },
+            {
+              "name": "Direct",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Direct",
+              "summary": "A required fixed-width column: one value per row.",
+              "constantValue": "0"
+            },
+            {
+              "name": "Packed",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Packed",
+              "summary": "A nullable value column: packed non-null values plus definition levels.",
+              "constantValue": "1"
+            },
+            {
+              "name": "Text",
+              "kind": "Field",
+              "returnType": "Parquet.SourceGenerator.Emitter.Columnar.ColumnarBatchComponent.LaneKind",
+              "isStatic": true,
+              "syntax": "LaneKind.Text",
+              "summary": "A string column: inline-nullable (or plain) text memory per row.",
+              "constantValue": "2"
             }
           ]
         }

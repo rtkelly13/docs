@@ -8,20 +8,26 @@ interface TypeHierarchyUmlProps {
   typeDoc: TypeDoc;
 }
 
-function cleanMermaidName(name: string): string {
-  // Replace <T> with ~T~ for Mermaid generic support, and strip namespace dots for node IDs
-  return name.replace(/<([^>]+)>/g, '~$1~').replace(/[^a-zA-Z0-9_~]/g, '_');
+function cleanIdentifier(name: string): string {
+  // Strip namespace prefixes, generics (<...>, ~...~), array brackets, and non-alphanumeric chars
+  const shortName = name.split('.').pop() || name;
+  const noGenerics = shortName.replace(/<[^>]+>/g, '').replace(/~[^~]+~/g, '');
+  const sanitized = noGenerics
+    .replace(/[^a-zA-Z0-9_]/g, '_')
+    .replace(/^_+/, '');
+  return sanitized || 'Type';
 }
 
-function formatShortName(fullName: string): string {
-  const parts = fullName.split('.');
-  return parts[parts.length - 1];
+function cleanMemberName(name: string): string {
+  // Methods can be .ctor, op_Equality, etc. Remove leading dots and special chars
+  const cleaned = name.replace(/<[^>]+>/g, '').replace(/[^a-zA-Z0-9_]/g, '');
+  return cleaned || 'member';
 }
 
 export function TypeHierarchyUml({ typeDoc }: TypeHierarchyUmlProps) {
   const chart = useMemo(() => {
     const lines: string[] = ['classDiagram'];
-    const currentName = cleanMermaidName(typeDoc.name);
+    const currentName = cleanIdentifier(typeDoc.name);
 
     lines.push(`    class ${currentName} {`);
     if (typeDoc.kind === 'Interface') {
@@ -31,19 +37,27 @@ export function TypeHierarchyUml({ typeDoc }: TypeHierarchyUmlProps) {
     }
 
     // Include top properties in UML
-    for (const prop of typeDoc.properties.slice(0, 8)) {
+    const seenProps = new Set<string>();
+    for (const prop of typeDoc.properties) {
+      const propName = cleanMemberName(prop.name);
+      if (seenProps.has(propName) || seenProps.size >= 8) continue;
+      seenProps.add(propName);
       const typeStr = prop.returnType
-        ? cleanMermaidName(formatShortName(prop.returnType))
-        : '';
-      lines.push(`        +${typeStr} ${prop.name}`);
+        ? cleanIdentifier(prop.returnType)
+        : 'var';
+      lines.push(`        +${typeStr} ${propName}`);
     }
 
     // Include top methods in UML
-    for (const method of typeDoc.methods.slice(0, 8)) {
+    const seenMethods = new Set<string>();
+    for (const method of typeDoc.methods) {
+      const methodName = cleanMemberName(method.name);
+      if (seenMethods.has(methodName) || seenMethods.size >= 8) continue;
+      seenMethods.add(methodName);
       const retStr = method.returnType
-        ? cleanMermaidName(formatShortName(method.returnType))
+        ? cleanIdentifier(method.returnType)
         : 'void';
-      lines.push(`        +${method.name}() ${retStr}`);
+      lines.push(`        +${methodName}() ${retStr}`);
     }
     lines.push('    }');
 
@@ -57,16 +71,28 @@ export function TypeHierarchyUml({ typeDoc }: TypeHierarchyUmlProps) {
       if (
         directBase &&
         directBase !== 'object' &&
-        directBase !== 'System.Object'
+        directBase !== 'System.Object' &&
+        directBase !== 'System.ValueType'
       ) {
-        const baseName = cleanMermaidName(formatShortName(directBase));
-        lines.push(`    ${baseName} <|-- ${currentName}`);
+        const baseName = cleanIdentifier(directBase);
+        if (baseName !== currentName) {
+          lines.push(`    ${baseName} <|-- ${currentName}`);
+        }
       }
     }
 
     // Implemented interfaces relation
-    for (const iface of typeDoc.interfaces.slice(0, 4)) {
-      const ifaceName = cleanMermaidName(formatShortName(iface));
+    const seenIfaces = new Set<string>();
+    for (const iface of typeDoc.interfaces) {
+      const ifaceName = cleanIdentifier(iface);
+      if (
+        seenIfaces.has(ifaceName) ||
+        ifaceName === currentName ||
+        seenIfaces.size >= 4
+      ) {
+        continue;
+      }
+      seenIfaces.add(ifaceName);
       lines.push(`    ${ifaceName} <|.. ${currentName}`);
     }
 
