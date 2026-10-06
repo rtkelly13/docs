@@ -23,6 +23,7 @@ export function MermaidViewer({ chart, title }: MermaidViewerProps) {
   const [svg, setSvg] = useState<string>('');
   const [viewMode, setViewMode] = useState<'diagram' | 'source'>('diagram');
   const [copied, setCopied] = useState(false);
+  const [renderError, setRenderError] = useState<string | null>(null);
   const [mounted, setMounted] = useState(false);
   const id = useId().replace(/[:]/g, '_');
 
@@ -36,8 +37,10 @@ export function MermaidViewer({ chart, title }: MermaidViewerProps) {
     let isSubscribed = true;
     const renderChart = async () => {
       try {
+        setRenderError(null);
         mermaid.initialize({
           startOnLoad: false,
+          suppressErrorRendering: true,
           securityLevel: 'loose',
           fontFamily: 'IBM Plex Mono, monospace',
           ...themeEngine.getConfig(),
@@ -50,7 +53,12 @@ export function MermaidViewer({ chart, title }: MermaidViewerProps) {
         if (isSubscribed) {
           setSvg(renderedSvg);
         }
-      } catch (err) {
+      } catch (err: any) {
+        if (isSubscribed) {
+          setRenderError(err?.message || 'Diagram syntax error');
+          const errEl = document.getElementById(`dmermaid-${id}`);
+          if (errEl) errEl.remove();
+        }
         console.error('Failed to render Mermaid chart:', err);
       }
     };
@@ -117,7 +125,22 @@ export function MermaidViewer({ chart, title }: MermaidViewerProps) {
 
       <div className="p-4 overflow-x-auto min-h-[250px] flex items-center justify-center">
         {viewMode === 'diagram' ? (
-          svg ? (
+          renderError ? (
+            <div className="text-center p-6 border border-amber-900/50 bg-amber-950/20 max-w-lg">
+              <p className="text-xs font-mono font-bold text-amber-400 mb-2">
+                Unable to render diagram
+              </p>
+              <p className="text-[11px] font-mono text-[var(--ds-text-muted)] break-words mb-3">
+                {renderError}
+              </p>
+              <button
+                onClick={() => setViewMode('source')}
+                className="text-xs font-mono text-cyan-400 underline hover:text-cyan-300"
+              >
+                View Mermaid Source
+              </button>
+            </div>
+          ) : svg ? (
             <div
               className="w-full flex justify-center [&_svg]:max-w-full [&_svg]:h-auto"
               dangerouslySetInnerHTML={{ __html: svg }}
